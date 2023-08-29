@@ -1,0 +1,138 @@
+name: test
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+        go-version: [1.21.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: ./.github/actions/install-node
+        with:
+          node-version: ${{ matrix.node-version }}
+        working-directory: ./frontend
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install Go dependencies
+        run: go get .
+
+      - name: Run frontend linter
+        run: pnpm --dir frontend run lint
+
+      - name: Run backend linter
+        uses: golangci/golangci-lint-action@v3.7.0
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+
+      - name: Build
+        run: ./scripts/build.sh
+        shell: bash
+
+      - name: Health Check
+        run: ./voxeti & ./scripts/health-check.sh
+        shell: bash
+
+  unit-test-backend:
+    name: Run backend unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.21.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install Go dependencies
+        run: go get .
+
+      - name: Run unit tests w/ coverage
+        run: ./scripts/unit-test-backend.sh
+        shell: bash
+
+  e2e-test-backend:
+    name: Run backend end-to-end tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.21.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install Go dependencies
+        run: go get .
+
+      - name: Run end-to-end tests
+        run: ./scripts/e2e-test-backend.sh
+        shell: bash
+
+  unit-test-frontend:
+    name: Run frontend unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: ./.github/actions/install
+        with:
+          node-version: ${{ matrix.node-version }}
+        working-directory: ./frontend
+      
+      - name: Run unit tests w/ coverage
+        run: ./scripts/unit-test-frontend.sh
+        shell: bash
+
+  e2e-test-frontend:
+    name: Run frontend end-to-end tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: ./.github/actions/install
+        with:
+          node-version: ${{ matrix.node-version }}
+        working-directory: ./frontend
+      
+      - name: Install Playwright browsers
+        run: pnpm --dir frontend exec playwright install --with-deps
+
+      - name: Run end-to-end tests
+        run: ./scripts/e2e-test-frontend.sh
+        shell: bash
