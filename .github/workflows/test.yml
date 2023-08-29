@@ -23,7 +23,10 @@ jobs:
         uses: ./.github/actions/install-node
         with:
           node-version: ${{ matrix.node-version }}
-        working-directory: ./frontend
+      
+      - name: Install Node.js dependencies
+        run: pnpm --dir frontend install
+        shell: bash
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -105,11 +108,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Node.js ${{ matrix.node-version }}
-        uses: ./.github/actions/install
+        uses: ./.github/actions/install-node
         with:
           node-version: ${{ matrix.node-version }}
-        working-directory: ./frontend
       
+      - name: Install Node.js dependencies
+        run: pnpm --dir frontend install
+        shell: bash
+
       - name: Run unit tests w/ coverage
         run: ./scripts/unit-test-frontend.sh
         shell: bash
@@ -125,11 +131,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Node.js ${{ matrix.node-version }}
-        uses: ./.github/actions/install
+        uses: ./.github/actions/install-node
         with:
           node-version: ${{ matrix.node-version }}
-        working-directory: ./frontend
       
+      - name: Install Node.js dependencies
+        run: pnpm --dir frontend install
+        shell: bash
+
       - name: Install Playwright browsers
         run: pnpm --dir frontend exec playwright install --with-deps
 
