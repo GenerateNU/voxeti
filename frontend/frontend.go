@@ -4,6 +4,7 @@ import (
 	"embed"
 	"log"
 	"net/url"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -15,7 +16,7 @@ var (
 	//go:embed dist/index.html
 	indexHTML embed.FS
 
-	distDirFS = echo.MustSubFS(dist, "dist")
+	distDirFS     = echo.MustSubFS(dist, "dist")
 	distIndexHTML = echo.MustSubFS(indexHTML, "dist")
 )
 
@@ -24,18 +25,18 @@ func RegisterHandlers(e *echo.Echo, devMode bool) {
 		setupDevProxy(e)
 		return
 	}
-	
-  e.FileFS("/", "index.html", distIndexHTML)
+
+	e.FileFS("/", "index.html", distIndexHTML)
 	e.StaticFS("/", distDirFS)
 }
 
 func setupDevProxy(e *echo.Echo) {
-	url, err := url.Parse("http://localhost:4000")
+	url, err := url.Parse("http://127.0.0.1:4000")
 	if err != nil {
 		log.Fatal(err)
 	}
-	
-  balancer := middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
+
+	balancer := middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
 		{
 			URL: url,
 		},
