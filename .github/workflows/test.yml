@@ -34,7 +34,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Install Go dependencies
-        run: go get .
+        run: cd backend && go get .
 
       - name: Run frontend linter
         run: pnpm --dir frontend run lint
@@ -69,7 +69,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Install Go dependencies
-        run: go get .
+        run: cd backend && go get .
 
       - name: Run unit tests w/ coverage
         run: ./scripts/unit-test-backend.sh
@@ -91,7 +91,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Install Go dependencies
-        run: go get .
+        run: cd backend && go get .
 
       - name: Run end-to-end tests
         run: ./scripts/e2e-test-backend.sh
