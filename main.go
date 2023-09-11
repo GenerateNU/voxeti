@@ -9,26 +9,24 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"voxeti/src/controller"
+	"voxeti/backend/src/controller"
+	"voxeti/frontend"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"github.com/pterm/pterm/putils"
-
-	"voxeti/frontend"
 )
 
 var (
-	devMode         = false // enable at build time with: "go build -tags dev". Running the dev script will set this automatically
-	logLevel        = pterm.LogLevelInfo
-	frontendDevPort = "4000" // vite server uses this port in dev mode, allowing for Hot Module Replacement
-	backendPort     string   // echo server uses this port, configurable with CLI flag
-	dbUri           string   // the mongodb database uri
+	devMode  = false // enable at build time with: "go build -tags dev". Running the dev script will set this automatically
+	logLevel = pterm.LogLevelInfo
+	//frontendDevPort = "4000" // vite server uses this port in dev mode, allowing for Hot Module Replacement
+	backendPort = "3000" // echo server uses this port
+	dbUri       string   // the mongodb database uri
 )
 
 func main() {
 	// parse command line flags
-	flag.StringVar(&backendPort, "port", "3000", "the port the server should listen to")
 	flag.StringVar(&dbUri, "db", "", "the MongoDB database URI to connect to")
 	flag.Parse()
 
@@ -47,12 +45,6 @@ func main() {
 	// configure server
 	e := configureServer()
 	// TODO: defer database.Disconnect()
-
-	// ensure no port conflicts between frontend and backend
-	if devMode && backendPort == frontendDevPort {
-		backendPort = "3000"
-		pterm.Warning.Println(fmt.Sprintf("port %s reserved for frontend dev server, using %s instead", frontendDevPort, backendPort))
-	}
 
 	// start echo server
 	go func() {
@@ -112,16 +104,16 @@ func configureServer() (e *echo.Echo) {
 
 	// register frontend handlers
 	pb.UpdateTitle("Registering frontend handlers")
-	frontend.RegisterHandlers(e, devMode)
+	frontend.RegisterFrontendHandlers(e, devMode)
 	pterm.Success.Println("Registered frontend handlers")
 	pb.Increment()
 
 	// register backend handlers
 	pb.UpdateTitle("Registering backend handlers")
-	backend.RegisterHandlers(e, logger)
+	controller.RegisterHandlers(e, logger)
 	pterm.Success.Println("Registered backend handlers")
 	pb.Increment()
 
-	pb.Stop()
+	_, _ = pb.Stop()
 	return
 }

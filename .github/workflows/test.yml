@@ -23,7 +23,7 @@ jobs:
         uses: ./.github/actions/install-node
         with:
           node-version: ${{ matrix.node-version }}
-      
+
       - name: Install Node.js dependencies
         run: pnpm --dir frontend install
         shell: bash
@@ -32,9 +32,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-
-      - name: Install Go dependencies
-        run: cd backend && go get .
 
       - name: Run frontend linter
         run: pnpm --dir frontend run lint
@@ -62,14 +59,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-
-      - name: Install Go dependencies
-        run: cd backend && go get .
 
       - name: Run unit tests w/ coverage
         run: ./scripts/unit-test-backend.sh
@@ -84,14 +78,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-
-      - name: Install Go dependencies
-        run: cd backend && go get .
 
       - name: Run end-to-end tests
         run: ./scripts/e2e-test-backend.sh
@@ -111,7 +102,7 @@ jobs:
         uses: ./.github/actions/install-node
         with:
           node-version: ${{ matrix.node-version }}
-      
+
       - name: Install Node.js dependencies
         run: pnpm --dir frontend install
         shell: bash
@@ -134,7 +125,7 @@ jobs:
         uses: ./.github/actions/install-node
         with:
           node-version: ${{ matrix.node-version }}
-      
+
       - name: Install Node.js dependencies
         run: pnpm --dir frontend install
         shell: bash

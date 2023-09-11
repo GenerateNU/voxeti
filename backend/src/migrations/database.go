@@ -12,7 +12,8 @@ import (
 var Client *mongo.Client
 
 func Connect(uri string) error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	Client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return err
@@ -22,6 +23,7 @@ func Connect(uri string) error {
 }
 
 func Disconnect() error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	return Client.Disconnect(ctx)
 }

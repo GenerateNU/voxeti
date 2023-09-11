@@ -3,9 +3,9 @@ module voxeti
 go 1.21.0
 
 require (
-	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/pterm/pterm v0.12.66
+	go.mongodb.org/mongo-driver v1.12.1
 )
 
 require (
@@ -31,7 +31,6 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
-	go.mongodb.org/mongo-driver v1.12.1 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
