@@ -1,8 +1,11 @@
-export default function Layout({ children }) {
+import React from "react";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-  <div id="layout" className="flex min-h-screen flex-col bg-background">
-    <h1 className="bg-primary">TODO: Navbar</h1>
+    <div id="layout" className="flex min-h-screen flex-col bg-background">
+      <h1 className="bg-primary">TODO: Navbar</h1>
       {children}
-    <h1 className="mt-auto bg-secondary">TODO: Footer</h1>
-  </div>
-)}
+      <h1 className="mt-auto bg-secondary">TODO: Footer</h1>
+    </div>
+  );
+}
