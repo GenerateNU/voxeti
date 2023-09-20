@@ -12,10 +12,10 @@ import (
 	"voxeti/backend/src/controller"
 	"voxeti/frontend"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"github.com/pterm/pterm/putils"
-	"github.com/joho/godotenv"
 )
 
 var (
