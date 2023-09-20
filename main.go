@@ -15,6 +15,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"github.com/pterm/pterm/putils"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -41,6 +42,12 @@ func main() {
 	// notify dev mode
 	if devMode {
 		pterm.Info.Println("Running in dev mode")
+	}
+
+	// configure environment variables
+	if err := godotenv.Load(".env"); err != nil {
+		pterm.Fatal.WithFatal(false).Println(`Failed to load environment variables, shutting down...`)
+		os.Exit(1)
 	}
 
 	// configure server
