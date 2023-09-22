@@ -1,0 +1,11 @@
+.userRegistrationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userRegistrationContainer input {
+  max-width: 36rem;
+  padding: 0 1 rem;
+  margin: 1rem auto 1rem;
+}
