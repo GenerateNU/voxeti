@@ -1,11 +1,15 @@
-// Short text response
+/*
+ShortAnswerInput
+
+Must be a child of the FormWrapper Component to function correctly.
+ */
 export function ShortAnswerInput({
   register,
   name,
   question,
   title,
 }: {
-  register: any;
+  register?: any;
   name: string;
   question: string;
   title?: string;
@@ -21,14 +25,20 @@ export function ShortAnswerInput({
   );
 }
 
-// true or false
+/*
+SelectInput
+
+Must be a child of the FormWrapper Component to function correctly.
+
+Used for single selection items (i.e. true/false, yes/or, country list, etc.)
+ */
 export function SelectInput({
   register,
   name,
   question,
   options,
 }: {
-  register: any;
+  register?: any;
   name: string;
   question: string;
   options: { key: string; display: string }[];
@@ -44,7 +54,14 @@ export function SelectInput({
     </div>
   );
 }
-// 0-10 scale
+
+/*
+ScaleInput
+
+Must be a child of the FormWrapper Component to function correctly.
+
+Used for min/max number selection (i.
+ */
 export function ScaleInput({
   register,
   name,
@@ -52,7 +69,7 @@ export function ScaleInput({
   min = 1,
   max = 10,
 }: {
-  register: any;
+  register?: any;
   name: string;
   question: string;
   min?: number;
