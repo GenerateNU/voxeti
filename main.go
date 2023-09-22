@@ -18,8 +18,9 @@ import (
 )
 
 var (
-	devMode  = false // enable at build time with: "go build -tags dev". Running the dev script will set this automatically
-	logLevel = pterm.LogLevelInfo
+	serveFrontend = false // enable at build time with: "go build -tags serve". Running the build and dev scripts will set this automatically
+	devMode       = false // enable at build time with: "go build -tags dev". Running the dev script will set this automatically
+	logLevel      = pterm.LogLevelInfo
 	//frontendDevPort = "4000" // vite server uses this port in dev mode, allowing for Hot Module Replacement
 	backendPort = "3000" // echo server uses this port
 	dbUri       string   // the mongodb database uri
@@ -71,7 +72,11 @@ func main() {
 func configureServer() (e *echo.Echo) {
 	// display startup progress
 	pterm.Info.Println("Starting Voxeti server...")
-	pb, _ := pterm.DefaultProgressbar.WithTotal(5).WithRemoveWhenDone(true).Start()
+	steps := 4
+	if serveFrontend {
+		steps += 1
+	}
+	pb, _ := pterm.DefaultProgressbar.WithTotal(steps).WithRemoveWhenDone(true).Start()
 
 	// configure logger
 	pb.UpdateTitle("Configuring logger")
@@ -103,10 +108,12 @@ func configureServer() (e *echo.Echo) {
 	pb.Increment()
 
 	// register frontend handlers
-	pb.UpdateTitle("Registering frontend handlers")
-	frontend.RegisterFrontendHandlers(e, devMode)
-	pterm.Success.Println("Registered frontend handlers")
-	pb.Increment()
+	if serveFrontend {
+		pb.UpdateTitle("Registering frontend handlers")
+		frontend.RegisterFrontendHandlers(e, devMode)
+		pterm.Success.Println("Registered frontend handlers")
+		pb.Increment()
+	}
 
 	// register backend handlers
 	pb.UpdateTitle("Registering backend handlers")

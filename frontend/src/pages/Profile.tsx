@@ -17,7 +17,6 @@ export default function Profile() {
     const id = '1';
 
     useEffect(() => {
-        console.log('Fetching profile')
         fetch(`/api/profile/${id}`)
             .then((res) => res.json())
             .then((data) => {

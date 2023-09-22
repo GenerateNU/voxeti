@@ -1,12 +1,4 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import {
-  Outlet,
-  RouterProvider,
-  Router,
-  Route,
-  RootRoute,
-} from "@tanstack/react-router";
+import { Outlet, Router, Route, RootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout.tsx";
 import Index from "./pages/Index.tsx";
