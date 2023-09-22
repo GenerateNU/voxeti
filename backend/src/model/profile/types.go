@@ -1,4 +1,4 @@
-package model
+package profile
 
 type Profile struct {
 	Email    string `json:"email" db:"email"`

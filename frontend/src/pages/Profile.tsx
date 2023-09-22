@@ -1,39 +1,37 @@
 import { useEffect, useState } from 'react';
 
-export default function Profile() {
-    let profile: any;
-    let setProfile: any;
-    [profile, setProfile] = useState(null);
+interface Profile {
+    email: string;
+    name: string;
+    location: string;
+    type: string;
+}
 
-    // useEffect(() => {
-    //     fetch("https://localhost:3000/api/profile")
-    //     .then(response => response.json())
-    //     .then(data => setProfile(data))
-    //   },[])
+export default function Profile() {
+    const [profile, setProfile] = useState<Profile>({
+        email: '',
+        name: '',
+        location: '',
+        type: '',
+    });
+    const id = '1';
 
     useEffect(() => {
-        const exampleProfile = {
-            email: "test",
-            name: "name",
-            location: "location",
-            type: "type"
-        }
-        setProfile(exampleProfile)
-      },[])
-
-    
-
+        console.log('Fetching profile')
+        fetch(`/api/profile/${id}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setProfile(data);
+            });
+    }, []);
 
     return (
-    <div>
-        {profile && (
-            <div>
-                <h1>Email: {profile['email']}</h1>
-                <h1>Name: {profile['name']}</h1>
-                <h1>Location: {profile['location']}</h1>
-                <h1>User Type: {profile['type']}</h1>
-            </div>
-        )
-        }
-    </div>);
+        <div>
+            <h1>Profile</h1>
+            <p>Email: {profile.email}</p>
+            <p>Name: {profile.name}</p>
+            <p>Location: {profile.location}</p>
+            <p>User Type: {profile.type}</p>
+        </div>
+    );
 }

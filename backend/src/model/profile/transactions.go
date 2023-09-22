@@ -1,4 +1,4 @@
-package model
+package profile
 
 // import (
 // 	"context"
@@ -7,7 +7,7 @@ package model
 // 	"go.mongodb.org/mongo-driver/mongo/options"
 // )
 
-func GetProfileFromDB(email string) (Profile, error) {
+func GetProfileFromDB(id int64) (Profile, error) {
 	// coll := client.Database("voxeti").Collection("users")
 	// filter := bson.D{{"email", email}}
 
@@ -21,6 +21,6 @@ func GetProfileFromDB(email string) (Profile, error) {
 	// 	}
 	// panic(err)
 	// }
-	profile := Profile{Email: "test@test.com", Name: "testName", Location: "location", UserType: "designer"}
+	profile := Profile{Email: "test@gmail.com", Name: "First Last", Location: "Boston", UserType: "Designer"}
 	return profile, nil
 }

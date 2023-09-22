@@ -2,16 +2,12 @@ package controller
 
 import (
 	"net/http"
-
-	// "model/model.go"
+	"strconv"
+	"voxeti/backend/src/model/profile"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 )
-
-// type MongoController struct {
-// 	model.Model
-// }
 
 func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
 	api := e.Group("/api")
@@ -32,8 +28,12 @@ func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
-	// api.GET("/profile", func(c echo.Context) error {
-	// 	logger.Info("profile endpoint hit!")
-	// 	return c.JSON(http.StatusOK, MongoController.ReturnProfile("test@test.com"))
-	// })
+	api.GET("/profile/:id", func(c echo.Context) error {
+		logger.Info("profile endpoint hit!")
+		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Invalid ID")
+		}
+		return c.JSON(http.StatusOK, profile.GetProfile(id))
+	})
 }
