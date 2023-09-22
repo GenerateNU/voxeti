@@ -2,10 +2,11 @@ package frontend
 
 import (
 	"embed"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"log"
 	"net/url"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var (
@@ -26,6 +27,7 @@ func RegisterFrontendHandlers(e *echo.Echo, devMode bool) {
 	}
 
 	e.FileFS("/", "index.html", distIndexHTML)
+	e.StaticFS("/profile", distDirFS)
 	e.StaticFS("/", distDirFS)
 }
 

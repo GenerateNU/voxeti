@@ -1,10 +1,17 @@
 package controller
 
 import (
+	"net/http"
+
+	// "model/model.go"
+
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
-	"net/http"
 )
+
+// type MongoController struct {
+// 	model.Model
+// }
 
 func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
 	api := e.Group("/api")
@@ -24,4 +31,9 @@ func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
 		logger.Info("helloworld endpoint hit!")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+
+	// api.GET("/profile", func(c echo.Context) error {
+	// 	logger.Info("profile endpoint hit!")
+	// 	return c.JSON(http.StatusOK, MongoController.ReturnProfile("test@test.com"))
+	// })
 }
