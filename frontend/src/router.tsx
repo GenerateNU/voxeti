@@ -30,7 +30,7 @@ const indexRoute = new Route({
 
 const profileRoute = new Route({
   getParentRoute: () => rootRoute,
-  path: "/profile",
+  path: "profile",
   component: Profile,
 });
 

@@ -21,7 +21,6 @@ func RegisterFrontendHandlers(e *echo.Echo, devMode bool) {
 	}
 
 	e.FileFS("/", "index.html", distIndexHTML)
-	e.StaticFS("/profile", distDirFS)
 	e.StaticFS("/", distDirFS)
 }
 

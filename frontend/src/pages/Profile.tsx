@@ -26,7 +26,7 @@ export default function Profile() {
 
     return (
         <div>
-            <h1>Profile</h1>
+            <button className="outline">Edit Profile</button>
             <p>Email: {profile.email}</p>
             <p>Name: {profile.name}</p>
             <p>Location: {profile.location}</p>
