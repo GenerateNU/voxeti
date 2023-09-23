@@ -109,7 +109,18 @@ func InvalidateUserSession(c echo.Context, store *sessions.CookieStore) model.Er
 	return model.ErrorResponse{}
 }
 
-func AuthenticateSession(c echo.Context, store *sessions.CookieStore, csrfToken string) model.ErrorResponse {
+func AuthenticateSession(c echo.Context, store *sessions.CookieStore) model.ErrorResponse {
+	var requestBody map[string]interface{}
+
+	if err := c.Bind(&requestBody); err != nil {
+		return model.ErrorResponse{Code: 500, Message: "Failed to unmarshal request body!"}
+	}
+
+	csrfToken, ok := requestBody["csrf_token"].(string)
+	if !ok {
+		return model.ErrorResponse{Code: 401, Message: "Unauthorized Request"}
+	}
+
 	// Retrieve the session:
 	session, _ := store.Get(c.Request(), "voxeti-session")
 

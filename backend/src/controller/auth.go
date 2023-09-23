@@ -29,13 +29,7 @@ func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, logger *pt
 	})
 
 	api.POST("/logout", func(c echo.Context) error {
-		var csrfToken model.CSRFToken
-
-		if err := c.Bind(&csrfToken); err != nil {
-			return c.JSON(CreateErrorResponse(500, "Failed to unmarshal credentials"))
-		}
-
-		if err := auth.AuthenticateSession(c, store, csrfToken.CSRFToken); err.Code != 0 {
+		if err := auth.AuthenticateSession(c, store); err.Code != 0 {
 			return c.JSON(CreateErrorResponse(err.Code, err.Message))
 		}
 
