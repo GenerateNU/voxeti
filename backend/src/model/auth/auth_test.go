@@ -64,7 +64,7 @@ func TestInvalidateUserSession(t *testing.T) {
 	// 1. Check to see if a cookie exists
 	session, _ := store.Get(c.Request(), "voxeti-session")
 	if session.Values["userId"] != 123 || session.Values["csrfToken"] == nil {
-	t.Fatal("Cannot complete test, dependent method, CreateUserSession, has failed!")
+		t.Fatal("Cannot complete test, dependent method, CreateUserSession, has failed!")
 	}
 
 	// invalidate the user session
