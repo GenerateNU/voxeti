@@ -97,6 +97,7 @@ func InvalidateUserSession(c echo.Context, store *sessions.CookieStore) model.Er
 
 	// Clear session values:
 	delete(session.Values, "userId")
+	delete(session.Values, "csrfToken")
 
 	// Update the expiry:
 	session.Options.MaxAge = -1
