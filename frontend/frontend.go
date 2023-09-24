@@ -1,26 +1,19 @@
 package frontend
 
 import (
-	"embed"
-	"log"
-	"net/url"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"io/fs"
+	"log"
+	"net/url"
 )
 
 var (
-	//go:embed dist/*
-	dist embed.FS
-
-	//go:embed dist/index.html
-	indexHTML embed.FS
-
-	distDirFS     = echo.MustSubFS(dist, "dist")
-	distIndexHTML = echo.MustSubFS(indexHTML, "dist")
+	distDirFS     fs.FS
+	distIndexHTML fs.FS
 )
 
-func RegisterHandlers(e *echo.Echo, devMode bool) {
+func RegisterFrontendHandlers(e *echo.Echo, devMode bool) {
 	if devMode {
 		setupDevProxy(e)
 		return
@@ -31,7 +24,7 @@ func RegisterHandlers(e *echo.Echo, devMode bool) {
 }
 
 func setupDevProxy(e *echo.Echo) {
-	url, err := url.Parse("http://127.0.0.1:4000")
+	url, err := url.Parse("http://localhost:4000")
 	if err != nil {
 		log.Fatal(err)
 	}

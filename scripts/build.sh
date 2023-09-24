@@ -8,8 +8,7 @@ build_frontend() (
 
 build_backend() (
   cd -- "$(dirname -- "$0")"/.. || exit 1
-  go get .
-  go build
+  go build -tags serve
 )
 
 build_frontend

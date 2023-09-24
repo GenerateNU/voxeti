@@ -8,8 +8,7 @@ start_frontend() (
 
 start_backend() (
   cd -- "$(dirname -- "$0")"/.. || exit 1
-  go get .
-  wgo -exit clear :: go run -tags dev . -db "mongodb://127.0.0.1:27017"
+  wgo -exit clear :: go run -tags serve,dev . -db "mongodb://127.0.0.1:27017"
 )
 
 start_frontend &
