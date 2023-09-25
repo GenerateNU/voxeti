@@ -86,7 +86,7 @@ func TestAuthenticateSession(t *testing.T) {
 	var store = sessions.NewCookieStore([]byte("test"))
 
 	// mocking http request:
-	csrfTokenBody := map[string]interface{}{ "csrf_token": "123" }
+	csrfTokenBody := map[string]interface{}{"csrf_token": "123"}
 	body, _ := json.Marshal(csrfTokenBody)
 
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
@@ -97,10 +97,10 @@ func TestAuthenticateSession(t *testing.T) {
 	// create a cookie:
 	session, _ := store.Get(req, "voxeti-session")
 	session.Values["csrfToken"] = "123"
-	session.Save(req, res)
+	_ = session.Save(req, res)
 	session.IsNew = false
 
-	// 1. Check that AuthenticateSession works properly: 
+	// 1. Check that AuthenticateSession works properly:
 	err := AuthenticateSession(c, store)
 
 	if err.Code != 0 {
@@ -135,7 +135,7 @@ func TestAuthenticateSession(t *testing.T) {
 
 	session, _ = store.Get(req, "voxeti-session")
 	session.Values["csrfToken"] = "something_else"
-	session.Save(req, res)
+	_ = session.Save(req, res)
 	session.IsNew = false
 
 	err = AuthenticateSession(c, store)
@@ -152,7 +152,7 @@ func TestAuthenticateSession(t *testing.T) {
 
 	session, _ = store.Get(req, "voxeti-session")
 	session.Values["csrfToken"] = "123"
-	session.Save(req, res)
+	_ = session.Save(req, res)
 	session.Options.MaxAge = -1
 	session.IsNew = false
 
