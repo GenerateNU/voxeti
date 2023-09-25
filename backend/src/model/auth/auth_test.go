@@ -6,21 +6,53 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"voxeti/backend/src/model"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 )
 
-// func TestBasic(t *testing.T) {
-// 	expectedString := "test"
-// 	want := regexp.MustCompile(`\b` + expectedString + `\b`)
-// 	actualString := "test"
-// 	if !want.MatchString(actualString) {
-// 		t.Fatalf(`Actual = %q, expected = %#q`, actualString, want)
-// 	}
-// }
-
 func TestLogin(t *testing.T) {
+	// mocking the echo context
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/", nil)
+	res := httptest.NewRecorder()
+	context := e.NewContext(req, res)
+	// initializing cookie store
+	var store = sessions.NewCookieStore([]byte("test"))
+
+	// Invalid Username
+	invalidUserCredentials := model.Credentials{}
+	invalidUserCredentials.Email = "wrong"
+	invalidUserCredentials.Password = "password1"
+	_, invalid_user_err := Login(context, store, invalidUserCredentials)
+
+	// Invalid Password
+	invalidPasswordCredentials := model.Credentials{}
+	invalidPasswordCredentials.Email = "user1@example.com"
+	invalidPasswordCredentials.Password = "wrong"
+	_, invalid_password_err := Login(context, store, invalidPasswordCredentials)
+
+	// Valid Login
+	validCredentials := model.Credentials{}
+	validCredentials.Email = "user1@example.com"
+	validCredentials.Password = "password1"
+	valid_response, err_null := Login(context, store, validCredentials)
+
+	// 1. Invalid username should throw appropriate error
+	if invalid_user_err.Code != 400 || invalid_user_err.Message != "User does not exist" {
+		t.Fatalf(`Invalid username input was not caught. Error code: %d. Error message: %q`, invalid_user_err.Code, invalid_user_err.Message)
+	}
+
+	// 2. Invalid password should throw appropriate error
+	if invalid_password_err.Code != 400 || invalid_password_err.Message != "Invalid Password" {
+		t.Fatal("Invalid password input was not caught.")
+	}
+
+	// 3. Valid credentials should login user
+	if err_null.Code != 0 || err_null.Message != "" || valid_response["csrf_token"] == nil || valid_response["user"] == nil {
+		t.Fatal("Valid username and password was not accepted.")
+	}
 
 }
 
@@ -81,16 +113,22 @@ func TestInvalidateUserSession(t *testing.T) {
 func TestAuthenticateSession(t *testing.T) {
 	// mocking the echo context
 	e := echo.New()
+	e_unauthorized := echo.New()
 
 	// initializing cookie store
 	var store = sessions.NewCookieStore([]byte("test"))
+
+	// Unauthorized user
+	req_unauthorized := httptest.NewRequest(http.MethodPost, "/", nil)
+	res_unauthorized := httptest.NewRecorder()
+	context_unauthorized := e_unauthorized.NewContext(req_unauthorized, res_unauthorized)
 
 	// mocking http request:
 	csrfTokenBody := map[string]interface{}{"csrf_token": "123"}
 	body, _ := json.Marshal(csrfTokenBody)
 
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	res := httptest.NewRecorder()
 	c := e.NewContext(req, res)
 
@@ -109,7 +147,7 @@ func TestAuthenticateSession(t *testing.T) {
 
 	// 2. Check that AuthenticateSession fails when not provided a CSRFToken:
 	req = httptest.NewRequest(http.MethodPost, "/", nil)
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	res = httptest.NewRecorder()
 	c = e.NewContext(req, res)
 
@@ -131,7 +169,7 @@ func TestAuthenticateSession(t *testing.T) {
 	}
 
 	// 4. Check that AuthenticateSession fails when csrfToken provided does not match cookie csrfToken:
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 	session, _ = store.Get(req, "voxeti-session")
 	session.Values["csrfToken"] = "something_else"
@@ -146,7 +184,7 @@ func TestAuthenticateSession(t *testing.T) {
 
 	// 5. Check that AuthenticateSession fails when cookie is expired:
 	req = httptest.NewRequest(http.MethodPost, "/", nil)
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	res = httptest.NewRecorder()
 	c = e.NewContext(req, res)
 
@@ -160,6 +198,12 @@ func TestAuthenticateSession(t *testing.T) {
 	if err.Code != 401 {
 		t.Fatal("AuthenticateSession should fail with 401 when given an expired session cookie! Currently passing.")
 	}
+
+	// 6. Should throw error when unauthorized user attempts to access current user's session state
+	err = AuthenticateSession(context_unauthorized, store)
+	if err.Code == 0 || err.Message == "" {
+		t.Fatal("Failed to prevent unauthorized user from authenticating.")
+	}
 }
 
 func TestCheckPasswordHash(t *testing.T) {
@@ -172,12 +216,26 @@ func TestCheckPasswordHash(t *testing.T) {
 		t.Fatal("CheckPasswordHash failed comparing equivalent plain string and hashed string. Should return true!")
 	}
 
-	// 1. Check that the method returns false of non-equivalent hashed, and unhashed strings:
+	// 2. Check that the method returns false of non-equivalent hashed, and unhashed strings:
 	if CheckPasswordHash(invalidInput, hashedInput) {
 		t.Fatal("CheckPasswordHash failed comparing non-equivalent plain string and hashed string. Should return false!")
+	}
+
+	// 3. Catch edge case of small change made to Hashed password
+	isTrue := CheckPasswordHash("password1", "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOj")
+	if isTrue {
+		t.Fatal("Failed to catch hash of password with one character deleted.")
 	}
 }
 
 func TestGenerateCSRFToken(t *testing.T) {
+	csrfToken, err := GenerateCSRFToken()
 
+	if err != nil {
+		t.Fatalf(`Error in generating CSRF Token: %q`, err.Error())
+	}
+
+	if csrfToken == "" {
+		t.Fatal("Generated an empty String instead of a valid CSRF Token.")
+	}
 }
