@@ -29,11 +29,15 @@ func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
 	})
 
 	api.GET("/profile/:id", func(c echo.Context) error {
-		logger.Info("profile endpoint hit!")
+		logger.Info("get profile endpoint hit!")
 		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "Invalid ID")
 		}
 		return c.JSON(http.StatusOK, profile.GetProfile(id))
 	})
+
+	// api.PUT("/profile/:id", func(c echo.Context) error {
+	// 	// TODO
+	// })
 }

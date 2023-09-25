@@ -1,14 +1,16 @@
+import { Link } from "@tanstack/react-router";
+
 export default function Navbar() {
     return (
-        <div>
-            <ul className="flex justify-between">
-                <li className="p-4">
-                    <a href="/" className="underline">Home</a>
+        <nav className="bg-primary flex">
+            <ul className="flex">
+                <li className="mr-6">
+                    <Link to="/">Home</Link>
                 </li>
-                <li className="p-4">
-                    <a href="/profile" className="underline">Profile</a>
+                <li className="mr-6">
+                    <Link to="/profile">Profile</Link>
                 </li>
             </ul>
-        </div>
+        </nav>
     );
   }
