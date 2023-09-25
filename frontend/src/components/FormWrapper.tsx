@@ -22,7 +22,7 @@ export default function FormWrapper({ children }: { children: ReactNode }) {
 
   const renderChildren = () => {
     return React.Children.map<ReactNode, ReactNode>(children, (child) => {
-      return React.cloneElement(child as ReactElement<any>, {
+      return React.cloneElement(child as ReactElement, {
         register: register,
       });
     });
