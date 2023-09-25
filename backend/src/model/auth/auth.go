@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"voxeti/backend/src/model"
 
 	"github.com/gorilla/sessions"
@@ -124,6 +125,8 @@ func AuthenticateSession(c echo.Context, store *sessions.CookieStore) model.Erro
 
 	// Retrieve the session:
 	session, _ := store.Get(c.Request(), "voxeti-session")
+
+	fmt.Print(session.Options.MaxAge)
 
 	// Check if the session is new or expired:
 	if session.IsNew || session.Options.MaxAge < 0 || session.Values["csrfToken"] != csrfToken {
