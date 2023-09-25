@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 
-export default function Navbar() {
+interface NavbarProps {
+    id: string;
+}
+
+export default function Navbar({ id }: NavbarProps) {
     return (
         <nav className="bg-primary flex">
             <ul className="flex">
@@ -8,9 +12,11 @@ export default function Navbar() {
                     <Link to="/">Home</Link>
                 </li>
                 <li className="mr-6">
-                    <Link to="/profile">Profile</Link>
+                    <Link to="/profile/$id" params={{
+                        id: id,
+                    }}>Profile</Link>
                 </li>
             </ul>
         </nav>
     );
-  }
+}

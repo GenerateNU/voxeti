@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from '@tanstack/react-router';
 
 interface UserProfile {
     email: string;
@@ -15,7 +16,7 @@ export default function ProfileData() {
         location: '',
         type: '',
     });
-    const id = '1';
+    const { id } = useParams();
 
     useEffect(() => {
         fetch(`/api/profile/${id}`)
