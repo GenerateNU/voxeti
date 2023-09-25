@@ -2,8 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
-	"voxeti/backend/src/model/profile"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
@@ -11,6 +9,10 @@ import (
 
 func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
 	api := e.Group("/api")
+
+	// register profile handlers
+	RegisterProfileHandlers(api, logger)
+
 	// catch any invalid endpoints with a 404 error
 	api.GET("*", func(c echo.Context) error {
 		return c.String(http.StatusNotFound, "Not Found")
@@ -27,17 +29,4 @@ func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
 		logger.Info("helloworld endpoint hit!")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
-
-	api.GET("/profile/:id", func(c echo.Context) error {
-		logger.Info("get profile endpoint hit!")
-		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-		if err != nil {
-			return c.String(http.StatusBadRequest, "Invalid ID")
-		}
-		return c.JSON(http.StatusOK, profile.GetProfile(id))
-	})
-
-	// api.PUT("/profile/:id", func(c echo.Context) error {
-	// 	// TODO
-	// })
 }
