@@ -1,3 +1,5 @@
+import { UseFormRegister, FieldValues } from "react-hook-form";
+
 /*
 ShortAnswerInput
 
@@ -9,7 +11,7 @@ export function ShortAnswerInput({
   question,
   title,
 }: {
-  register?: any;
+  register: UseFormRegister<FieldValues>;
   name: string;
   question: string;
   title?: string;
@@ -38,7 +40,7 @@ export function SelectInput({
   question,
   options,
 }: {
-  register?: any;
+  register: UseFormRegister<FieldValues>;
   name: string;
   question: string;
   options: { key: string; display: string }[];
@@ -69,7 +71,7 @@ export function ScaleInput({
   min = 1,
   max = 10,
 }: {
-  register?: any;
+  register: UseFormRegister<FieldValues>;
   name: string;
   question: string;
   min?: number;

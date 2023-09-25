@@ -1,5 +1,5 @@
+import { useForm } from "react-hook-form";
 import { ShortAnswerInput, SelectInput, ScaleInput } from "./FormComponents";
-import FormWrapper from "./FormWrapper";
 
 /*
 UserRegistration
@@ -7,19 +7,35 @@ UserRegistration
 An implementation/demo for the FormWrapper component
 */
 export default function UserRegistration() {
+  const { register, handleSubmit } = useForm();
+
   return (
-    <FormWrapper>
+    <form
+      onSubmit={handleSubmit((data) => {
+        console.log(data);
+      })}
+    >
       <ShortAnswerInput
+        register={register}
         name="firstName"
         question="First Name"
-      ></ShortAnswerInput>
-      <ShortAnswerInput name="lastName" question="Last Name"></ShortAnswerInput>
+      />
+
       <ShortAnswerInput
+        register={register}
+        name="lastName"
+        question="Last Name"
+      />
+
+      <ShortAnswerInput
+        register={register}
         name="shortAnswer"
         question="Enter response here"
         title="This is a titled question"
-      ></ShortAnswerInput>
+      />
+
       <SelectInput
+        register={register}
         name="role"
         question="Designer or Producer?"
         options={[
@@ -27,8 +43,17 @@ export default function UserRegistration() {
           { key: "designer", display: "Designer" },
           { key: "producer", display: "Producer" },
         ]}
-      ></SelectInput>
-      <ScaleInput name="coolness" question="How cool are you?"></ScaleInput>
-    </FormWrapper>
+      />
+
+      <ScaleInput
+        register={register}
+        name="coolness"
+        question="How cool are you?"
+      />
+
+      <button type="submit">
+        Hit me to Submit and look at the console when done
+      </button>
+    </form>
   );
 }

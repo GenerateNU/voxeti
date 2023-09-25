@@ -2,6 +2,12 @@ import styles from "./FormComponents.module.css";
 import { useForm } from "react-hook-form";
 import React, { ReactElement, ReactNode } from "react";
 
+/**
+ * This file is a proof of concept and was trialed for potenial in the future.
+ * Depending on what we get from the designers on what forms they want we can use
+ * what we learned here in the future.
+ */
+
 /*
 FormWrapper
 
