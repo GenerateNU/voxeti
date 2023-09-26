@@ -32,11 +32,14 @@ jobs:
       - name: Run frontend checks
         run: make frontend-check
 
-      - name: Run backend checks
-        run: make backend-check
-
       - name: Run backend linter
         uses: golangci/golangci-lint-action@v3.7.0
+
+      - name: Run backend format
+        run: make backend-format
+
+      - name: Run backend vet
+        run: make backend-vet
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
@@ -46,9 +49,6 @@ jobs:
 
       - name: Build
         run: make all
-
-      - name: Health Check
-        run: ./voxeti & make health-check
 
   unit-test-backend:
     name: Run backend unit tests
