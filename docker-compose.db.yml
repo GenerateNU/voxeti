@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  db:
+    image: mongo
+    container_name: test-mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=administrator
+      - MONGO_INITDB_ROOT_PASSWORD=Welcome1234
+  db-client:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=administrator
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=Welcome1234
+      - ME_CONFIG_MONGODB_URL=mongodb://administrator:Welcome1234@db:27017/
+    depends_on:
+      - db

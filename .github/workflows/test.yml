@@ -24,17 +24,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Node.js dependencies
-        run: pnpm --dir frontend install
-        shell: bash
-
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Run frontend linter
-        run: pnpm --dir frontend run lint
+      - name: Run frontend checks
+        run: make frontend-check
+
+      - name: Run backend checks
+        run: make backend-check
 
       - name: Run backend linter
         uses: golangci/golangci-lint-action@v3.7.0
@@ -46,12 +45,10 @@ jobs:
             node_modules
 
       - name: Build
-        run: ./scripts/build.sh
-        shell: bash
+        run: make all
 
       - name: Health Check
-        run: ./voxeti & ./scripts/health-check.sh
-        shell: bash
+        run: ./voxeti & make health-check
 
   unit-test-backend:
     name: Run backend unit tests
@@ -68,9 +65,8 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Run unit tests w/ coverage
-        run: ./scripts/unit-test-backend.sh
-        shell: bash
+      - name: Run unit tests
+        run: make backend-unit-test
 
   e2e-test-backend:
     name: Run backend end-to-end tests
@@ -88,8 +84,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Run end-to-end tests
-        run: ./scripts/e2e-test-backend.sh
-        shell: bash
+        run: make backend-e2e-test
 
   unit-test-frontend:
     name: Run frontend unit tests
@@ -106,13 +101,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Node.js dependencies
-        run: pnpm --dir frontend install
-        shell: bash
-
-      - name: Run unit tests w/ coverage
-        run: ./scripts/unit-test-frontend.sh
-        shell: bash
+      - name: Run unit tests
+        run: make frontend-unit-test
 
   e2e-test-frontend:
     name: Run frontend end-to-end tests
@@ -137,5 +127,4 @@ jobs:
         run: pnpm --dir frontend exec playwright install --with-deps
 
       - name: Run end-to-end tests
-        run: ./scripts/e2e-test-frontend.sh
-        shell: bash
+        run: make frontend-e2e-test

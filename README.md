@@ -4,7 +4,7 @@ A service-based platform for outsourcing and monetizing 3D printing
 
 ## Quick Start
 
-Run `./scripts/build.sh`, then execute the compiled `voxeti` binary.
+Run `make all`, then execute the compiled `voxeti` binary.
 You can specify the database to connect to with a CLI flag.
 
 > [!NOTE]
@@ -39,6 +39,6 @@ The project can be run in either development mode or production mode. The key di
 In development mode, Vite is in charge of running the frontend on its own server and Echo redirects to it.
 In production mode, Vite generates a static frontend that Echo embeds and serves in its file structure.
 
-As a developer, you will primarily run the server in development mode while you work. To start the server in development mode, run `./scripts/dev.sh`.
-To compile the binary in production mode, run `./scripts/build.sh`. This will generate an executable `voxeti` binary.
+As a developer, you will primarily run the server in development mode while you work. To start the server in development mode, run `make dev`.
+To compile the binary in production mode, run `make all`. This will generate an executable `voxeti` binary.
 Consider investigating these scripts if you want to know how they work in greater detail.
