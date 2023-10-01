@@ -11,7 +11,7 @@ import (
 )
 
 func ValidateSTLFile(file *multipart.FileHeader) model.ErrorResponse {
-	// Open the STL File: 
+	// Open the STL File:
 	src, err := file.Open()
 	if err != nil {
 		return model.ErrorResponse{Code: 500, Message: "Failed to open the STL File!"}
@@ -29,17 +29,17 @@ func ValidateSTLFile(file *multipart.FileHeader) model.ErrorResponse {
 	if string(firstBytes) == "solid" {
 		// Validate an ASCII file:
 		if err := ValidateASCIISTLFile(src, file.Size); err.Code != 0 {
-			return err;
+			return err
 		}
 	} else {
 		// Validate a binary file:
 		if err := ValidateASCIISTLFile(src, file.Size); err.Code != 0 {
-			return err;
+			return err
 		}
 	}
 	// Return success:
 	return model.ErrorResponse{}
-}	
+}
 
 func ValidateBinarySTLFile(file multipart.File, size int64) model.ErrorResponse {
 	return model.ErrorResponse{}

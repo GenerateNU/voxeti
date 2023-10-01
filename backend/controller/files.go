@@ -13,7 +13,7 @@ func RegisterFilesHandlers(e *echo.Group, logger *pterm.Logger) {
 	api := e.Group("/files")
 
 	api.POST("/upload-stl", func(c echo.Context) error {
-		// Extract the file from the request: 
+		// Extract the file from the request:
 		file, err := c.FormFile("file")
 		if err != nil {
 			return c.JSON(CreateErrorResponse(400, "No file has been provided to the request"))
