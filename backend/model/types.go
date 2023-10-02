@@ -1,18 +1,23 @@
 package model
 
 type User struct {
-	Username    string      `bson:"username"`
-	FirstName   string      `bson:"firstName"`
-	LastName    string      `bson:"lastName"`
-	Email       string      `bson:"email"`
-	Birthday    string      `bson:"birthday"`
-	PhoneNumber PhoneNumber `bson:"phoneNumber"`
-	UserType    string      `bson:"userType"`
+	Username    string      `bson:"username" json:"username"`
+	FirstName   string      `bson:"firstName" json:"firstName"`
+	LastName    string      `bson:"lastName" json:"lastName"`
+	Email       string      `bson:"email" json:"email"`
+	Birthday    string      `bson:"birthday" json:"birthday"`
+	PhoneNumber PhoneNumber `bson:"phoneNumber" json:"phoneNumber"`
+	UserType    string      `bson:"userType" json:"userType"`
 }
 
 type PhoneNumber struct {
-	CountryCode string `bson:"countryCode"`
-	Number      string `bson:"number"`
+	CountryCode string `bson:"countryCode" json:"countryCode"`
+	Number      string `bson:"number" json:"number"`
+}
+
+type UserResponse struct {
+	Id   string `bson:"_id" json:"id"`
+	User User   `bson:"user" json:"user"`
 }
 
 type ErrorResponse struct {
