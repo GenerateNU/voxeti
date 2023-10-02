@@ -17,12 +17,16 @@ func RegisterHandlersUserRegistration(e *echo.Group, dbClient *mongo.Client, log
 	api.POST("/create", func(c echo.Context) error {
 		logger.Info("user registration endpoint hit!")
 		user := model.User{}
-		c.Bind(&user)
-		err := registration.CreateUser(user, dbClient, logger)
-		if err.Code != 0 {
-			return c.JSON(err.Code, err)
+		if err := c.Bind(&user); err != nil {
+			return c.JSON(http.StatusBadRequest, model.ErrorResponse{
+				Code:    400,
+				Message: err.Error(),
+			})
+		}
+		createUserErr := registration.CreateUser(user, dbClient, logger)
+		if createUserErr.Code != 0 {
+			return c.JSON(createUserErr.Code, createUserErr)
 		}
 		return c.JSON(http.StatusOK, user)
 	})
-
 }
