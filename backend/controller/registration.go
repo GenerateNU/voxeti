@@ -18,7 +18,7 @@ func RegisterHandlersUserRegistration(e *echo.Group, dbClient *mongo.Client, log
 		logger.Info("user registration endpoint hit!")
 		user := model.User{}
 		c.Bind(&user)
-		err := registration.CreateUser(user)
+		err := registration.CreateUser(user, dbClient, logger)
 		if err.Code != 0 {
 			return c.JSON(err.Code, err)
 		}

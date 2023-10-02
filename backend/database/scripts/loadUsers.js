@@ -1,4 +1,4 @@
-import MongoClient from "mongodb";
+MongoClient = require("mongodb").MongoClient;
 
 /**
  * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
