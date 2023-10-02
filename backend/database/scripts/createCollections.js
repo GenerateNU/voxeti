@@ -13,6 +13,7 @@ MongoClient.connect(uri)
 
     // New Collection
     createUserCollection(connect);
+    createIndices(connect.collection("users"));
 
     console.log("collection created");
   })
@@ -20,6 +21,10 @@ MongoClient.connect(uri)
     // Handling the error
     console.log(err.Message);
   });
+
+async function createIndices(collection) {
+  collection.createIndex({ username: 1 }, { unique: true });
+}
 
 async function createUserCollection(connect) {
   connect.createCollection("users", {
@@ -39,22 +44,22 @@ async function createUserCollection(connect) {
         properties: {
           username: {
             bsonType: "string",
-            minimum: 4,
-            maximum: 20,
+            minLength: 4,
+            maxLength: 20,
             description:
               "'username' must be a string, length range of [4,20] and is required",
           },
           firstName: {
             bsonType: "string",
-            minimum: 1,
-            maximum: 50,
+            minLength: 1,
+            maxLength: 50,
             description:
               "'firstName' must be a string, length range of [1,50] and is required",
           },
           lastName: {
             bsonType: "string",
-            minimum: 1,
-            maximum: 50,
+            minLength: 1,
+            maxLength: 50,
             description:
               "'lastName' must be a string, length range of [1,50] and is required",
           },
@@ -73,8 +78,8 @@ async function createUserCollection(connect) {
             properties: {
               coordinates: {
                 bsonType: "array",
-                minimum: 2,
-                maximum: 2,
+                minLength: 2,
+                maxLength: 2,
                 description:
                   "'coordinates' must be a coordinates pair [longitude, latitude]",
               },
@@ -109,15 +114,15 @@ async function createUserCollection(connect) {
             properties: {
               countryCode: {
                 bsonType: "string",
-                minimum: 1,
-                maximum: 5,
+                minLength: 1,
+                maxLength: 5,
                 description:
                   "'countryCode' must be a string, length range of [1,5], and is required",
               },
               number: {
                 bsonType: "string",
-                minimum: 10,
-                maximum: 10,
+                minLength: 10,
+                maxLength: 10,
                 description:
                   "'number' must be a string, length of 10, and is required",
               },
