@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+import MongoClient from "mongodb";
 
 /**
  * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
@@ -20,8 +20,6 @@ MongoClient.connect(uri)
     // Handling the error
     console.log(err.Message);
   });
-
-process.exit();
 
 async function createUserCollection(connect) {
   connect.createCollection("users", {
