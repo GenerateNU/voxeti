@@ -1,9 +1,10 @@
-//go:build serve
+//go:build embed
 
 package frontend
 
 import (
 	"embed"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,6 +17,7 @@ var (
 )
 
 func init() {
+	embedFrontend = true
 	distDirFS = echo.MustSubFS(dist, "dist")
 	distIndexHTML = echo.MustSubFS(indexHTML, "dist")
 }

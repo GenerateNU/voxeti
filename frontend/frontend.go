@@ -1,29 +1,30 @@
 package frontend
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"io/fs"
 	"log"
 	"net/url"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var (
+	embedFrontend = false // enable at build time with: "go build -tags embed"
 	distDirFS     fs.FS
 	distIndexHTML fs.FS
 )
 
-func RegisterFrontendHandlers(e *echo.Echo, devMode bool) {
-	if devMode {
-		setupDevProxy(e)
+func RegisterFrontendHandlers(e *echo.Echo) {
+	if embedFrontend {
+		e.FileFS("/", "index.html", distIndexHTML)
+		e.StaticFS("/", distDirFS)
 		return
 	}
-
-	e.FileFS("/", "index.html", distIndexHTML)
-	e.StaticFS("/", distDirFS)
+	setupProxy(e)
 }
 
-func setupDevProxy(e *echo.Echo) {
+func setupProxy(e *echo.Echo) {
 	url, err := url.Parse("http://localhost:4000")
 	if err != nil {
 		log.Fatal(err)

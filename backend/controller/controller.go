@@ -10,9 +10,10 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func RegisterHandlers(e *echo.Echo, logger *pterm.Logger) {
+func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/api")
 
 	// Initialize session store:
