@@ -12,7 +12,7 @@ export default function Footer() {
                 className="block py-2 pl-3 pr-4 text-background hover:text-primary rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
                 aria-current="page"
               >
-                Something 
+                Placeholder 1 
               </a>
             </li>
             <li>
@@ -20,7 +20,7 @@ export default function Footer() {
                 href="#"
                 className="block py-2 pl-3 pr-4 text-background rounded hover:text-primary md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
               >
-                idk
+                Placeholder 2
               </a>
             </li>
             <li>
@@ -28,7 +28,7 @@ export default function Footer() {
                 href="#"
                 className="block py-2 pl-3 pr-4 text-background rounded hover:text-primary md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
               >
-                something else
+                Placeholder 3
               </a>
             </li>
           </ul>
