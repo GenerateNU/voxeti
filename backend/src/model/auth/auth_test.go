@@ -2,17 +2,42 @@ package auth
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	// "fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
+	"time"
 	"voxeti/backend/src/model"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func TestLogin(t *testing.T) {
+	// configure environment variable
+	t.Setenv("DATABASE_NAME", "data")
+
+	// mocking mongodb client
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second);
+	defer cancel()
+	dbClient, _ := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://administrator:Welcome1234@127.0.0.1:27017"));
+
+	// insert test user if currently doesn't exist
+	usersCollection := dbClient.Database(os.Getenv("DATABASE_NAME")).Collection("users");
+	filter := bson.D{{Key: "email", Value: "user1@example.com"}}
+
+	var user model.User
+	if err := usersCollection.FindOne(context.Background(), filter).Decode(&user); err != nil {
+		newUser := model.User{Email: "user1@example.com", Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji"}
+		usersCollection.InsertOne(context.TODO(), newUser)
+	}
+
 	// mocking the echo context
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
@@ -25,22 +50,22 @@ func TestLogin(t *testing.T) {
 	invalidUserCredentials := model.Credentials{}
 	invalidUserCredentials.Email = "wrong"
 	invalidUserCredentials.Password = "password1"
-	_, invalid_user_err := Login(context, store, invalidUserCredentials)
+	_, invalid_user_err := Login(context, store, dbClient, invalidUserCredentials)
 
 	// Invalid Password
 	invalidPasswordCredentials := model.Credentials{}
 	invalidPasswordCredentials.Email = "user1@example.com"
 	invalidPasswordCredentials.Password = "wrong"
-	_, invalid_password_err := Login(context, store, invalidPasswordCredentials)
+	_, invalid_password_err := Login(context, store, dbClient, invalidPasswordCredentials)
 
 	// Valid Login
 	validCredentials := model.Credentials{}
 	validCredentials.Email = "user1@example.com"
 	validCredentials.Password = "password1"
-	valid_response, err_null := Login(context, store, validCredentials)
+	valid_response, err_null := Login(context, store, dbClient, validCredentials)
 
 	// 1. Invalid username should throw appropriate error
-	if invalid_user_err.Code != 400 || invalid_user_err.Message != "User does not exist" {
+	if invalid_user_err.Code != 400 || invalid_user_err.Message != "User does not exist!" {
 		t.Fatalf(`Invalid username input was not caught. Error code: %d. Error message: %q`, invalid_user_err.Code, invalid_user_err.Message)
 	}
 
@@ -53,7 +78,6 @@ func TestLogin(t *testing.T) {
 	if err_null.Code != 0 || err_null.Message != "" || valid_response["csrf_token"] == nil || valid_response["user"] == nil {
 		t.Fatal("Valid username and password was not accepted.")
 	}
-
 }
 
 func TestCreateUserSession(t *testing.T) {
@@ -67,7 +91,7 @@ func TestCreateUserSession(t *testing.T) {
 	// initializing empty cookie store
 	var store = sessions.NewCookieStore([]byte("test"))
 
-	csrfToken, _ := CreateUserSession(c, store, 123)
+	csrfToken, _ := CreateUserSession(c, store, "123")
 
 	// 1. There is a csrfToken returned:
 	if csrfToken == "" {
@@ -77,7 +101,7 @@ func TestCreateUserSession(t *testing.T) {
 	// 2. There is a session created inside of the store that includes a CSRFToken and userId: 123
 	session, _ := store.Get(c.Request(), "voxeti-session")
 
-	if session.Values["userId"] != 123 || session.Values["csrfToken"] == nil {
+	if session.Values["userId"] != "123" || session.Values["csrfToken"] == nil {
 		t.Fatal("CreateUserSession failed to create a valid user session!")
 	}
 }
@@ -92,11 +116,11 @@ func TestInvalidateUserSession(t *testing.T) {
 
 	// initializing cookie store
 	var store = sessions.NewCookieStore([]byte("test"))
-	CreateUserSession(c, store, 123)
+	CreateUserSession(c, store, "123")
 
 	// 1. Check to see if a cookie exists
 	session, _ := store.Get(c.Request(), "voxeti-session")
-	if session.Values["userId"] != 123 || session.Values["csrfToken"] == nil {
+	if session.Values["userId"] != "123" || session.Values["csrfToken"] == nil {
 		t.Fatal("Cannot complete test, dependent method, CreateUserSession, has failed!")
 	}
 

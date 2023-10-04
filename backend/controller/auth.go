@@ -8,9 +8,10 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, logger *pterm.Logger) {
+func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/auth")
 
 	api.POST("/login", func(c echo.Context) error {
@@ -20,7 +21,7 @@ func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, logger *pt
 			return c.JSON(CreateErrorResponse(500, "Failed to unmarshal credentials"))
 		}
 
-		response, err := auth.Login(c, store, creds)
+		response, err := auth.Login(c, store, dbClient, creds)
 		if err.Code != 0 {
 			return c.JSON(CreateErrorResponse(err.Code, err.Message))
 		}

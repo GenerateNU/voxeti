@@ -8,69 +8,41 @@ import (
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-// For testing:
-var usersTest []model.User = []model.User{
-	{
-		Id:        1,
-		Email:     "user1@example.com",
-		Password:  "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji", // password1
-		FirstName: "John",
-		LastName:  "Doe",
-	},
-	{
-		Id:        2,
-		Email:     "user2@example.com",
-		Password:  "$2a$10$6kKTmL.QlNTHUBthBJBnjOwb8dpAO8a4wlLpRpy.SwzlIZ85PMtO6", // password2
-		FirstName: "Jane",
-		LastName:  "Smith",
-	},
-}
-
-func Login(c echo.Context, store *sessions.CookieStore, credentials model.Credentials) (map[string]interface{}, model.ErrorResponse) {
-	// TEMP CODE:
-	// ------------------------------------------------
-	var client model.User
-	var found bool = false
-	for _, user := range usersTest {
-		if user.Email == credentials.Email {
-			client = user
-			found = true
-			break
-		}
+func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, credentials model.Credentials) (map[string]interface{}, model.ErrorResponse) {
+	// Look for the user in the database:
+	user, err := GetUserByEmail(credentials.Email, dbClient);
+	if err.Code != 0 {
+		return map[string]interface{}{}, err
 	}
-
-	if !found {
-		return map[string]interface{}{}, model.ErrorResponse{Code: 400, Message: "User does not exist"}
-	}
-	// ------------------------------------------------
 
 	// Check if the incoming password is the same as the user password:
-	if ok := CheckPasswordHash(credentials.Password, client.Password); !ok {
+	if ok := CheckPasswordHash(credentials.Password, user.Password); !ok {
 		return map[string]interface{}{}, model.ErrorResponse{Code: 400, Message: "Invalid Password"}
 	}
 
 	// Create a new user session:
-	csrfToken, err := CreateUserSession(c, store, client.Id)
+	csrfToken, err := CreateUserSession(c, store, user.Id)
 	if err.Code != 0 {
 		return map[string]interface{}{}, err
 	}
 
 	// Remove the password from the user object and return the user:
-	client.Password = ""
+	user.Password = ""
 
 	response := map[string]interface{}{
 		"csrf_token": csrfToken,
-		"user":       client,
+		"user":       user,
 	}
 
 	return response, model.ErrorResponse{}
 }
 
-func CreateUserSession(c echo.Context, store *sessions.CookieStore, userId int) (string, model.ErrorResponse) {
+func CreateUserSession(c echo.Context, store *sessions.CookieStore, userId string) (string, model.ErrorResponse) {
 	// Creating a new session:
 	session, _ := store.Get(c.Request(), "voxeti-session")
 

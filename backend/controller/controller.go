@@ -27,7 +27,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	api.Use(session.Middleware(store))
 
 	// Register extra route handlers
-	RegisterAuthHandlers(api, store, logger)
+	RegisterAuthHandlers(api, store, dbClient, logger)
 
 	// catch any invalid endpoints with a 404 error
 	api.GET("*", func(c echo.Context) error {
