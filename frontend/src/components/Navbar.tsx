@@ -4,8 +4,8 @@ type NavItemDetails = {
   link: string;
 };
 
-// An item on the leftside of the Navbar
-function LeftNavItem({ title, link }: NavItemDetails) {
+// An item on the Navbar
+function NavItem({ title, link }: NavItemDetails) {
   return (
     <li>
       <a
@@ -22,7 +22,7 @@ function LeftNavItem({ title, link }: NavItemDetails) {
 export default function Navbar() {
   return (
     <nav className="bg-text border-gray-200 dark:bg-gray-900">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <div className="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         {/* Drop down menu for mobile */}
         <button
           data-collapse-toggle="navbar-default"
@@ -49,11 +49,18 @@ export default function Navbar() {
             />
           </svg>
         </button>
-        <div className="hidden w-full md:block md:w-auto" id="navbar-default">
+        <div className="hidden w-full md:flex md:w-full md:justify-between" id="navbar-default">
+          {/* Navbar: Left-Section */}
           <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            <LeftNavItem title={"Voxeti"} link={"#"} />
-            <LeftNavItem title={"About"} link={"#"} />
-            <LeftNavItem title={"Services"} link={"#"} />
+            <NavItem title={"Voxeti"} link={"#"} />
+            <NavItem title={"About"} link={"#"} />
+            <NavItem title={"Services"} link={"#"} />
+          </ul>
+          {/* Navbar: Right-Section */}
+          <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <NavItem title={"Help"} link={"#"} />
+            <NavItem title={"Log in"} link={"#"} />
+            <NavItem title={"Sign up"} link={"#"} />
           </ul>
         </div>
       </div>
