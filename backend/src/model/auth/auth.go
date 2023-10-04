@@ -15,7 +15,7 @@ import (
 
 func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, credentials model.Credentials) (map[string]interface{}, model.ErrorResponse) {
 	// Look for the user in the database:
-	user, err := GetUserByEmail(credentials.Email, dbClient);
+	user, err := GetUserByEmail(credentials.Email, dbClient)
 	if err.Code != 0 {
 		return map[string]interface{}{}, err
 	}

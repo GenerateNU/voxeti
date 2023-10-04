@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,7 +11,6 @@ import (
 	"time"
 	"voxeti/backend/controller"
 	"voxeti/frontend"
-	"fmt"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"

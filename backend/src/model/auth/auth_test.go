@@ -24,18 +24,21 @@ func TestLogin(t *testing.T) {
 	t.Setenv("DATABASE_NAME", "data")
 
 	// mocking mongodb client
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second);
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	dbClient, _ := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://administrator:Welcome1234@127.0.0.1:27017"));
+	dbClient, _ := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://administrator:Welcome1234@127.0.0.1:27017"))
 
 	// insert test user if currently doesn't exist
-	usersCollection := dbClient.Database(os.Getenv("DATABASE_NAME")).Collection("users");
+	usersCollection := dbClient.Database(os.Getenv("DATABASE_NAME")).Collection("users")
 	filter := bson.D{{Key: "email", Value: "user1@example.com"}}
 
 	var user model.User
 	if err := usersCollection.FindOne(context.Background(), filter).Decode(&user); err != nil {
 		newUser := model.User{Email: "user1@example.com", Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji"}
-		usersCollection.InsertOne(context.TODO(), newUser)
+		_, err = usersCollection.InsertOne(context.TODO(), newUser)
+		if err != nil {
+			t.Fatal("Failed adding user to database during test setup.")
+		}
 	}
 
 	// mocking the echo context

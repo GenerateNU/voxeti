@@ -11,7 +11,7 @@ import (
 
 func GetUserByEmail(email string, dbClient *mongo.Client) (model.User, model.ErrorResponse) {
 	// Access the users collection and initialize a filter:
-	usersCollection := dbClient.Database(os.Getenv("DATABASE_NAME")).Collection("users");
+	usersCollection := dbClient.Database(os.Getenv("DATABASE_NAME")).Collection("users")
 	filter := bson.D{{Key: "email", Value: email}}
 
 	// Retrieve the user:
