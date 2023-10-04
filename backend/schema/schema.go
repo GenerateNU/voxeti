@@ -20,7 +20,7 @@ type User struct {
 	PhoneNumber       PhoneNumber        `bson:"phoneNumber,omitempty"`
 	Experience        ExperienceLevel    `bson:"experience,omitempty"`
 	Printers          []Printer          `bson:"printers,omitempty"`
-	AvailableFilament []Filament         `bson:"materials,omitempty"`
+	AvailableFilament []Filament         `bson:"availableFilament,omitempty"`
 }
 
 // A Voxeti print Job
