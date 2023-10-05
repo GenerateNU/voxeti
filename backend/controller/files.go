@@ -24,11 +24,13 @@ func RegisterFilesHandlers(e *echo.Group, logger *pterm.Logger) {
 			return c.JSON(CreateErrorResponse(400, "STL file exceeds the 20MB file limit"))
 		}
 
-		if err := files.ValidateSTLFile(file); err.Code != 0 {
-			return c.JSON(CreateErrorResponse(err.Code, err.Message))
+		validationErr := files.ValidateSTLFile(file)
+		if err != nil {
+			return c.JSON(CreateErrorResponse(validationErr.Code, validationErr.Message))
 		}
 
-		return c.String(http.StatusOK, "You have provided a valid STL file!")
+		// Will need to be updated to return DB reference:
+		return c.NoContent(http.StatusOK)
 	})
 
 	api.GET("/retrieve-stl", func(c echo.Context) error {
