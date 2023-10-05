@@ -4,9 +4,8 @@ import (
 	"bufio"
 	"mime/multipart"
 	"strings"
-	"voxeti/backend/model"
+	"voxeti/backend/schema"
 
-	// "github.com/pterm/pterm"
 	"github.com/pterm/pterm"
 )
 

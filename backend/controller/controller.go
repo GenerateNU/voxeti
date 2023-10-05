@@ -2,7 +2,7 @@ package controller
 
 import (
 	"net/http"
-	"voxeti/backend/model"
+	"voxeti/backend/schema"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"

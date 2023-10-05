@@ -3,7 +3,7 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"voxeti/backend/model/files"
+	"voxeti/backend/schema/files"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
