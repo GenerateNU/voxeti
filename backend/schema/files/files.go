@@ -9,11 +9,11 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func ValidateSTLFile(file *multipart.FileHeader) model.ErrorResponse {
+func ValidateSTLFile(file *multipart.FileHeader) schema.ErrorResponse {
 	// Open the STL File:
 	src, err := file.Open()
 	if err != nil {
-		return model.ErrorResponse{Code: 500, Message: "Failed to open the STL File!"}
+		return schema.ErrorResponse{Code: 500, Message: "Failed to open the STL File!"}
 	}
 	defer src.Close()
 
@@ -21,7 +21,7 @@ func ValidateSTLFile(file *multipart.FileHeader) model.ErrorResponse {
 	firstBytes := make([]byte, 5)
 	_, err = src.Read(firstBytes)
 	if err != nil {
-		return model.ErrorResponse{Code: 500, Message: "Failed to read STL file!"}
+		return schema.ErrorResponse{Code: 500, Message: "Failed to read STL file!"}
 	}
 
 	// Determine which method to call:
@@ -37,17 +37,17 @@ func ValidateSTLFile(file *multipart.FileHeader) model.ErrorResponse {
 		}
 	}
 	// Return success:
-	return model.ErrorResponse{}
+	return schema.ErrorResponse{}
 }
 
-func ValidateBinarySTLFile(file multipart.File, size int64) model.ErrorResponse {
-	return model.ErrorResponse{}
+func ValidateBinarySTLFile(file multipart.File, size int64) schema.ErrorResponse {
+	return schema.ErrorResponse{}
 }
 
-func ValidateASCIISTLFile(file multipart.File, size int64) model.ErrorResponse {
+func ValidateASCIISTLFile(file multipart.File, size int64) schema.ErrorResponse {
 	// Check file size:
 	if size < 15 {
-		return model.ErrorResponse{Code: 400, Message: "ASCII file is too small!"}
+		return schema.ErrorResponse{Code: 400, Message: "ASCII file is too small!"}
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -57,7 +57,7 @@ func ValidateASCIISTLFile(file multipart.File, size int64) model.ErrorResponse {
 		pterm.Println(scanner.Text())
 		// Check to make sure the end of the file is the true end:
 		if seenEndSolid {
-			return model.ErrorResponse{Code: 400, Message: "Invalid STL ASCII File, extra line after endsolid!"}
+			return schema.ErrorResponse{Code: 400, Message: "Invalid STL ASCII File, extra line after endsolid!"}
 		}
 		// Line 2 must begin with "facet" or "endsolid"
 		if lineNumber == 2 {
@@ -65,7 +65,7 @@ func ValidateASCIISTLFile(file multipart.File, size int64) model.ErrorResponse {
 				seenEndSolid = true
 				continue
 			} else if !strings.HasPrefix(strings.Trim(scanner.Text(), " "), "facet") {
-				return model.ErrorResponse{Code: 400, Message: "Invalid STL ASCII File, line 2 missing facet!"}
+				return schema.ErrorResponse{Code: 400, Message: "Invalid STL ASCII File, line 2 missing facet!"}
 			}
 		}
 		// Locate end of file:
@@ -78,8 +78,8 @@ func ValidateASCIISTLFile(file multipart.File, size int64) model.ErrorResponse {
 
 	// Check if the end of the file was found:
 	if !seenEndSolid {
-		return model.ErrorResponse{Code: 400, Message: "Invalid STL ASCII File, end of file not found!"}
+		return schema.ErrorResponse{Code: 400, Message: "Invalid STL ASCII File, end of file not found!"}
 	} else {
-		return model.ErrorResponse{}
+		return schema.ErrorResponse{}
 	}
 }

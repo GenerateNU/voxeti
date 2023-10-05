@@ -33,8 +33,8 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	})
 }
 
-func CreateErrorResponse(code int, message string) (int, map[string]model.ErrorResponse) {
-	errorResponse := map[string]model.ErrorResponse{
+func CreateErrorResponse(code int, message string) (int, map[string]schema.ErrorResponse) {
+	errorResponse := map[string]schema.ErrorResponse{
 		"error": {
 			Code:    code,
 			Message: message,
