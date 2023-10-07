@@ -10,7 +10,7 @@ function NavItem({ title, link }: NavItemDetails) {
     <li>
       <a
         href={link}
-        className="block py-2 pl-3 pr-4 text-background hover:text-primary rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+        className="block py-2 pl-3 pr-4 text-background hover:text-secondary/75 md:bg-transparent md:p-0 focus:outline focus:outline-2 focus:outline-tertiary rounded-lg"
         aria-current="page"
       >
         {title}
@@ -21,14 +21,14 @@ function NavItem({ title, link }: NavItemDetails) {
 
 export default function Navbar() {
   return (
-    <nav className="bg-text border-gray-200 dark:bg-gray-900">
+    <nav className="bg-primary">
       <div className="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         {/* Drop down menu for mobile */}
         <button
           data-collapse-toggle="navbar-default"
           type="button"
-          className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden 
-                  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden
+                  hover:bg-secondary/10 focus:outline focus:outline-2 focus:outline-tertiary"
           aria-controls="navbar-default"
           aria-expanded="false"
         >
@@ -49,15 +49,18 @@ export default function Navbar() {
             />
           </svg>
         </button>
-        <div className="hidden w-full md:flex md:w-full md:justify-between" id="navbar-default">
+        <div
+          className="hidden w-full md:flex md:w-full md:justify-between"
+          id="navbar-default"
+        >
           {/* Navbar: Left-Section */}
-          <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
             <NavItem title={"Voxeti"} link={"#"} />
             <NavItem title={"About"} link={"#"} />
             <NavItem title={"Services"} link={"#"} />
           </ul>
           {/* Navbar: Right-Section */}
-          <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
             <NavItem title={"Help"} link={"#"} />
             <NavItem title={"Log in"} link={"#"} />
             <NavItem title={"Sign up"} link={"#"} />
