@@ -4,15 +4,10 @@
 
 @layer base {
   :root {
-    /* Brand colors */
-    --primary-color: 1 7 19;
-    --secondary-color: 255 0 200;
-    --tertiary-color: 1 87 255;
-    /* Application colors */
-    --call-to-action-color: 255 215 0;
-    --error-color: 255 0 0;
-    --background-color: 255 255 255;
-    --body-text-color: 0 0 0;
-    --inactivity-color: 255 127 0;
+    --text-color: 3 2 2;
+    --background-color: 249 243 241;
+    --primary-color: 77 147 168;
+    --secondary-color: 206 213 233;
+    --accent-color: 45 98 84;
   }
 }

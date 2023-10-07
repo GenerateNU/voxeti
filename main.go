@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 	"voxeti/backend/controller"
+	"voxeti/backend/database"
 	"voxeti/frontend"
 
 	"github.com/labstack/echo/v4"
@@ -103,6 +104,11 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 		}
 	}
 	spinnerSuccess.Success("Connected to database")
+
+	// create needed collections
+	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Creating MongoDB collections...")
+	database.Setup(dbClient, logger)
+	spinnerSuccess.Success("Created MongoDB collections")
 
 	// register frontend handlers
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Registering frontend handlers...")
