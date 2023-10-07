@@ -9,12 +9,8 @@ import (
 
 func CreateUser(user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
 	// validate request body
-	if reqErrors := ValidateCreateUser(user, db); reqErrors != "" {
-
-		return nil, &model.ErrorResponse{
-			Code:    400,
-			Message: "Bad request: " + reqErrors,
-		}
+	if reqError := ValidateCreateUser(user, db); reqError != nil {
+		return nil, reqError
 	}
 
 	// insert user into database
@@ -26,7 +22,6 @@ func CreateUser(user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorRes
 	return id, nil
 }
 
-// get user by id
 func GetUserById(id *primitive.ObjectID, db *DB) (*schema.User, *model.ErrorResponse) {
 
 	// get user from database
@@ -39,16 +34,11 @@ func GetUserById(id *primitive.ObjectID, db *DB) (*schema.User, *model.ErrorResp
 	return user, nil
 }
 
-// update user by id
 func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
 
 	// validate request body
-	if reqErrors := ValidateUpdateUser(id, user, db); reqErrors != "" {
-
-		return nil, &model.ErrorResponse{
-			Code:    400,
-			Message: "Bad request: " + reqErrors,
-		}
+	if reqError := ValidateUpdateUser(id, user, db); reqError != nil {
+		return nil, reqError
 	}
 
 	// update user in database

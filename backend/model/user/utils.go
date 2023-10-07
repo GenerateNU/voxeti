@@ -4,40 +4,64 @@ import (
 	"context"
 	"net/mail"
 	"reflect"
+	"voxeti/backend/model"
 	"voxeti/backend/schema"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func ValidateCreateUser(user *schema.User, db *DB) string {
+func ValidateCreateUser(user *schema.User, db *DB) *model.ErrorResponse {
 	// check if user already exists
 	if checkUserExistsEmail(user.Email, db) {
-		return "user with email already exists"
+		return &model.ErrorResponse{
+			Code:    400,
+			Message: "User with email already exists",
+		}
 	}
 
 	errors := validateUserFields(user)
 
-	return errors
+	if errors != "" {
+		return &model.ErrorResponse{
+			Code:    400,
+			Message: "Bad request: " + errors,
+		}
+	}
+
+	return nil
 }
 
-func ValidateUpdateUser(id *primitive.ObjectID, user *schema.User, db *DB) string {
+func ValidateUpdateUser(id *primitive.ObjectID, user *schema.User, db *DB) *model.ErrorResponse {
 
 	if !checkUserExistsId(id, db) {
-		return "user does not exist"
+		return &model.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
 	}
 
 	// check if request email is different than email for user with id
 	if isEmailUpdated(id, user.Email, db) {
 		// check if user with new email already exists
 		if checkUserExistsEmail(user.Email, db) {
-			return "user with email already exists"
+			return &model.ErrorResponse{
+				Code:    400,
+				Message: "User with email already exists",
+			}
 		}
 	}
 
 	errors := validateUserFields(user)
 
-	return errors
+	if errors != "" {
+		return &model.ErrorResponse{
+			Code:    400,
+			Message: "Bad request: " + errors,
+		}
+	}
+
+	return nil
 }
 
 func isEmail(email string) bool {
