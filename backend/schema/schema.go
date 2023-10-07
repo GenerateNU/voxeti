@@ -64,7 +64,7 @@ type PhoneNumber struct {
 type ExperienceLevel int
 
 const (
-	NoExperience = iota
+	NoExperience = iota + 1
 	SomeExperince
 	MaxExperience
 )
