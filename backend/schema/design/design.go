@@ -1,14 +1,54 @@
-package files
+package design
 
 import (
 	"bufio"
 	"encoding/binary"
+	"path/filepath"
 
 	"io"
 	"mime/multipart"
 	"strings"
 	"voxeti/backend/schema"
+
+	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
+
+func UploadSTLFile(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.ErrorResponse, *schema.Design) {
+	errorResponse := &schema.ErrorResponse{}
+
+	// Upload STL file with GridFS:
+	errorResponse, design := UploadDesign(file, bucket)
+	if errorResponse != nil {
+		return errorResponse, nil
+	}
+
+	// Return ID of file in DB and nil error:
+	return nil, design
+}
+
+func DeleteSTLFile(id string, bucket *gridfs.Bucket) *schema.ErrorResponse {
+	errorResponse := &schema.ErrorResponse{}
+
+	// Delete STL file:
+	errorResponse = DeleteDesign(id, bucket)
+	if errorResponse != nil {
+		return errorResponse
+	}
+
+	return nil;
+}
+
+func GetSTLFile(id string, bucket *gridfs.Bucket) (*schema.ErrorResponse, *[]byte) {
+	errorResponse := &schema.ErrorResponse{}
+
+	// Get STL file by id
+	errorResponse, designBytes := GetDesign(id, bucket)
+	if errorResponse != nil {
+		return errorResponse, nil
+	}
+
+	return nil, designBytes
+}
 
 func ValidateSTLFile(file *multipart.FileHeader) *schema.ErrorResponse {
 	errorResponse := &schema.ErrorResponse{}
@@ -21,6 +61,14 @@ func ValidateSTLFile(file *multipart.FileHeader) *schema.ErrorResponse {
 		return errorResponse
 	}
 	defer src.Close()
+
+	// Check the file extension:
+	fileExtension := filepath.Ext(file.Filename)
+	if fileExtension != ".stl" {
+		errorResponse.Code = 400
+		errorResponse.Message = "File type is not STL!"
+		return errorResponse
+	}
 
 	// Parse the first 5 bytes to check if the file is ASCII or binary:
 	firstBytes := make([]byte, 5)

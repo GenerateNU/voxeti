@@ -4,7 +4,6 @@ package schema
 import (
 	"github.com/paulmach/orb/geojson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
 
 // 1. Key schema
@@ -38,7 +37,11 @@ type Job struct {
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
-type Design gridfs.File
+type Design struct {
+	Id				primitive.ObjectID `bson:"_id" json:"id"`
+	Name      string						 `bson:"name" json:"name"`
+	Length		int64							 `bson:"length" json:"length"`
+}
 
 // 2. Supporting schema
 
