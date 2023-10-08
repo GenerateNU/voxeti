@@ -14,8 +14,6 @@ import (
 )
 
 func UploadSTLFile(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.ErrorResponse, *schema.Design) {
-	var errorResponse = &schema.ErrorResponse{}
-
 	// Upload STL file with GridFS:
 	errorResponse, design := UploadDesign(file, bucket)
 	if errorResponse != nil {
@@ -27,10 +25,8 @@ func UploadSTLFile(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.E
 }
 
 func DeleteSTLFile(id string, bucket *gridfs.Bucket) *schema.ErrorResponse {
-	var errorResponse = &schema.ErrorResponse{}
-
 	// Delete STL file:
-	errorResponse = DeleteDesign(id, bucket)
+	errorResponse := DeleteDesign(id, bucket)
 	if errorResponse != nil {
 		return errorResponse
 	}
@@ -39,8 +35,6 @@ func DeleteSTLFile(id string, bucket *gridfs.Bucket) *schema.ErrorResponse {
 }
 
 func GetSTLFile(id string, bucket *gridfs.Bucket) (*schema.ErrorResponse, *[]byte) {
-	var errorResponse = &schema.ErrorResponse{}
-
 	// Get STL file by id
 	errorResponse, designBytes := GetDesign(id, bucket)
 	if errorResponse != nil {
@@ -51,7 +45,7 @@ func GetSTLFile(id string, bucket *gridfs.Bucket) (*schema.ErrorResponse, *[]byt
 }
 
 func ValidateSTLFile(file *multipart.FileHeader) *schema.ErrorResponse {
-	var errorResponse = &schema.ErrorResponse{}
+	errorResponse := &schema.ErrorResponse{}
 
 	// Open the STL File:
 	src, err := file.Open()
@@ -96,7 +90,7 @@ func ValidateSTLFile(file *multipart.FileHeader) *schema.ErrorResponse {
 }
 
 func ValidateBinarySTLFile(file multipart.File, size int64) *schema.ErrorResponse {
-	var errorResponse = &schema.ErrorResponse{}
+	errorResponse := &schema.ErrorResponse{}
 
 	// Check file size:
 	if size < 84 {
@@ -137,7 +131,7 @@ func ValidateBinarySTLFile(file multipart.File, size int64) *schema.ErrorRespons
 }
 
 func ValidateASCIISTLFile(file multipart.File, size int64) *schema.ErrorResponse {
-	var errorResponse = &schema.ErrorResponse{}
+	errorResponse := &schema.ErrorResponse{}
 
 	// Check file size:
 	if size < 15 {

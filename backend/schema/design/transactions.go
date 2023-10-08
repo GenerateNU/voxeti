@@ -12,8 +12,8 @@ import (
 )
 
 func UploadDesign(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.ErrorResponse, *schema.Design) {
-	var errResponse = &schema.ErrorResponse{}
-	var design = &schema.Design{}
+	errResponse := &schema.ErrorResponse{}
+	design := &schema.Design{}
 
 	// Open the STL file:
 	src, err := file.Open()
@@ -38,7 +38,7 @@ func UploadDesign(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.Er
 }
 
 func DeleteDesign(id string, bucket *gridfs.Bucket) *schema.ErrorResponse {
-	var errResponse = &schema.ErrorResponse{}
+	errResponse := &schema.ErrorResponse{}
 
 	// Convert the id to an ObjectID:
 	objectID, err := primitive.ObjectIDFromHex(id)
@@ -59,8 +59,8 @@ func DeleteDesign(id string, bucket *gridfs.Bucket) *schema.ErrorResponse {
 }
 
 func GetDesign(id string, bucket *gridfs.Bucket) (*schema.ErrorResponse, *[]byte) {
-	var errResponse = &schema.ErrorResponse{}
-	var designBytes = &[]byte{}
+	errResponse := &schema.ErrorResponse{}
+	designBytes := &[]byte{}
 
 	// Convert the id to an ObjectID:
 	objectID, err := primitive.ObjectIDFromHex(id)
