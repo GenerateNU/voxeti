@@ -13,6 +13,12 @@ func CreateUser(user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorRes
 		return nil, reqError
 	}
 
+	// update location field for each address
+	locErr := UpdateLocations(user)
+	if locErr != nil {
+		return nil, locErr
+	}
+
 	// insert user into database
 	id, dbErr := CreateUserDB(user, db)
 	if dbErr != nil {
@@ -41,9 +47,14 @@ func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primiti
 		return nil, reqError
 	}
 
+	// update location field for each address
+	locErr := UpdateLocations(user)
+	if locErr != nil {
+		return nil, locErr
+	}
+
 	// update user in database
 	updatedId, dbErr := UpdateUserByIdDB(id, user, db)
-
 	if dbErr != nil {
 		return nil, dbErr
 	}

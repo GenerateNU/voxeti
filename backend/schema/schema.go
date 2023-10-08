@@ -56,8 +56,8 @@ type Address struct {
 
 // A phone number
 type PhoneNumber struct {
-	AreaCode string `bson:"areaCode,omitempty"`
-	Number   string `bson:"number,omitempty"`
+	CountryCode string `bson:"countryCode,omitempty"`
+	Number      string `bson:"number,omitempty"`
 }
 
 // Go does not have native enums, so this is a close approximation for 3D printing experience level
@@ -86,9 +86,9 @@ const (
 
 // Print/printer physical dimensions
 type Dimensions struct {
-	height uint `bson:"height,omitempty"`
-	width  uint `bson:"width,omitempty"`
-	depth  uint `bson:"depth,omitempty"`
+	Height uint `bson:"height,omitempty"`
+	Width  uint `bson:"width,omitempty"`
+	Depth  uint `bson:"depth,omitempty"`
 }
 
 // A filament

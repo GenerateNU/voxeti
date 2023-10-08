@@ -7,6 +7,10 @@ import (
 	"voxeti/backend/model"
 	"voxeti/backend/schema"
 
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
+	"googlemaps.github.io/maps"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -127,8 +131,50 @@ func isEmailUpdated(id *primitive.ObjectID, email string, db *DB) bool {
 	return err == nil && result.Email != email
 }
 
-// TODO: convert address to lat/long using geocoding api
+// use google maps api to get location from address
+// HARD CODED API KEY FOR NOW
+func getLocation(address *schema.Address) (*geojson.Geometry, *model.ErrorResponse) {
+	addressString := address.Line1 + " " + address.City + " " + address.State + " " + address.ZipCode
+	client, err := maps.NewClient(maps.WithAPIKey("AIzaSyAP5_5mbMLn34q2B_UHDM4MHsbfb82ZTZM"))
+	if err != nil {
+		return nil, &model.ErrorResponse{
+			Code:    500,
+			Message: "Failed to create google maps client",
+		}
+	}
+	r := &maps.GeocodingRequest{
+		Address: addressString,
+	}
+	resp, err := client.Geocode(context.Background(), r)
+	if err != nil {
+		return nil, &model.ErrorResponse{
+			Code:    500,
+			Message: "Failed to get location from address: " + addressString,
+		}
+	}
+	lat := resp[0].Geometry.Location.Lat
+	lng := resp[0].Geometry.Location.Lng
+	location := geojson.Geometry{
+		Type:        "Point",
+		Coordinates: orb.Point{lng, lat},
+	}
 
+	return &location, nil
+}
+
+// update location field for each address
+func UpdateLocations(user *schema.User) *model.ErrorResponse {
+	for i := 0; i < len(user.Addresses); i++ {
+		location, err := getLocation(&user.Addresses[i])
+		if err != nil {
+			return err
+		}
+		user.Addresses[i].Location = *location
+	}
+	return nil
+}
+
+// check for missing or invalid fields
 func validateUserFields(user *schema.User) string {
 	errors := ""
 	v := reflect.ValueOf(*user)
@@ -138,7 +184,6 @@ func validateUserFields(user *schema.User) string {
 		field := v.Field(i)
 		fieldName := v.Type().Field(i).Name
 
-		// validate required fields
 		switch fieldName {
 		case "FirstName":
 			if field.String() == "" {
@@ -158,24 +203,115 @@ func validateUserFields(user *schema.User) string {
 			} else if !isEmail(field.String()) {
 				errors += "email is invalid, "
 			}
+		case "Password":
+			if field.String() == "" {
+				errors += "password is missing, "
+			}
+		case "Addresses":
+			if field.Len() == 0 {
+				errors += "addresses is missing, "
+			} else {
+				for j := 0; j < field.Len(); j++ {
+					address := field.Index(j)
+					name := address.FieldByName("Name")
+					line1 := address.FieldByName("Line1")
+					zipCode := address.FieldByName("ZipCode")
+					city := address.FieldByName("City")
+					state := address.FieldByName("State")
+					country := address.FieldByName("Country")
+
+					if name.String() == "" {
+						errors += "name is missing, "
+					}
+
+					if line1.String() == "" {
+						errors += "line1 is missing, "
+					}
+
+					if zipCode.String() == "" {
+						errors += "zipCode is missing, "
+					}
+
+					if city.String() == "" {
+						errors += "city is missing, "
+					}
+
+					if state.String() == "" {
+						errors += "state is missing, "
+					}
+
+					if country.String() == "" {
+						errors += "country is missing, "
+					}
+				}
+			}
 		case "PhoneNumber":
-			areaCode := field.FieldByName("AreaCode")
+			countryCode := field.FieldByName("CountryCode")
 			number := field.FieldByName("Number")
 
-			if areaCode.String() == "" {
-				errors += "areaCode is missing, "
-			} else if len(areaCode.String()) < 1 || len(areaCode.String()) > 5 {
-				errors += "areaCode must have 1-5 characters, "
+			if countryCode.String() == "" {
+				errors += "countryCode is missing, "
+			} else if len(countryCode.String()) < 1 || len(countryCode.String()) > 5 {
+				errors += "countryCode must have 1-5 characters, "
 			}
 
 			if number.String() == "" {
 				errors += "number is missing, "
 			} else if len(number.String()) != 10 {
-				errors += "number must have 1-10 characters, "
+				errors += "number must have 10 characters, "
 			}
 		case "Experience":
-			if field.Int() < 1 || field.Int() > 3 {
+			if field.Int() != schema.NoExperience && field.Int() != schema.SomeExperince && field.Int() != schema.MaxExperience {
 				errors += "experience must be 1, 2, or 3, "
+			}
+		case "Printers":
+			// since this is an optional field, only validate if field is not empty
+			if field.Len() != 0 {
+				for j := 0; j < field.Len(); j++ {
+					printer := field.Index(j)
+					supportedFilament := printer.FieldByName("SupportedFilament")
+					dimensions := printer.FieldByName("Dimensions")
+
+					if supportedFilament.Len() == 0 {
+						errors += "supportedFilament is missing, "
+					} else {
+						for k := 0; k < supportedFilament.Len(); k++ {
+							filament := supportedFilament.Index(k)
+							if filament.String() != schema.PLA && filament.String() != schema.ABS && filament.String() != schema.TPE {
+								errors += "filament must be PLA, ABS, or TPE, "
+							}
+						}
+					}
+					if dimensions.FieldByName("Height").Uint() == 0 {
+						errors += "height is missing, "
+					}
+
+					if dimensions.FieldByName("Width").Uint() == 0 {
+						errors += "width is missing, "
+					}
+
+					if dimensions.FieldByName("Depth").Uint() == 0 {
+						errors += "depth is missing, "
+					}
+				}
+			}
+		case "AvailableFilament":
+			// since this is an optional field, only validate if field is not empty
+			if field.Len() != 0 {
+				for j := 0; j < field.Len(); j++ {
+					filament := field.Index(j)
+					if filament.FieldByName("Type").String() != schema.PLA && filament.FieldByName("Type").String() != schema.ABS && filament.FieldByName("Type").String() != schema.TPE {
+						errors += "filament must be PLA, ABS, or TPE, "
+					}
+
+					if filament.FieldByName("Color").String() == "" {
+						errors += "color is missing, "
+					}
+
+					if filament.FieldByName("PricePerUnit").Uint() == 0 {
+						errors += "pricePerUnit is missing, "
+					}
+				}
 			}
 		}
 	}

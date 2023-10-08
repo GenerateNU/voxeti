@@ -9,7 +9,12 @@ require (
 	go.mongodb.org/mongo-driver v1.12.1
 )
 
-require github.com/pmezard/go-difflib v1.0.0 // indirect
+require (
+	github.com/google/uuid v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	go.opencensus.io v0.22.3 // indirect
+	googlemaps.github.io/maps v1.5.0 // indirect
+)
 
 require (
 	atomicgo.dev/cursor v0.2.0 // indirect
