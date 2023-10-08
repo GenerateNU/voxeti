@@ -27,7 +27,7 @@ var (
 func main() {
 	// parse command line flags
 	backendPort := flag.Int("p", 3000, "the port to host the backend on")
-	dbUri := flag.String("db", "", "the MongoDB database URI to connect to")
+	dbUri := flag.String("db", "", "mongodb://localhost:27017")
 	flag.Parse()
 
 	// display splash screen
@@ -92,7 +92,7 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Connecting to database...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	dbClient, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUri))
+	dbClient, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil || dbClient.Ping(ctx, readpref.Primary()) != nil {
 		spinnerSuccess.Fail("Failed to connect to database")
 		os.Exit(1)

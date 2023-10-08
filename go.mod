@@ -3,9 +3,16 @@ module voxeti
 go 1.21.0
 
 require (
+	github.com/gorilla/sessions v1.2.1
+	github.com/labstack/echo-contrib v0.15.0
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/pterm/pterm v0.12.66
 	go.mongodb.org/mongo-driver v1.12.1
+)
+
+require (
+	github.com/gorilla/context v1.1.1 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
 )
 
 require (

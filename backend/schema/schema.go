@@ -108,3 +108,11 @@ const (
 	InShipping = "INSHIPPING"
 	Complete   = "COMPLETE"
 )
+
+
+
+// Not part of DB, used for custom error handling
+type ErrorResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
