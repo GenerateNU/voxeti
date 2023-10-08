@@ -14,13 +14,13 @@ import (
 func RegisterFilesHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/designs")
 
-		// initialize GridFS bucket
-		db := dbClient.Database("designs")
-		bucket, err := gridfs.NewBucket(db)
-		if err != nil {
-			logger.Info("Failed to initialize the design file store!");
-			os.Exit(1)
-		}
+	// initialize GridFS bucket
+	db := dbClient.Database("designs")
+	bucket, err := gridfs.NewBucket(db)
+	if err != nil {
+		logger.Info("Failed to initialize the design file store!")
+		os.Exit(1)
+	}
 
 	api.POST("", func(c echo.Context) error {
 		// Extract the file from the request:
@@ -41,7 +41,7 @@ func RegisterFilesHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.
 		}
 
 		// Add STL file to DB:
-		uploadErr, design := design.UploadSTLFile(file, bucket);
+		uploadErr, design := design.UploadSTLFile(file, bucket)
 		if uploadErr != nil {
 			return c.JSON(CreateErrorResponse(uploadErr.Code, uploadErr.Message))
 		}
