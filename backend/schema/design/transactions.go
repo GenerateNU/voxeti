@@ -2,11 +2,11 @@ package design
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"voxeti/backend/schema"
-	"fmt"
-	
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
