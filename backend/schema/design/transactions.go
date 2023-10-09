@@ -5,8 +5,8 @@ import (
 	"io"
 	"mime/multipart"
 	"voxeti/backend/schema"
-
-	"github.com/pterm/pterm"
+	"fmt"
+	
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
@@ -31,7 +31,7 @@ func UploadDesign(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.Er
 	}
 
 	design.Id = objectID
-	design.Name = pterm.Sprintf("voxeti-%s.stl", objectID.Hex())
+	design.Name = fmt.Sprintf("voxeti-%s.stl", objectID.Hex())
 	design.Length = file.Size
 
 	return nil, design

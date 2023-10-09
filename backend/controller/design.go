@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"os"
+	"fmt"
 	"voxeti/backend/schema/design"
 
 	"github.com/labstack/echo/v4"
@@ -61,9 +62,9 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		}
 
 		// Set response headers:
-		c.Response().Header().Set("Content-Disposition", pterm.Sprintf("attachment; filename=voxeti-%s.stl", id))
+		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=voxeti-%s.stl", id))
 		c.Response().Header().Set("Content-Type", "application/octet-stream")
-		c.Response().Header().Set("Content-Length", pterm.Sprint(len(*designBytes)))
+		c.Response().Header().Set("Content-Length", fmt.Sprint(len(*designBytes)))
 
 		if _, err := c.Response().Write(*designBytes); err != nil {
 			return c.JSON(CreateErrorResponse(500, "Failed to attach STL design to request!"))
