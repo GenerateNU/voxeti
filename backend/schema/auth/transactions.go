@@ -2,24 +2,26 @@ package auth
 
 import (
 	"context"
-	"os"
-	"voxeti/backend/src/model"
+	"voxeti/backend/schema"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetUserByEmail(email string, dbClient *mongo.Client) (model.User, model.ErrorResponse) {
+func GetUserByEmail(email string, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
+	errResponse := &schema.ErrorResponse{}
+
 	// Access the users collection and initialize a filter:
-	usersCollection := dbClient.Database(os.Getenv("DATABASE_NAME")).Collection("users")
+	usersCollection := dbClient.Database(schema.DatabaseName).Collection("users")
 	filter := bson.D{{Key: "email", Value: email}}
 
 	// Retrieve the user:
-	var user model.User
+	user := &schema.User{}
 	if err := usersCollection.FindOne(context.Background(), filter).Decode(&user); err != nil {
-		return model.User{}, model.ErrorResponse{Code: 400, Message: "User does not exist!"}
+		errResponse.Code = 400
+		errResponse.Message = "User does not exist!"
 	}
 
 	// Return the user:
-	return user, model.ErrorResponse{}
+	return user, nil
 }

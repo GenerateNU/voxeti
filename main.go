@@ -46,9 +46,10 @@ func main() {
 
 		// load environment variables
 		err := godotenv.Load(".env")
-		if err != nil {
+		if err != nil || os.Getenv("SESSION_KEY") == "" {
 			pterm.Info.Println("Failed to load environment varibales, shutting down...")
 			pterm.Fatal.WithFatal(false).Println(err)
+			os.Exit(1)
 		}
 	}
 
