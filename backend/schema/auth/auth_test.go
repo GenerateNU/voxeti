@@ -28,28 +28,31 @@ func TestLogin(t *testing.T) {
 
 	// Create DB Test Cases:
 	testCases := []struct {
-		name 							string
-		credentials     	schema.Credentials
-		prepMongoMock 		func(mt *mtest.T)
-		expectedResponse  schema.LoginResponse
-		expectedError			schema.ErrorResponse
-		wantError					bool
-	} {
+		name             string
+		credentials      schema.Credentials
+		prepMongoMock    func(mt *mtest.T)
+		expectedResponse schema.LoginResponse
+		expectedError    schema.ErrorResponse
+		wantError        bool
+	}{
 		{
-			name: "success",
+			name: "Success",
 			credentials: schema.Credentials{
-				Email: "user1@example.com",
+				Email:    "user1@example.com",
 				Password: "password1",
-			},		
+			},
 			prepMongoMock: func(mt *mtest.T) {
 				user := schema.User{
-					Email: "user1@example.com",
+					Email:    "user1@example.com",
 					Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
 				}
 
 				userBSON, _ := bson.Marshal(user)
 				var bsonD bson.D
-				bson.Unmarshal(userBSON, &bsonD)
+				err := bson.Unmarshal(userBSON, &bsonD)
+				if err != nil {
+					assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
+				}
 
 				res := mtest.CreateCursorResponse(
 					1,
@@ -64,7 +67,7 @@ func TestLogin(t *testing.T) {
 			},
 			expectedResponse: schema.LoginResponse{
 				User: schema.User{
-					Email: "user1@example.com",
+					Email:    "user1@example.com",
 					Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
 				},
 			},
@@ -73,18 +76,21 @@ func TestLogin(t *testing.T) {
 		{
 			name: "Invalid Password",
 			credentials: schema.Credentials{
-				Email: "user1@example.com",
+				Email:    "user1@example.com",
 				Password: "password1",
-			},		
+			},
 			prepMongoMock: func(mt *mtest.T) {
 				user := schema.User{
-					Email: "user1@example.com",
+					Email:    "user1@example.com",
 					Password: "someRandomPassword",
 				}
 
 				userBSON, _ := bson.Marshal(user)
 				var bsonD bson.D
-				bson.Unmarshal(userBSON, &bsonD)
+				err := bson.Unmarshal(userBSON, &bsonD)
+				if err != nil {
+					assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Invalid Password'")
+				}
 
 				res := mtest.CreateCursorResponse(
 					1,
@@ -98,7 +104,7 @@ func TestLogin(t *testing.T) {
 				mt.AddMockResponses(res, end)
 			},
 			expectedError: schema.ErrorResponse{
-				Code: 400,
+				Code:    400,
 				Message: "Invalid Password",
 			},
 			wantError: true,
@@ -106,14 +112,14 @@ func TestLogin(t *testing.T) {
 		{
 			name: "Invalid Username",
 			credentials: schema.Credentials{
-				Email: "wrongUser@example.com",
+				Email:    "wrongUser@example.com",
 				Password: "password1",
-			},		
+			},
 			prepMongoMock: func(mt *mtest.T) {
 				mt.AddMockResponses(bson.D{{Key: "ok", Value: 0}})
 			},
 			expectedError: schema.ErrorResponse{
-				Code: 400,
+				Code:    400,
 				Message: "User does not exist!",
 			},
 			wantError: true,
@@ -193,13 +199,11 @@ func TestInvalidateUserSession(t *testing.T) {
 	var store = sessions.NewCookieStore([]byte("test"))
 	CreateUserSession(c, store, "123")
 
-	session, _ := store.Get(c.Request(), "voxeti-session")
-
 	// invalidate the user session
 	InvalidateUserSession(c, store)
 
 	// 1. Ensure the cookie is new when created and that no userId and CSRF token exists
-	session, _ = store.Get(c.Request(), "voxeti-session")
+	session, _ := store.Get(c.Request(), "voxeti-session")
 	assert.Equal(nil, session.Values["userId"])
 	assert.Equal(nil, session.Values["csrfToken"])
 }
