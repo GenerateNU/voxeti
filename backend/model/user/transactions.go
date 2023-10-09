@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 	"voxeti/backend/model"
-
 	"voxeti/backend/schema"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -34,6 +34,43 @@ func CreateUserDB(user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorR
 	// return object id of new user
 	id := result.InsertedID.(primitive.ObjectID)
 	return &id, nil
+}
+
+func GetAllUsersDB(db *DB) ([]*schema.User, *model.ErrorResponse) {
+	// if real db is nil, get user from mock db
+	if db.RealDB == nil {
+		if users, ok := Values(db.MockDB); ok {
+			return users, nil
+		}
+		return nil, &model.ErrorResponse{
+			Code:    404,
+			Message: "Users not found",
+		}
+	}
+
+	// get user from real db
+	coll := db.RealDB.Database("data").Collection("users")
+
+	filter := bson.D{{}}
+
+	cursor, err := coll.Find(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+	// end find
+
+	var results []schema.User
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		panic(err)
+	}
+
+	var users []*schema.User
+	for _, result := range results {
+		cursor.Decode(&result)
+		users = append(users, &result)
+	}
+
+	return users, nil
 }
 
 func GetUserByIdDB(id *primitive.ObjectID, db *DB) (*schema.User, *model.ErrorResponse) {
@@ -85,6 +122,36 @@ func UpdateUserByIdDB(id *primitive.ObjectID, user *schema.User, db *DB) (*primi
 	})
 
 	if err != nil {
+		return nil, &model.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
+	}
+
+	// return object id of updated user
+	return id, nil
+}
+
+func DeleteUserByIdDB(id *primitive.ObjectID, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
+
+	// if real db is nil, update user in mock db
+	if db.RealDB == nil {
+		if _, ok := db.MockDB[*id]; ok {
+			return id, nil
+		}
+		return nil, &model.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
+	}
+
+	filter := bson.D{{Key: "_id", Value: id}}
+
+	// update user in real db
+	coll := db.RealDB.Database("data").Collection("users")
+	result, err := coll.DeleteOne(context.TODO(), filter)
+
+	if result.DeletedCount == 0 || err != nil {
 		return nil, &model.ErrorResponse{
 			Code:    404,
 			Message: "User not found",
