@@ -16,25 +16,36 @@ func RegisterJobHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *m
 
 	api.GET("/:id", func(c echo.Context) error {
 		jobId := c.Param("id")
-		job, _ := job.GetJobById(jobId, dbClient)
+		retrievedJob, errorResponse := job.GetJobById(jobId, dbClient)
 
-		// if response.Code != 0 {
-		// 	return c.JSON(http.StatusBadRequest, response)
-		// }
+		if errorResponse.Code != 0 {
+			return c.JSON(http.StatusBadRequest, errorResponse)
+		}
 
-		return c.JSON(http.StatusOK, job)
+		return c.JSON(http.StatusOK, retrievedJob)
 	})
 
-	// api.DELETE("/:id", func(c echo.Context) error {
-	// 	return job.DeleteJob(c, dbClient)
-	// })
+	api.GET("/", func(c echo.Context) error {
+		designerId := c.QueryParam("designer")
+		producerId := c.QueryParam("producer")
+		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerId, producerId, dbClient)
+		if errorResponse.Code != 0 {
+			return c.JSON(http.StatusBadRequest, errorResponse)
+		}
 
-	// api.POST("/", func(c echo.Context) error {
-	// 	return job.CreateJob(c, dbClient)
-	// })
+		return c.JSON(http.StatusOK, retrievedJobs)
+	})
 
-	// api.PUT("/:id", func(c echo.Context) error {
-	// 	return job.UpdateJob(c, dbClient)
-	// })
+	api.DELETE("/:id", func(c echo.Context) error {
+		return job.DeleteJob(c, dbClient)
+	})
+
+	api.POST("/", func(c echo.Context) error {
+		return job.CreateJob(c, dbClient)
+	})
+
+	api.PUT("/:id", func(c echo.Context) error {
+		return job.UpdateJob(c, dbClient)
+	})
 	
 }

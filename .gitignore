@@ -19,3 +19,4 @@ voxeti
 
 # Go workspace file
 go.work
+.env
