@@ -139,7 +139,6 @@ func TestLogin(t *testing.T) {
 			testCase.prepMongoMock(mt)
 
 			loginResponse, err := Login(context, store, mt.Client, testCase.credentials)
-			t.Log(err)
 
 			if testCase.wantError {
 				if err == nil {
