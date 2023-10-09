@@ -66,8 +66,15 @@ func GetAllUsersDB(db *DB) ([]*schema.User, *model.ErrorResponse) {
 
 	var users []*schema.User
 	for _, result := range results {
-		cursor.Decode(&result)
-		users = append(users, &result)
+		decodeError := cursor.Decode(&result)
+		if decodeError != nil {
+			users = append(users, &result)
+		} else {
+			return nil, &model.ErrorResponse{
+				Code:    404,
+				Message: "User not found",
+			}
+		}
 	}
 
 	return users, nil
