@@ -11,7 +11,7 @@ export default function Footer() {
                 className="block py-2 pl-3 pr-4 text-background hover:text-primary rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
                 aria-current="page"
               >
-                Placeholder 1 
+                Placeholder 1
               </a>
             </li>
             <li>

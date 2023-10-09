@@ -13,9 +13,8 @@ import (
 )
 
 func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, credentials schema.Credentials) (*schema.LoginResponse, *schema.ErrorResponse) {
-	err := &schema.ErrorResponse{}
 	response := &schema.LoginResponse{}
-	
+
 	// Look for the user in the database:
 	user, err := GetUserByEmail(credentials.Email, dbClient)
 	if err != nil {
@@ -45,8 +44,6 @@ func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, 
 }
 
 func CreateUserSession(c echo.Context, store *sessions.CookieStore, userId string) (*string, *schema.ErrorResponse) {
-	errResponse := &schema.ErrorResponse{}
-	
 	// Creating a new session:
 	session, _ := store.Get(c.Request(), "voxeti-session")
 
@@ -74,7 +71,7 @@ func CreateUserSession(c echo.Context, store *sessions.CookieStore, userId strin
 
 func InvalidateUserSession(c echo.Context, store *sessions.CookieStore) *schema.ErrorResponse {
 	errResponse := &schema.ErrorResponse{}
-	
+
 	// Retrieve the session:
 	session, _ := store.Get(c.Request(), "voxeti-session")
 
@@ -101,14 +98,14 @@ func AuthenticateSession(c echo.Context, store *sessions.CookieStore) *schema.Er
 
 	if err := c.Bind(&requestBody); err != nil {
 		errResponse.Code = 500
-		errResponse.Message =  "Failed to unmarshal request body!"
+		errResponse.Message = "Failed to unmarshal request body!"
 		return errResponse
- 	}
+	}
 
 	csrfToken, ok := requestBody["csrfToken"].(string)
 	if !ok {
 		errResponse.Code = 401
-		errResponse.Message =  "Unauthorized Request"
+		errResponse.Message = "Unauthorized Request"
 		return errResponse
 	}
 
@@ -118,7 +115,7 @@ func AuthenticateSession(c echo.Context, store *sessions.CookieStore) *schema.Er
 	// Check if the session is new or expired:
 	if session.IsNew || session.Options.MaxAge < 0 || session.Values["csrfToken"] != csrfToken {
 		errResponse.Code = 401
-		errResponse.Message =  "Unauthorized Request"
+		errResponse.Message = "Unauthorized Request"
 		return errResponse
 	}
 	return nil

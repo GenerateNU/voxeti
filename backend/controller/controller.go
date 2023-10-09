@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"os"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
