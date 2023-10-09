@@ -1,6 +1,8 @@
 package job
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -11,18 +13,82 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Find a specified job by its ID
 func GetJobById(jobId string, dbClient *mongo.Client) (schema.Job, schema.ErrorResponse) {
-	job, response := FindJobById(jobId, dbClient);
-	return job, response
+	godotenv.Load()	
+	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
+	objectId, _ := primitive.ObjectIDFromHex(jobId);
+	filter := bson.M{"_id": objectId}
+
+	// Retrieve the specified job from the collection
+	var job schema.Job
+
+	// If the job is not found, throw an error
+	if err := jobCollection.FindOne(context.Background(), filter).Decode(&job); err != nil {
+		return schema.Job{}, schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
+	}
+
+	// Return the job
+	return job, schema.ErrorResponse{}
 }
 
 // Find a specified job by either a producer or designer ID
-func GetJobsByDesignerOrProducerId(designerId string, producerId string, dbClient *mongo.Client) ([]schema.Job, schema.ErrorResponse) {
-	jobs, response := findJobsByDesignerOrProducerId(designerId, producerId, dbClient);
-	return jobs, response
+func GetJobsByDesignerOrProducerId(designerId string, producerId string, limit int64, skip int64, dbClient *mongo.Client, requestContext context.Context) ([]schema.Job, schema.ErrorResponse) {
+	// load jobs collection
+	godotenv.Load()	
+	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
+	// Extract Object IDs
+	designerObjId, _ := primitive.ObjectIDFromHex(designerId)
+	producerObjId, _ := primitive.ObjectIDFromHex(producerId)
+	
+	// Create filter
+	var filter primitive.D = bson.D{{}};
+	if (designerId != "" && producerId != "")  {
+		filter = bson.D{{Key: "DesignerId", Value: designerObjId}, {Key: "ProducerId", Value: producerObjId}}
+	} else if (designerId != "" && producerId == "") {
+		filter = bson.D{{Key: "DesignerId", Value: designerObjId}}
+	} else if (designerId == "" && producerId != "") {
+		filter = bson.D{{Key: "ProducerId", Value: producerObjId}}
+	}
+	
+	var jobs []schema.Job
+
+	// pagination options
+	paginationOptions := options.Find();
+	paginationOptions.SetLimit(limit);
+	paginationOptions.SetSkip(skip);
+
+	// If jobs are not found, throw an error
+	cursor, err := jobCollection.Find(requestContext, filter, paginationOptions)
+	if err != nil {
+		fmt.Println(err.Error())
+		return []schema.Job{}, schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
+	}
+	defer cursor.Close(requestContext)
+
+	// Iterate over the cursor and append each job to the slice
+	for cursor.Next(requestContext) {
+		var job schema.Job
+		if err := cursor.Decode(&job); err != nil {
+			return []schema.Job{}, schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
+		}
+		jobs = append(jobs, job)
+	}
+
+	// If there was an error iterating over the cursor, return an error
+	if err := cursor.Err(); err != nil {
+		return []schema.Job{}, schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	}
+	// If no jobs exist (ex: there are 2 pages but user tries to go to "page 3")
+	if jobs == nil {
+		return []schema.Job{}, schema.ErrorResponse{Code: 400, Message: "Page does not exist"}
+	}
+
+	// Return the jobs
+	return jobs, schema.ErrorResponse{}
 }
 
 
@@ -90,13 +156,3 @@ func UpdateJob(c echo.Context, dbClient *mongo.Client) error {
 	}
 	return c.JSON(http.StatusOK, job)
 }
-	
-// 	pagination
-// 	limitStr := c.QueryParam("limit")
-// 	skipStr := c.QueryParam("skip")
-// 	limit, _ := strconv.Atoi(limitStr)  
-// 	skip, _ := strconv.Atoi(skipStr) 
-	
-// 	cursor, err := jobCollection.Find(c.Request().Context(), bson.M{"designer_id": designerID}, options.Find().SetLimit(int64(limit)).SetSkip(int64(skip)))
-
-

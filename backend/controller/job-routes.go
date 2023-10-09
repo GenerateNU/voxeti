@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"strconv"
+	"voxeti/backend/schema"
 	"voxeti/backend/src/job"
 
 	"net/http"
@@ -26,9 +28,16 @@ func RegisterJobHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *m
 	})
 
 	api.GET("/", func(c echo.Context) error {
+		limit := 2 // represents the number of results we want per page
 		designerId := c.QueryParam("designer")
 		producerId := c.QueryParam("producer")
-		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerId, producerId, dbClient)
+		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
+		skip := limit * page_num
+		
+		if page_num < 0 {
+			return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid page number"})
+		}
+		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerId, producerId, int64(limit), int64(skip), dbClient, c.Request().Context())
 		if errorResponse.Code != 0 {
 			return c.JSON(http.StatusBadRequest, errorResponse)
 		}
