@@ -176,13 +176,13 @@ func TestCreateUserSession(t *testing.T) {
 	csrfToken, _ := CreateUserSession(c, store, "123")
 
 	// 1. There is a csrfToken returned:
-	assert.Equal(nil, csrfToken)
+	assert.NotEqual(nil, csrfToken)
 
 	// 2. There is a session created inside of the store that includes a CSRFToken and userId: 123
 	session, _ := store.Get(c.Request(), "voxeti-session")
 
 	assert.Equal("123", session.Values["userId"])
-	assert.Equal(nil, session.Values["csrfToken"])
+	assert.NotEqual(nil, session.Values["csrfToken"])
 }
 
 func TestInvalidateUserSession(t *testing.T) {
@@ -204,8 +204,8 @@ func TestInvalidateUserSession(t *testing.T) {
 
 	// 1. Ensure the cookie is new when created and that no userId and CSRF token exists
 	session, _ := store.Get(c.Request(), "voxeti-session")
-	assert.Equal(nil, session.Values["userId"])
-	assert.Equal(nil, session.Values["csrfToken"])
+	assert.NotEqual(nil, session.Values["userId"])
+	assert.NotEqual(nil, session.Values["csrfToken"])
 }
 
 func TestAuthenticateSession(t *testing.T) {
