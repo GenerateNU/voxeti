@@ -46,7 +46,7 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 			return c.JSON(CreateErrorResponse(uploadErr.Code, uploadErr.Message))
 		}
 
-		// Return file id as response:
+		// Return file as response:
 		return c.JSON(http.StatusOK, design)
 	})
 
@@ -82,7 +82,6 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 			return c.JSON(CreateErrorResponse(deleteErr.Code, deleteErr.Message))
 		}
 
-		// Return success / failure:
 		return c.NoContent(http.StatusOK)
 	})
 }
