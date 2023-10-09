@@ -13,7 +13,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	api := e.Group("/api")
 
 	// Register Additional Handlers:
-	RegisterFilesHandlers(api, dbClient, logger)
+	RegisterDesignHandlers(api, dbClient, logger)
 
 	// catch any invalid endpoints with a 404 error
 	api.GET("*", func(c echo.Context) error {

@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
 
-func RegisterFilesHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
+func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/designs")
 
 	// initialize GridFS bucket
