@@ -14,6 +14,7 @@ import (
 
 func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, credentials schema.Credentials) (*schema.LoginResponse, *schema.ErrorResponse) {
 	response := &schema.LoginResponse{}
+	errResponse := &schema.ErrorResponse{}
 
 	// Look for the user in the database:
 	user, err := GetUserByEmail(credentials.Email, dbClient)
@@ -23,9 +24,9 @@ func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, 
 
 	// Check if the incoming password is the same as the user password:
 	if ok := CheckPasswordHash(credentials.Password, user.Password); !ok {
-		err.Code = 400
-		err.Message = "Invalid Password"
-		return nil, err
+		errResponse.Code = 400
+		errResponse.Message = "Invalid Password"
+		return nil, errResponse
 	}
 
 	// Create a new user session:
@@ -97,7 +98,7 @@ func AuthenticateSession(c echo.Context, store *sessions.CookieStore) *schema.Er
 	var requestBody map[string]interface{}
 
 	if err := c.Bind(&requestBody); err != nil {
-		errResponse.Code = 500
+		errResponse.Code = 400
 		errResponse.Message = "Failed to unmarshal request body!"
 		return errResponse
 	}

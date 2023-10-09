@@ -17,9 +17,10 @@ func GetUserByEmail(email string, dbClient *mongo.Client) (*schema.User, *schema
 
 	// Retrieve the user:
 	user := &schema.User{}
-	if err := usersCollection.FindOne(context.Background(), filter).Decode(&user); err != nil {
+	if err := usersCollection.FindOne(context.Background(), filter).Decode(user); err != nil {
 		errResponse.Code = 400
 		errResponse.Message = "User does not exist!"
+		return nil, errResponse
 	}
 
 	// Return the user:

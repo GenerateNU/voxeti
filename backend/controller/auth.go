@@ -19,7 +19,7 @@ func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *
 		var creds schema.Credentials
 
 		if err := c.Bind(&creds); err != nil {
-			return c.JSON(utilities.CreateErrorResponse(500, "Failed to unmarshal credentials"))
+			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal credentials"))
 		}
 
 		response, err := auth.Login(c, store, dbClient, creds)
