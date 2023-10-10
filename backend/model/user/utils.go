@@ -246,8 +246,9 @@ func validateUserFields(user *schema.User) string {
 				}
 			}
 		case "PhoneNumber":
-			countryCode := field.FieldByName("CountryCode")
-			number := field.FieldByName("Number")
+			phoneNumberPtr := v.FieldByName("PhoneNumber")
+			countryCode := reflect.Indirect(phoneNumberPtr).FieldByName("CountryCode")
+			number := reflect.Indirect(phoneNumberPtr).FieldByName("Number")
 
 			if countryCode.String() == "" {
 				errors += "countryCode is missing, "
@@ -325,3 +326,5 @@ func Values[M ~map[K]V, K comparable, V any](m M) ([]V, bool) {
 	}
 	return r, true
 }
+
+////////////////////

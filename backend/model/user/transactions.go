@@ -139,6 +139,44 @@ func UpdateUserByIdDB(id *primitive.ObjectID, user *schema.User, db *DB) (*primi
 	return id, nil
 }
 
+func PatchUserByIdDB(id *primitive.ObjectID, user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
+
+	// if real db is nil, update user in mock db
+	if db.RealDB == nil {
+		if _, ok := db.MockDB[*id]; ok {
+			db.MockDB[*id] = user
+			return id, nil
+		}
+		return nil, &model.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
+	}
+
+	//
+	// update user in real db
+	coll := db.RealDB.Database("data").Collection("users")
+
+	filter := primitive.M{"_id": id}
+	update := primitive.M{"$set": user}
+
+	_, err := coll.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		panic(err)
+	}
+	//
+
+	if err != nil {
+		return nil, &model.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
+	}
+
+	// return object id of updated user
+	return id, nil
+}
+
 func DeleteUserByIdDB(id *primitive.ObjectID, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
 
 	// if real db is nil, update user in mock db

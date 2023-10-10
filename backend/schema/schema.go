@@ -12,12 +12,12 @@ import (
 // A Voxeti User, can be both a Designer and a Producer
 type User struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	FirstName         string             `bson:"firstName"`
-	LastName          string             `bson:"lastName"`
+	FirstName         string             `bson:"firstName,omitempty"`
+	LastName          string             `bson:"lastName,omitempty"`
 	Email             string             `bson:"email,omitempty"`
 	Password          string             `bson:"password,omitempty"`
 	Addresses         []Address          `bson:"addresses,omitempty"`
-	PhoneNumber       PhoneNumber        `bson:"phoneNumber,omitempty"`
+	PhoneNumber       *PhoneNumber       `bson:"phoneNumber,omitempty"`
 	Experience        ExperienceLevel    `bson:"experience,omitempty"`
 	Printers          []Printer          `bson:"printers,omitempty"`
 	AvailableFilament []Filament         `bson:"availableFilament,omitempty"`

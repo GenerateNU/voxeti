@@ -40,6 +40,18 @@ func GetUserById(id *primitive.ObjectID, db *DB) (*schema.User, *model.ErrorResp
 	return user, nil
 }
 
+func GetAllUsers(db *DB) ([]*schema.User, *model.ErrorResponse) {
+
+	// get user from database
+	users, dbErr := GetAllUsersDB(db)
+
+	if dbErr != nil {
+		return nil, dbErr
+	}
+
+	return users, nil
+}
+
 func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
 
 	// validate request body
@@ -55,6 +67,28 @@ func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primiti
 
 	// update user in database
 	updatedId, dbErr := UpdateUserByIdDB(id, user, db)
+	if dbErr != nil {
+		return nil, dbErr
+	}
+
+	return updatedId, nil
+}
+
+func PatchUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
+
+	/* 	// validate request body
+	   	if reqError := ValidateUpdateUser(id, user, db); reqError != nil {
+	   		return nil, reqError
+	   	} */
+
+	/* 	// update location field for each address
+	   	locErr := UpdateLocations(user)
+	   	if locErr != nil {
+	   		return nil, locErr
+	   	} */
+
+	// update user in database
+	updatedId, dbErr := PatchUserByIdDB(id, user, db)
 	if dbErr != nil {
 		return nil, dbErr
 	}
