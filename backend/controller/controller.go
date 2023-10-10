@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"os"
+	"voxeti/backend/schema"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -13,6 +14,7 @@ import (
 
 func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/api")
+
 
 	// Initialize session store:
 	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
@@ -26,6 +28,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 
 	// Register extra route handlers
 	RegisterAuthHandlers(api, store, dbClient, logger)
+	RegisterDesignHandlers(api, dbClient, logger)
 
 	// catch any invalid endpoints with a 404 error
 	api.GET("*", func(c echo.Context) error {
@@ -43,4 +46,14 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 		logger.Info("helloworld endpoint hit!")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+}
+
+func CreateErrorResponse(code int, message string) (int, map[string]schema.ErrorResponse) {
+	errorResponse := map[string]schema.ErrorResponse{
+		"error": {
+			Code:    code,
+			Message: message,
+		},
+	}
+	return code, errorResponse
 }
