@@ -2,7 +2,10 @@ package controller
 
 import (
 	"net/http"
+	"os"
 
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,7 +14,19 @@ import (
 func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/api")
 
-	// Register Additional Handlers:
+
+	// Initialize session store:
+	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+	store.Options = &sessions.Options{
+		MaxAge:   int(60 * 60 * 24),
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	}
+	api.Use(session.Middleware(store))
+
+	// Register extra route handlers
+	RegisterAuthHandlers(api, store, dbClient, logger)
 	RegisterDesignHandlers(api, dbClient, logger)
 
 	// catch any invalid endpoints with a 404 error

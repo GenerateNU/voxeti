@@ -6,20 +6,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Database Name:
+var DatabaseName = "data"
+
 // 1. Key schema
 
 // A Voxeti User, can be both a Designer and a Producer
 type User struct {
-	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	firstName         string             `bson:"firstName"`
-	lastName          string             `bson:"lastName"`
-	email             string             `bson:"email,omitempty"`
-	password          string             `bson:"password,omitempty"`
-	addresses         []Address          `bson:"addresses,omitempty"`
-	PhoneNumber       PhoneNumber        `bson:"phoneNumber,omitempty"`
-	Experience        ExperienceLevel    `bson:"experience,omitempty"`
-	Printers          []Printer          `bson:"printers,omitempty"`
-	AvailableFilament []Filament         `bson:"availableFilament,omitempty"`
+	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	FirstName         string             `bson:"firstName" json:"firstName"`
+	LastName          string             `bson:"lastName" json:"lastName"`
+	Email             string             `bson:"email,omitempty" json:"email"`
+	Password          string             `bson:"password,omitempty" json:"password"`
+	Addresses         []Address          `bson:"addresses,omitempty" json:"addresses"`
+	PhoneNumber       PhoneNumber        `bson:"phoneNumber,omitempty" json:"phoneNumber"`
+	Experience        ExperienceLevel    `bson:"experience,omitempty" json:"experience"`
+	Printers          []Printer          `bson:"printers,omitempty" json:"printers"`
+	AvailableFilament []Filament         `bson:"availableFilament,omitempty" json:"availableFilament"`
 }
 
 // A Voxeti print Job
