@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"voxeti/backend/schema/design"
+	"voxeti/backend/utilities"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
@@ -27,24 +28,24 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		// Extract the file from the request:
 		file, err := c.FormFile("file")
 		if err != nil {
-			return c.JSON(CreateErrorResponse(400, "No file has been provided to the request"))
+			return c.JSON(utilities.CreateErrorResponse(400, "No file has been provided to the request"))
 		}
 
 		// Check to make sure the file does not exceed 20MB:
 		if file.Size > (1000 * 1000 * 20) {
-			return c.JSON(CreateErrorResponse(400, "STL file exceeds the 20MB file limit"))
+			return c.JSON(utilities.CreateErrorResponse(400, "STL file exceeds the 20MB file limit"))
 		}
 
 		// Validate STL file:
 		validationErr := design.ValidateSTLFile(file)
 		if validationErr != nil {
-			return c.JSON(CreateErrorResponse(validationErr.Code, validationErr.Message))
+			return c.JSON(utilities.CreateErrorResponse(validationErr.Code, validationErr.Message))
 		}
 
 		// Add STL file to DB:
 		uploadErr, design := design.UploadSTLFile(file, bucket)
 		if uploadErr != nil {
-			return c.JSON(CreateErrorResponse(uploadErr.Code, uploadErr.Message))
+			return c.JSON(utilities.CreateErrorResponse(uploadErr.Code, uploadErr.Message))
 		}
 
 		// Return file id as response:
@@ -58,7 +59,7 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		// Call Retrieve Method:
 		retrievalErr, designBytes := design.GetSTLFile(id, bucket)
 		if retrievalErr != nil {
-			return c.JSON(CreateErrorResponse(retrievalErr.Code, retrievalErr.Message))
+			return c.JSON(utilities.CreateErrorResponse(retrievalErr.Code, retrievalErr.Message))
 		}
 
 		// Set response headers:
@@ -67,7 +68,7 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		c.Response().Header().Set("Content-Length", fmt.Sprint(len(*designBytes)))
 
 		if _, err := c.Response().Write(*designBytes); err != nil {
-			return c.JSON(CreateErrorResponse(500, "Failed to attach STL design to request!"))
+			return c.JSON(utilities.CreateErrorResponse(500, "Failed to attach STL design to request!"))
 		}
 
 		return nil
@@ -80,7 +81,7 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		// Call Delete Method:
 		deleteErr := design.DeleteSTLFile(id, bucket)
 		if deleteErr != nil {
-			return c.JSON(CreateErrorResponse(deleteErr.Code, deleteErr.Message))
+			return c.JSON(utilities.CreateErrorResponse(deleteErr.Code, deleteErr.Message))
 		}
 
 		// Return success / failure:
