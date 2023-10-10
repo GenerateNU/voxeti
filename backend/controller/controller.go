@@ -3,7 +3,6 @@ package controller
 import (
 	"net/http"
 	"os"
-	"voxeti/backend/schema"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -46,14 +45,4 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 		logger.Info("helloworld endpoint hit!")
 		return c.String(http.StatusOK, "Hello, World!")
 	})
-}
-
-func CreateErrorResponse(code int, message string) (int, map[string]schema.ErrorResponse) {
-	errorResponse := map[string]schema.ErrorResponse{
-		"error": {
-			Code:    code,
-			Message: message,
-		},
-	}
-	return code, errorResponse
 }
