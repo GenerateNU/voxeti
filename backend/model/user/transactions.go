@@ -65,6 +65,7 @@ func GetAllUsersDB(db *DB) ([]*schema.User, *model.ErrorResponse) {
 		panic(err)
 	}
 
+	// Takes query results and adds to a list to return
 	var users []*schema.User
 	for _, result := range results {
 		decodeError := cursor.Decode(&result)
@@ -154,7 +155,6 @@ func PatchUserByIdDB(id *primitive.ObjectID, user *schema.User, db *DB) (*primit
 		}
 	}
 
-	//
 	// update user in real db
 	coll := db.RealDB.Database("data").Collection("users")
 

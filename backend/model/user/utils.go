@@ -319,6 +319,7 @@ func validateUserFields(user *schema.User) string {
 	return errors
 }
 
+// Function to get all values from a map
 func Values[M ~map[K]V, K comparable, V any](m M) ([]V, bool) {
 	r := make([]V, 0, len(m))
 	for _, v := range m {

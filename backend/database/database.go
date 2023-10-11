@@ -10,13 +10,14 @@ import (
 	"github.com/pterm/pterm"
 )
 
+// Setup for when backend gets created
 func Setup(dbClient *mongo.Client, logger *pterm.Logger) {
 	CreateUserCollection(dbClient, logger)
 }
 
 func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
-	// insert user into real db
 
+	// insert user into real db
 	database := dbClient.Database("data")
 
 	dropErr := database.Collection("users").Drop(context.TODO())
@@ -24,6 +25,7 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 		logger.Fatal(dropErr.Error())
 	}
 
+	// MongoDB schema validation
 	userSchema := bson.M{
 		"bsonType": "object",
 		"title":    "User Object Validation",
@@ -152,14 +154,17 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 							"properties": bson.M{
 								"height": bson.M{
 									"bsonType":    "long",
+									"minimum":     0,
 									"description": "must be a positive integer, measured in meters",
 								},
 								"width": bson.M{
 									"bsonType":    "long",
+									"minimum":     0,
 									"description": "must be a positive integer, measured in meters",
 								},
 								"depth": bson.M{
 									"bsonType":    "long",
+									"minimum":     0,
 									"description": "must be a positive integer, measured in meters",
 								},
 							},
@@ -183,6 +188,7 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 						},
 						"pricePerUnit": bson.M{
 							"bsonType":    "long",
+							"minimum":     0,
 							"description": "must be a non-negative cost",
 						}},
 				},
@@ -201,10 +207,12 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 		logger.Fatal(createErr.Error())
 	}
 
+	// Add index/constraint to make sure there are no duplicate emails
 	indexModel := mongo.IndexModel{
 		Keys: bson.D{{Key: "email", Value: 1}},
 	}
 
+	// Inserts the index/constraint
 	_, indexErr := database.Collection("users").Indexes().CreateOne(context.TODO(), indexModel)
 	if indexErr != nil {
 		logger.Fatal(indexErr.Error())
