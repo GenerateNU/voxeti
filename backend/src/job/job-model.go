@@ -3,13 +3,11 @@ package job
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 
 	"voxeti/backend/schema"
 
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -36,7 +34,7 @@ func GetJobById(jobId string, dbClient *mongo.Client) (schema.Job, schema.ErrorR
 }
 
 // Find a specified job by either a producer or designer ID
-func GetJobsByDesignerOrProducerId(designerId string, producerId string, limit int64, skip int64, dbClient *mongo.Client, requestContext context.Context) ([]schema.Job, schema.ErrorResponse) {
+func GetJobsByDesignerOrProducerId(designerId string, producerId string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, schema.ErrorResponse) {
 	// load jobs collection
 	godotenv.Load()	
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
@@ -62,15 +60,15 @@ func GetJobsByDesignerOrProducerId(designerId string, producerId string, limit i
 	paginationOptions.SetSkip(skip);
 
 	// If jobs are not found, throw an error
-	cursor, err := jobCollection.Find(requestContext, filter, paginationOptions)
+	cursor, err := jobCollection.Find(context.Background(), filter, paginationOptions)
 	if err != nil {
 		fmt.Println(err.Error())
 		return []schema.Job{}, schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
 	}
-	defer cursor.Close(requestContext)
+	defer cursor.Close(context.Background())
 
 	// Iterate over the cursor and append each job to the slice
-	for cursor.Next(requestContext) {
+	for cursor.Next(context.Background()) {
 		var job schema.Job
 		if err := cursor.Decode(&job); err != nil {
 			return []schema.Job{}, schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
@@ -93,66 +91,67 @@ func GetJobsByDesignerOrProducerId(designerId string, producerId string, limit i
 
 
 // Delete a job
-func DeleteJob (c echo.Context, dbClient *mongo.Client) error {
-	// get job ID
-	jobIDStr := c.Param("id")
-	jobID, err := primitive.ObjectIDFromHex(jobIDStr)
+func DeleteJob (jobId string, dbClient *mongo.Client) schema.ErrorResponse {
+	jobIdObject, err := primitive.ObjectIDFromHex(jobId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid job ID format"})
+		return schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
 	}
-	// load colelction
+	// load collectio
 	godotenv.Load(".env");
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
 	// delete job and check that the job was deleted
-	deleteResult, err := jobCollection.DeleteOne(c.Request().Context(), bson.M{"_id": jobID})
+	deleteResult, err := jobCollection.DeleteOne(context.Background(), bson.M{"_id": jobIdObject})
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Error deleting job"})
+		return schema.ErrorResponse{Code: 400, Message: "Error deleting job"}
 	}
 	if deleteResult.DeletedCount == 0 {
-		return c.JSON(http.StatusNotFound, schema.ErrorResponse{Code: 404, Message: "Job does not exist!"})
+		return schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
 	}
 
-	return c.NoContent(http.StatusOK)
+	return schema.ErrorResponse{}
 }
 
 // Creates a job
-func CreateJob(c echo.Context, dbClient *mongo.Client) error {
-	// create new job with given data
-	job := new(schema.Job)
-	if err := c.Bind(job); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid job data"})
-	}
+func CreateJob(newJob schema.Job, dbClient *mongo.Client) (schema.Job, schema.ErrorResponse) {
 	// insert the job into the database
 	godotenv.Load(".env");
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
-	result, err := jobCollection.InsertOne(c.Request().Context(), job)
+	result, err := jobCollection.InsertOne(context.Background(), newJob)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Unable to create job"})
+		return schema.Job{}, schema.ErrorResponse{Code: 500, Message: "Unable to create job"}
 	}
 	// add an ID field to the new job
-	job.Id = result.InsertedID.(primitive.ObjectID)
-	return c.JSON(http.StatusCreated, job)
+	newJob.Id = result.InsertedID.(primitive.ObjectID)
+	return newJob, schema.ErrorResponse{}
 }
 
 // Updates a job
-func UpdateJob(c echo.Context, dbClient *mongo.Client) error {
-	// get job ID
-	jobIDStr := c.Param("id")
-	jobID, err := primitive.ObjectIDFromHex(jobIDStr)
+func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client)  (schema.Job, schema.ErrorResponse) {
+	jobIdObject, err := primitive.ObjectIDFromHex(jobId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid job ID format"})
+		return schema.Job{}, schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
 	}
 	// create a new job with the given data
 	godotenv.Load(".env");
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
-	job := new(schema.Job)
-	if err := c.Bind(job); err != nil {
-		return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid job data"})
-	}
 	// replace the old job with the new job
-	_, err = jobCollection.ReplaceOne(c.Request().Context(), bson.M{"_id": jobID}, job)
+	_, err = jobCollection.ReplaceOne(context.Background(), bson.M{"_id": jobIdObject}, job)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, schema.ErrorResponse{Code: 500, Message: "Unable to update job"})
+		return schema.Job{}, schema.ErrorResponse{Code: 500, Message: "Job update failed"}
 	}
-	return c.JSON(http.StatusOK, job)
+	return job, schema.ErrorResponse{}
+}
+
+func PatchJob(jobId primitive.ObjectID, patchData bson.M, dbClient *mongo.Client) (schema.Job, schema.ErrorResponse) {
+	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
+	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, bson.M{"$set": patchData})
+	if err != nil {
+		return schema.Job{}, schema.ErrorResponse{Code: 500, Message: "Unable to update job"}
+	}
+	updatedJob := schema.Job{}
+	err = jobCollection.FindOne(context.Background(), bson.M{"_id": jobId}).Decode(&updatedJob)
+	if err != nil {
+		return schema.Job{}, schema.ErrorResponse{Code: 404, Message: "Unable to retrieve updated job"}
+	}
+	return updatedJob, schema.ErrorResponse{}
 }
