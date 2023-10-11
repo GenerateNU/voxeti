@@ -51,7 +51,7 @@ func GetAllUsersDB(db *DB) ([]*schema.User, *model.ErrorResponse) {
 	// get user from real db
 	coll := db.RealDB.Database("data").Collection("users")
 
-	filter := bson.D{{}}
+	filter := bson.D{}
 
 	cursor, err := coll.Find(context.TODO(), filter)
 	if err != nil {
@@ -59,7 +59,7 @@ func GetAllUsersDB(db *DB) ([]*schema.User, *model.ErrorResponse) {
 	}
 	// end find
 
-	var results []schema.User
+	var results []*schema.User
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		panic(err)
 	}
@@ -68,7 +68,7 @@ func GetAllUsersDB(db *DB) ([]*schema.User, *model.ErrorResponse) {
 	for _, result := range results {
 		decodeError := cursor.Decode(&result)
 		if decodeError != nil {
-			users = append(users, &result)
+			users = append(users, result)
 		} else {
 			return nil, &model.ErrorResponse{
 				Code:    404,

@@ -37,7 +37,7 @@ var (
 				Location: geojson.Geometry{},
 			},
 		},
-		PhoneNumber: schema.PhoneNumber{
+		PhoneNumber: &schema.PhoneNumber{
 			CountryCode: "+1",
 			Number:      "9191238686",
 		},
@@ -101,7 +101,7 @@ var (
 				Location: geojson.Geometry{},
 			},
 		},
-		PhoneNumber: schema.PhoneNumber{
+		PhoneNumber: &schema.PhoneNumber{
 			CountryCode: "+1",
 			Number:      "9191238686",
 		},
@@ -165,7 +165,7 @@ var (
 				Location: geojson.Geometry{},
 			},
 		},
-		PhoneNumber: schema.PhoneNumber{
+		PhoneNumber: &schema.PhoneNumber{
 			CountryCode: "+1",
 			Number:      "9191238686",
 		},
@@ -208,7 +208,7 @@ var (
 		Email:             "",
 		Password:          "",
 		Addresses:         []schema.Address{{}},
-		PhoneNumber:       schema.PhoneNumber{},
+		PhoneNumber:       &schema.PhoneNumber{},
 		Experience:        schema.SomeExperince,
 		Printers:          []schema.Printer{{}},
 		AvailableFilament: []schema.Filament{{}},
@@ -220,7 +220,7 @@ var (
 		Email:     "bademail",
 		Password:  "",
 		Addresses: []schema.Address{{}},
-		PhoneNumber: schema.PhoneNumber{
+		PhoneNumber: &schema.PhoneNumber{
 			CountryCode: "123456",
 			Number:      "1",
 		},
