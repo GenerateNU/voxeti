@@ -48,9 +48,10 @@ func GetAllUsersDB(db *DB) ([]*schema.User, *model.ErrorResponse) {
 		}
 	}
 
-	// get user from real db
+	// get all users from real db
 	coll := db.RealDB.Database("data").Collection("users")
 
+	// Currently blank filter, can be changed in the future for algorithm
 	filter := bson.D{}
 
 	cursor, err := coll.Find(context.TODO(), filter)

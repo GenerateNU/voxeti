@@ -61,7 +61,7 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 				"bsonType": "array",
 				"items": bson.M{
 					"bsonType": "object",
-					"required": []string{"name", "line1", "line2", "zipCode", "city", "state", "country"},
+					"required": []string{"name", "line1", "zipCode", "city", "state", "country"},
 					"properties": bson.M{
 						"name": bson.M{
 							"bsonType":    "string",

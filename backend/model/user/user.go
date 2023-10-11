@@ -76,16 +76,11 @@ func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primiti
 
 func PatchUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
 
-	/* 	// validate request body
-	   	if reqError := ValidateUpdateUser(id, user, db); reqError != nil {
-	   		return nil, reqError
-	   	} */
-
-	/* 	// update location field for each address
-	   	locErr := UpdateLocations(user)
-	   	if locErr != nil {
-	   		return nil, locErr
-	   	} */
+	// update location field for each address
+	locErr := UpdateLocations(user)
+	if locErr != nil {
+		return nil, locErr
+	}
 
 	// update user in database
 	updatedId, dbErr := PatchUserByIdDB(id, user, db)
