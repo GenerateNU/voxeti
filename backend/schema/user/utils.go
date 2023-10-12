@@ -5,8 +5,9 @@ import (
 	"net/mail"
 	"os"
 	"reflect"
-	"voxeti/backend/model"
+	"strconv"
 	"voxeti/backend/schema"
+	"voxeti/backend/utilities"
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
@@ -14,56 +15,47 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func ValidateCreateUser(user *schema.User, db *DB) *model.ErrorResponse {
+func ValidateCreateUser(user *schema.User, dbClient *mongo.Client) *map[string]schema.ErrorResponse {
 	// check if user already exists
-	if checkUserExistsEmail(user.Email, db) {
-		return &model.ErrorResponse{
-			Code:    400,
-			Message: "User with email already exists",
-		}
+	if checkUserExistsEmail(user.Email, dbClient) {
+		_, errorResponse := utilities.CreateErrorResponse(400, "User with email already exists")
+		return &errorResponse
 	}
 
 	errors := validateUserFields(user)
 
 	if errors != "" {
-		return &model.ErrorResponse{
-			Code:    400,
-			Message: "Bad request: " + errors,
-		}
+		_, errorResponse := utilities.CreateErrorResponse(400, "Bad request: "+errors)
+		return &errorResponse
 	}
 
 	return nil
 }
 
-func ValidateUpdateUser(id *primitive.ObjectID, user *schema.User, db *DB) *model.ErrorResponse {
+func ValidateUpdateUser(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) *map[string]schema.ErrorResponse {
 
-	if !checkUserExistsId(id, db) {
-		return &model.ErrorResponse{
-			Code:    404,
-			Message: "User not found",
-		}
+	if !checkUserExistsId(id, dbClient) {
+		_, errorResponse := utilities.CreateErrorResponse(404, "User not found")
+		return &errorResponse
 	}
 
 	// check if request email is different than email for user with id
-	if isEmailUpdated(id, user.Email, db) {
+	if isEmailUpdated(id, user.Email, dbClient) {
 		// check if user with new email already exists
-		if checkUserExistsEmail(user.Email, db) {
-			return &model.ErrorResponse{
-				Code:    400,
-				Message: "User with email already exists",
-			}
+		if checkUserExistsEmail(user.Email, dbClient) {
+			_, errorResponse := utilities.CreateErrorResponse(400, "User with email already exists")
+			return &errorResponse
 		}
 	}
 
 	errors := validateUserFields(user)
 
 	if errors != "" {
-		return &model.ErrorResponse{
-			Code:    400,
-			Message: "Bad request: " + errors,
-		}
+		_, errorResponse := utilities.CreateErrorResponse(400, "Bad request: "+errors)
+		return &errorResponse
 	}
 
 	return nil
@@ -74,20 +66,10 @@ func isEmail(email string) bool {
 	return err == nil
 }
 
-func checkUserExistsEmail(email string, db *DB) bool {
-
-	// if real db is not being used, check mock db for user with same email
-	if db.RealDB == nil {
-		for _, v := range db.MockDB {
-			if v.Email == email {
-				return true
-			}
-		}
-		return false
-	}
+func checkUserExistsEmail(email string, dbClient *mongo.Client) bool {
 
 	// search for user by email
-	coll := db.RealDB.Database("data").Collection("users")
+	coll := dbClient.Database("data").Collection("users")
 	filter := bson.D{{Key: "email", Value: email}}
 	var result schema.User
 	err := coll.FindOne(context.Background(), filter).Decode(&result)
@@ -95,18 +77,10 @@ func checkUserExistsEmail(email string, db *DB) bool {
 	return err == nil
 }
 
-func checkUserExistsId(id *primitive.ObjectID, db *DB) bool {
-
-	// if real db is not being used, check mock db for user with same id
-	if db.RealDB == nil {
-		if _, ok := db.MockDB[*id]; ok {
-			return true
-		}
-		return false
-	}
+func checkUserExistsId(id *primitive.ObjectID, dbClient *mongo.Client) bool {
 
 	// search for user by id
-	coll := db.RealDB.Database("data").Collection("users")
+	coll := dbClient.Database("data").Collection("users")
 	filter := bson.D{{Key: "_id", Value: *id}}
 	var result schema.User
 	err := coll.FindOne(context.Background(), filter).Decode(&result)
@@ -114,17 +88,10 @@ func checkUserExistsId(id *primitive.ObjectID, db *DB) bool {
 	return err == nil
 }
 
-func isEmailUpdated(id *primitive.ObjectID, email string, db *DB) bool {
-	// check if current email is the same as the updated email
-	if db.RealDB == nil {
-		if user, ok := db.MockDB[*id]; ok {
-			return user.Email != email
-		}
-		return false
-	}
+func isEmailUpdated(id *primitive.ObjectID, email string, dbClient *mongo.Client) bool {
 
 	// search for user by id
-	coll := db.RealDB.Database("data").Collection("users")
+	coll := dbClient.Database("data").Collection("users")
 	filter := bson.D{{Key: "_id", Value: *id}}
 	var result schema.User
 	err := coll.FindOne(context.Background(), filter).Decode(&result)
@@ -133,25 +100,21 @@ func isEmailUpdated(id *primitive.ObjectID, email string, db *DB) bool {
 }
 
 // use google maps api to get location from address
-func getLocation(address *schema.Address) (*geojson.Geometry, *model.ErrorResponse) {
+func getLocation(address *schema.Address) (*geojson.Geometry, *map[string]schema.ErrorResponse) {
 	addressString := address.Line1 + " " + address.City + " " + address.State + " " + address.ZipCode
 	apiKey := os.Getenv("G_MAPS_API_KEY")
 	client, err := maps.NewClient(maps.WithAPIKey(apiKey))
 	if err != nil {
-		return nil, &model.ErrorResponse{
-			Code:    500,
-			Message: "Failed to create google maps client",
-		}
+		_, errorResponse := utilities.CreateErrorResponse(500, "Failed to create google maps client")
+		return nil, &errorResponse
 	}
 	r := &maps.GeocodingRequest{
 		Address: addressString,
 	}
 	resp, err := client.Geocode(context.Background(), r)
 	if err != nil {
-		return nil, &model.ErrorResponse{
-			Code:    500,
-			Message: "Failed to get location from address: " + addressString,
-		}
+		_, errorResponse := utilities.CreateErrorResponse(500, "Failed to get location from address: "+addressString)
+		return nil, &errorResponse
 	}
 	lat := resp[0].Geometry.Location.Lat
 	lng := resp[0].Geometry.Location.Lng
@@ -164,7 +127,7 @@ func getLocation(address *schema.Address) (*geojson.Geometry, *model.ErrorRespon
 }
 
 // update location field for each address
-func UpdateLocations(user *schema.User) *model.ErrorResponse {
+func UpdateLocations(user *schema.User) *map[string]schema.ErrorResponse {
 	for i := 0; i < len(user.Addresses); i++ {
 		location, err := getLocation(&user.Addresses[i])
 		if err != nil {
@@ -253,14 +216,26 @@ func validateUserFields(user *schema.User) string {
 
 			if countryCode.String() == "" {
 				errors += "countryCode is missing, "
-			} else if len(countryCode.String()) < 1 || len(countryCode.String()) > 5 {
-				errors += "countryCode must have 1-5 characters, "
+			} else {
+				// check if countryCode is a number
+				_, err := strconv.Atoi(countryCode.String())
+				if err != nil {
+					errors += "countryCode must be a number, "
+				} else if len(countryCode.String()) < 1 || len(countryCode.String()) > 5 {
+					errors += "countryCode must have 1-5 characters, "
+				}
 			}
 
 			if number.String() == "" {
 				errors += "number is missing, "
-			} else if len(number.String()) != 10 {
-				errors += "number must have 10 characters, "
+			} else {
+				// check if number is a number
+				_, err := strconv.ParseInt(number.String(), 10, 64)
+				if err != nil {
+					errors += "number must be a number, "
+				} else if len(number.String()) != 10 {
+					errors += "number must have 10 digits, "
+				}
 			}
 		case "Experience":
 			if field.Int() != schema.NoExperience && field.Int() != schema.SomeExperince && field.Int() != schema.MaxExperience {
@@ -320,13 +295,21 @@ func validateUserFields(user *schema.User) string {
 	return errors
 }
 
-// Function to get all values from a map
-func Values[M ~map[K]V, K comparable, V any](m M) ([]V, bool) {
-	r := make([]V, 0, len(m))
-	for _, v := range m {
-		r = append(r, v)
-	}
-	return r, true
-}
+// paginate users by page and limit
+func PaginateUsers(page int, limit int, users []*schema.User) []*schema.User {
+	// get start and end indices for pagination
+	start := (page - 1) * limit
+	end := page * limit
 
-////////////////////
+	// check if start index is out of range
+	if start >= len(users) {
+		return []*schema.User{}
+	}
+
+	// check if end index is out of range
+	if end > len(users) {
+		end = len(users)
+	}
+
+	return users[start:end]
+}

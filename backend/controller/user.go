@@ -2,8 +2,10 @@ package controller
 
 import (
 	"net/http"
-	"voxeti/backend/model/user"
+	"strconv"
 	"voxeti/backend/schema"
+	"voxeti/backend/schema/user"
+	"voxeti/backend/utilities"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,22 +23,17 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		// unmarshal request body into user struct
 		u := schema.User{}
 		if err := c.Bind(&u); err != nil {
-			return c.JSON(http.StatusBadRequest, "Failed to unmarshal request body")
+			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		// create db struct that contains real db and mock db
-		db := user.DB{
-			RealDB: dbClient,
-			MockDB: make(map[primitive.ObjectID]*schema.User),
-		}
-
-		id, err := user.CreateUser(&u, &db)
+		id, err := user.CreateUser(&u, dbClient)
 
 		if err != nil {
-			return c.JSON(err.Code, err.Message)
+			derefErr := *err
+			return c.JSON(derefErr["error"].Code, derefErr)
 		}
 		// return object id of new user
-		return c.JSON(http.StatusOK, *id)
+		return c.JSON(http.StatusOK, user.IdResponse{Id: *id})
 	})
 
 	api.GET("/:id", func(c echo.Context) error {
@@ -45,38 +42,41 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		// get id from url
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid id")
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id"))
 		}
 
-		// create db struct that contains real db and mock db
-		db := user.DB{
-			RealDB: dbClient,
-			MockDB: make(map[primitive.ObjectID]*schema.User),
+		user, userErr := user.GetUserById(&id, dbClient)
+
+		if userErr != nil {
+			derefErr := *userErr
+			return c.JSON(derefErr["error"].Code, derefErr)
 		}
 
-		user, userErr := user.GetUserById(&id, &db)
-
-		if err != nil {
-			return c.JSON(userErr.Code, userErr.Message)
-		}
-
-		// NEED TO ADD JSON TAGS TO SCHEMA SO USER DISPLAYS CORRECTLY
 		return c.JSON(http.StatusOK, *user)
 	})
 
-	api.GET("/all", func(c echo.Context) error {
+	api.GET("", func(c echo.Context) error {
 		logger.Info("get all user endpoint hit!")
 
-		// create db struct that contains real db and mock db
-		db := user.DB{
-			RealDB: dbClient,
-			MockDB: make(map[primitive.ObjectID]*schema.User),
+		page := c.QueryParam("page")
+		limit := c.QueryParam("limit")
+
+		if page == "" || limit == "" {
+			return c.JSON(utilities.CreateErrorResponse(400, "Missing page or limit"))
 		}
 
-		users, userErr := user.GetAllUsersDB(&db)
+		pageInt, pageErr := strconv.Atoi(page)
+		limitInt, limitErr := strconv.Atoi(limit)
+
+		if pageErr != nil || limitErr != nil || pageInt < 1 || limitInt < 0 {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page or limit"))
+		}
+
+		users, userErr := user.GetAllUsers(pageInt, limitInt, dbClient)
 
 		if userErr != nil {
-			return c.JSON(userErr.Code, userErr.Message)
+			derefErr := *userErr
+			return c.JSON(derefErr["error"].Code, derefErr)
 		}
 
 		return c.JSON(http.StatusOK, users)
@@ -88,29 +88,24 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		// get id from url
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid id")
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id"))
 		}
 
 		// unmarshal request body into user struct
 		u := schema.User{}
 		if err := c.Bind(&u); err != nil {
-			return c.JSON(http.StatusBadRequest, "Failed to unmarshal request body")
+			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		// create db struct that contains real db and mock db
-		db := user.DB{
-			RealDB: dbClient,
-			MockDB: make(map[primitive.ObjectID]*schema.User),
-		}
-
-		patchedId, patchErr := user.PatchUserById(&id, &u, &db)
+		patchedId, patchErr := user.PatchUserById(&id, &u, dbClient)
 
 		if patchErr != nil {
-			return c.JSON(patchErr.Code, patchErr.Message)
+			derefErr := *patchErr
+			return c.JSON(derefErr["error"].Code, derefErr)
 		}
 
 		// return object id of updated user
-		return c.JSON(http.StatusOK, *patchedId)
+		return c.JSON(http.StatusOK, user.IdResponse{Id: *patchedId})
 	})
 	api.PUT("/:id", func(c echo.Context) error {
 		logger.Info("update user endpoint hit!")
@@ -118,29 +113,24 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		// get id from url
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid id")
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id"))
 		}
 
 		// unmarshal request body into user struct
 		u := schema.User{}
 		if err := c.Bind(&u); err != nil {
-			return c.JSON(http.StatusBadRequest, "Failed to unmarshal request body")
+			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		// create db struct that contains real db and mock db
-		db := user.DB{
-			RealDB: dbClient,
-			MockDB: make(map[primitive.ObjectID]*schema.User),
-		}
-
-		updatedId, updateErr := user.UpdateUserById(&id, &u, &db)
+		updatedId, updateErr := user.UpdateUserById(&id, &u, dbClient)
 
 		if updateErr != nil {
-			return c.JSON(updateErr.Code, updateErr.Message)
+			derefErr := *updateErr
+			return c.JSON(derefErr["error"].Code, derefErr)
 		}
 
 		// return object id of updated user
-		return c.JSON(http.StatusOK, *updatedId)
+		return c.JSON(http.StatusOK, user.IdResponse{Id: *updatedId})
 	})
 
 	api.DELETE("/:id", func(c echo.Context) error {
@@ -149,28 +139,23 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		// get id from url
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Invalid id")
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id"))
 		}
 
 		// unmarshal request body into user struct
 		u := schema.User{}
 		if err := c.Bind(&u); err != nil {
-			return c.JSON(http.StatusBadRequest, "Failed to unmarshal request body")
+			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		// create db struct that contains real db and mock db
-		db := user.DB{
-			RealDB: dbClient,
-			MockDB: make(map[primitive.ObjectID]*schema.User),
-		}
+		deletedId, deleteErr := user.DeleteUserByIdDB(&id, dbClient)
 
-		updatedId, updateErr := user.DeleteUserByIdDB(&id, &db)
-
-		if updateErr != nil {
-			return c.JSON(updateErr.Code, updateErr.Message)
+		if deleteErr != nil {
+			derefErr := *deleteErr
+			return c.JSON(derefErr["error"].Code, derefErr)
 		}
 
 		// return object id of updated user
-		return c.JSON(http.StatusOK, *updatedId)
+		return c.JSON(http.StatusOK, user.IdResponse{Id: *deletedId})
 	})
 }
