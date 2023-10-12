@@ -32,7 +32,7 @@ export interface Design {
   length: number;
 }
 
-// 2. Supporting Schema: 
+// 2. Supporting Schema:
 
 // Address coordinates
 export type Coordinates = {

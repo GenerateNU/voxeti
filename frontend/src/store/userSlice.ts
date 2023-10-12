@@ -48,7 +48,7 @@ export const userSlice = createSlice({
 })
 
 // Export reducers for use:
-export const { 
+export const {
   setUser,
   resetUser,
 } = userSlice.actions;

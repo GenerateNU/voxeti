@@ -15,7 +15,6 @@ import (
 func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/api")
 
-
 	// Initialize session store:
 	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 	store.Options = &sessions.Options{
@@ -28,9 +27,9 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	api.Use(session.Middleware(store))
 	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowCredentials: true,
-		AllowOrigins: []string{"http://localhost:4000"},
-    AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
-    AllowHeaders: []string{"Content-Type"},
+		AllowOrigins:     []string{"http://localhost:4000"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{"Content-Type"},
 	}))
 
 	// Register extra route handlers
