@@ -14,6 +14,9 @@ voxeti
 # Test binary, built with `go test -c`
 *.test
 
+#
+/node_modules
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 

@@ -11,6 +11,6 @@ type Credentials struct {
 }
 
 type LoginResponse struct {
-	CSRFToken string `json:"csrf_token"`
+	CSRFToken string `json:"csrfToken"`
 	User      User   `json:"user"`
 }
