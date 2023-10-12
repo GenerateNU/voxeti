@@ -1,7 +1,7 @@
 import { Outlet, Router, Route, RootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout.tsx";
-import Index from "./pages/index.tsx";
+import Index from "./pages/Index.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
