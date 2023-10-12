@@ -29,8 +29,7 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		id, err := user.CreateUser(&u, dbClient)
 
 		if err != nil {
-			derefErr := *err
-			return c.JSON(derefErr["error"].Code, derefErr)
+			return c.JSON(err.Code, err)
 		}
 		// return object id of new user
 		return c.JSON(http.StatusOK, user.IdResponse{Id: *id})
@@ -48,8 +47,7 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		user, userErr := user.GetUserById(&id, dbClient)
 
 		if userErr != nil {
-			derefErr := *userErr
-			return c.JSON(derefErr["error"].Code, derefErr)
+			return c.JSON(userErr.Code, userErr)
 		}
 
 		return c.JSON(http.StatusOK, *user)
@@ -75,8 +73,7 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		users, userErr := user.GetAllUsers(pageInt, limitInt, dbClient)
 
 		if userErr != nil {
-			derefErr := *userErr
-			return c.JSON(derefErr["error"].Code, derefErr)
+			return c.JSON(userErr.Code, userErr)
 		}
 
 		return c.JSON(http.StatusOK, users)
@@ -100,8 +97,7 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		patchedId, patchErr := user.PatchUserById(&id, &u, dbClient)
 
 		if patchErr != nil {
-			derefErr := *patchErr
-			return c.JSON(derefErr["error"].Code, derefErr)
+			return c.JSON(patchErr.Code, patchErr)
 		}
 
 		// return object id of updated user
@@ -125,8 +121,7 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		updatedId, updateErr := user.UpdateUserById(&id, &u, dbClient)
 
 		if updateErr != nil {
-			derefErr := *updateErr
-			return c.JSON(derefErr["error"].Code, derefErr)
+			return c.JSON(updateErr.Code, updateErr)
 		}
 
 		// return object id of updated user
@@ -151,8 +146,7 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 		deletedId, deleteErr := user.DeleteUserByIdDB(&id, dbClient)
 
 		if deleteErr != nil {
-			derefErr := *deleteErr
-			return c.JSON(derefErr["error"].Code, derefErr)
+			return c.JSON(deleteErr.Code, deleteErr)
 		}
 
 		// return object id of updated user

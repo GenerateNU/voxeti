@@ -3,22 +3,23 @@ package user
 import (
 	"context"
 	"voxeti/backend/schema"
-	"voxeti/backend/utilities"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func CreateUserDB(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *map[string]schema.ErrorResponse) {
+func createUserDB(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
 
 	// insert user into db
 	coll := dbClient.Database("data").Collection("users")
 	result, err := coll.InsertOne(context.TODO(), user)
 
 	if err != nil {
-		_, errorResponse := utilities.CreateErrorResponse(500, err.Error())
-		return nil, &errorResponse
+		return nil, &schema.ErrorResponse{
+			Code:    500,
+			Message: err.Error(),
+		}
 	}
 
 	// return object id of new user
@@ -26,7 +27,7 @@ func CreateUserDB(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectI
 	return &id, nil
 }
 
-func GetAllUsersDB(dbClient *mongo.Client) ([]*schema.User, *map[string]schema.ErrorResponse) {
+func getAllUsersDB(dbClient *mongo.Client) ([]*schema.User, *schema.ErrorResponse) {
 
 	// get all users from db
 	coll := dbClient.Database("data").Collection("users")
@@ -36,8 +37,10 @@ func GetAllUsersDB(dbClient *mongo.Client) ([]*schema.User, *map[string]schema.E
 
 	cursor, err := coll.Find(context.TODO(), filter)
 	if err != nil {
-		_, errorResponse := utilities.CreateErrorResponse(500, err.Error())
-		return nil, &errorResponse
+		return nil, &schema.ErrorResponse{
+			Code:    500,
+			Message: err.Error(),
+		}
 	}
 	// end find
 
@@ -53,15 +56,17 @@ func GetAllUsersDB(dbClient *mongo.Client) ([]*schema.User, *map[string]schema.E
 		if decodeError != nil {
 			users = append(users, result)
 		} else {
-			_, errorResponse := utilities.CreateErrorResponse(404, "User not found")
-			return nil, &errorResponse
+			return nil, &schema.ErrorResponse{
+				Code:    404,
+				Message: "User not found",
+			}
 		}
 	}
 
 	return users, nil
 }
 
-func GetUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User, *map[string]schema.ErrorResponse) {
+func getUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
 
 	// get user from db
 	coll := dbClient.Database("data").Collection("users")
@@ -69,14 +74,16 @@ func GetUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User
 	err := coll.FindOne(context.TODO(), primitive.M{"_id": id}).Decode(&user)
 
 	if err != nil {
-		_, errorResponse := utilities.CreateErrorResponse(404, "User not found")
-		return nil, &errorResponse
+		return nil, &schema.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
 	}
 
 	return &user, nil
 }
 
-func UpdateUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *map[string]schema.ErrorResponse) {
+func updateUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
 
 	// update user in db
 	coll := dbClient.Database("data").Collection("users")
@@ -85,15 +92,17 @@ func UpdateUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo
 	})
 
 	if err != nil {
-		_, errorResponse := utilities.CreateErrorResponse(404, "User not found")
-		return nil, &errorResponse
+		return nil, &schema.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
 	}
 
 	// return object id of updated user
 	return id, nil
 }
 
-func PatchUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *map[string]schema.ErrorResponse) {
+func patchUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
 
 	// update user in db
 	coll := dbClient.Database("data").Collection("users")
@@ -103,21 +112,24 @@ func PatchUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.
 
 	_, err := coll.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		_, errorResponse := utilities.CreateErrorResponse(500, err.Error())
-		return nil, &errorResponse
+		return nil, &schema.ErrorResponse{
+			Code:    500,
+			Message: err.Error(),
+		}
 	}
-	//
 
 	if err != nil {
-		_, errorResponse := utilities.CreateErrorResponse(404, "User not found")
-		return nil, &errorResponse
+		return nil, &schema.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
 	}
 
 	// return object id of updated user
 	return id, nil
 }
 
-func DeleteUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*primitive.ObjectID, *map[string]schema.ErrorResponse) {
+func DeleteUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
 
 	filter := bson.D{{Key: "_id", Value: id}}
 
@@ -126,10 +138,45 @@ func DeleteUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*primitiv
 	result, err := coll.DeleteOne(context.TODO(), filter)
 
 	if result.DeletedCount == 0 || err != nil {
-		_, errorResponse := utilities.CreateErrorResponse(404, "User not found")
-		return nil, &errorResponse
+		return nil, &schema.ErrorResponse{
+			Code:    404,
+			Message: "User not found",
+		}
 	}
 
 	// return object id of updated user
 	return id, nil
+}
+
+func checkUserExistsEmail(email string, dbClient *mongo.Client) bool {
+
+	// search for user by email
+	coll := dbClient.Database("data").Collection("users")
+	filter := bson.D{{Key: "email", Value: email}}
+	var result schema.User
+	err := coll.FindOne(context.Background(), filter).Decode(&result)
+
+	return err == nil
+}
+
+func checkUserExistsId(id *primitive.ObjectID, dbClient *mongo.Client) bool {
+
+	// search for user by id
+	coll := dbClient.Database("data").Collection("users")
+	filter := bson.D{{Key: "_id", Value: *id}}
+	var result schema.User
+	err := coll.FindOne(context.Background(), filter).Decode(&result)
+
+	return err == nil
+}
+
+func isEmailUpdated(id *primitive.ObjectID, email string, dbClient *mongo.Client) bool {
+
+	// search for user by id
+	coll := dbClient.Database("data").Collection("users")
+	filter := bson.D{{Key: "_id", Value: *id}}
+	var result schema.User
+	err := coll.FindOne(context.Background(), filter).Decode(&result)
+
+	return err == nil && result.Email != email
 }
