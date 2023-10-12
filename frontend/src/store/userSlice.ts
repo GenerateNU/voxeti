@@ -32,7 +32,7 @@ export const userSlice = createSlice({
       // Set the user:
       state.user = action.payload.user;
     },
-    
+
     // 2. Reset user state on logout or session revocation:
     resetUser: () => initialState,
   }
