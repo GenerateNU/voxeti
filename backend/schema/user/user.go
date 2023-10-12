@@ -40,14 +40,17 @@ func GetUserById(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User, 
 	return user, nil
 }
 
-func GetAllUsers(dbClient *mongo.Client) ([]*schema.User, *map[string]schema.ErrorResponse) {
+func GetAllUsers(page int, limit int, dbClient *mongo.Client) ([]*schema.User, *map[string]schema.ErrorResponse) {
 
-	// get user from database
+	// get users from database
 	users, dbErr := GetAllUsersDB(dbClient)
 
 	if dbErr != nil {
 		return nil, dbErr
 	}
+
+	// paginate results by page and limit
+	users = PaginateUsers(page, limit, users)
 
 	return users, nil
 }

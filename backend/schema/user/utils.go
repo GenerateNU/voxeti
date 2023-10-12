@@ -291,4 +291,23 @@ func Values[M ~map[K]V, K comparable, V any](m M) ([]V, bool) {
 	return r, true
 }
 
+// paginate users by page and limit
+func PaginateUsers(page int, limit int, users []*schema.User) []*schema.User {
+	// get start and end indices for pagination
+	start := (page - 1) * limit
+	end := page * limit
+
+	// check if start index is out of range
+	if start >= len(users) {
+		return []*schema.User{}
+	}
+
+	// check if end index is out of range
+	if end > len(users) {
+		end = len(users)
+	}
+
+	return users[start:end]
+}
+
 ////////////////////

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"voxeti/backend/schema"
 	"voxeti/backend/schema/user"
 	"voxeti/backend/utilities"
@@ -57,7 +58,21 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 	api.GET("", func(c echo.Context) error {
 		logger.Info("get all user endpoint hit!")
 
-		users, userErr := user.GetAllUsersDB(dbClient)
+		page := c.QueryParam("page")
+		limit := c.QueryParam("limit")
+
+		if page == "" || limit == "" {
+			return c.JSON(utilities.CreateErrorResponse(400, "Missing page or limit"))
+		}
+
+		pageInt, pageErr := strconv.Atoi(page)
+		limitInt, limitErr := strconv.Atoi(limit)
+
+		if pageErr != nil || limitErr != nil || pageInt < 1 || limitInt < 0 {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page or limit"))
+		}
+
+		users, userErr := user.GetAllUsers(pageInt, limitInt, dbClient)
 
 		if userErr != nil {
 			derefErr := *userErr
