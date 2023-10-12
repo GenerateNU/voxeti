@@ -27,16 +27,16 @@ type User struct {
 
 // A Voxeti print Job
 type Job struct {
-	Id         primitive.ObjectID `bson:"_id,omitempty"`
-	DesignerId primitive.ObjectID `bson:"designer_id,omitempty"`
-	ProducerId primitive.ObjectID `bson:"producer_id,omitempty"`
-	DesignId   primitive.ObjectID `bson:"design_id,omitempty"`
-	Status     JobStatus          `bson:"status,omitempty"`
-	Price      uint               `bson:"price,omitempty"`
-	Color      string             `bson:"color,omitempty"`
-	Filament   FilamentType       `bson:"filament,omitempty"`
-	Dimensions Dimensions         `bson:"dimensions,omitempty"`
-	Scale      uint               `bson:"scale,omitempty"`
+	Id         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	DesignerId primitive.ObjectID `bson:"designerId,omitempty" json:"designerId"`
+	ProducerId primitive.ObjectID `bson:"producerId,omitempty" json:"producerId"`
+	DesignId   primitive.ObjectID `bson:"designId,omitempty" json:"designId"`
+	Status     JobStatus          `bson:"status,omitempty" json:"status"`
+	Price      uint               `bson:"price,omitempty" json:"price"`
+	Color      string             `bson:"color,omitempty" json:"color"`
+	Filament   FilamentType       `bson:"filament,omitempty" json:"filament"`
+	Dimensions Dimensions         `bson:"dimensions,omitempty" json:"dimensions"`
+	Scale      uint               `bson:"scale,omitempty" json:"scale"`
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding

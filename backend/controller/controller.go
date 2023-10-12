@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/pterm/pterm"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -19,10 +20,17 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	store.Options = &sessions.Options{
 		MaxAge:   int(60 * 60 * 24),
 		Path:     "/",
-		Secure:   true,
 		HttpOnly: true,
 	}
+
+	// Initialize backend middleware:
 	api.Use(session.Middleware(store))
+	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowCredentials: true,
+		AllowOrigins:     []string{"http://localhost:4000"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{"Content-Type"},
+	}))
 
 	// Register extra route handlers
 	RegisterAuthHandlers(api, store, dbClient, logger)
