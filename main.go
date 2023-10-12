@@ -52,7 +52,6 @@ func main() {
 			pterm.Fatal.WithFatal(false).Println(err)
 			os.Exit(1)
 		}
-		pterm.Info.Println(os.Getenv("G_MAPS_API_KEY") == "AIzaSyAP5_5mbMLn34q2B_UHDM4MHsbfb82ZTZM")
 	}
 
 	// configure server
