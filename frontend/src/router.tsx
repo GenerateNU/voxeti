@@ -28,7 +28,10 @@ const indexRoute = new Route({
 });
 
 // Add routes to the route tree here
-const routeTree = rootRoute.addChildren([error404Route, indexRoute]);
+const routeTree = rootRoute.addChildren([
+  error404Route,
+  indexRoute,
+]);
 
 const router = new Router({ routeTree });
 declare module "@tanstack/react-router" {
