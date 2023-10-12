@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"net/mail"
+	"os"
 	"reflect"
 	"voxeti/backend/model"
 	"voxeti/backend/schema"
@@ -132,10 +133,9 @@ func isEmailUpdated(id *primitive.ObjectID, email string, db *DB) bool {
 }
 
 // use google maps api to get location from address
-// HARD CODED API KEY FOR NOW
 func getLocation(address *schema.Address) (*geojson.Geometry, *model.ErrorResponse) {
 	addressString := address.Line1 + " " + address.City + " " + address.State + " " + address.ZipCode
-	client, err := maps.NewClient(maps.WithAPIKey("AIzaSyAP5_5mbMLn34q2B_UHDM4MHsbfb82ZTZM"))
+	client, err := maps.NewClient(maps.WithAPIKey(os.Getenv("SESSION_KEY")))
 	if err != nil {
 		return nil, &model.ErrorResponse{
 			Code:    500,
