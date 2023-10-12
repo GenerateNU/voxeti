@@ -1,4 +1,4 @@
-import { User } from "../index.types";
+import { User } from "../main.types";
 
 export type UserSliceState = {
   csrfToken: string;
