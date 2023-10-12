@@ -1,15 +1,15 @@
 package user
 
 import (
-	"voxeti/backend/model"
 	"voxeti/backend/schema"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func CreateUser(user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
+func CreateUser(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *map[string]schema.ErrorResponse) {
 	// validate request body
-	if reqError := ValidateCreateUser(user, db); reqError != nil {
+	if reqError := ValidateCreateUser(user, dbClient); reqError != nil {
 		return nil, reqError
 	}
 
@@ -20,7 +20,7 @@ func CreateUser(user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorRes
 	}
 
 	// insert user into database
-	id, dbErr := CreateUserDB(user, db)
+	id, dbErr := CreateUserDB(user, dbClient)
 	if dbErr != nil {
 		return nil, dbErr
 	}
@@ -28,10 +28,10 @@ func CreateUser(user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorRes
 	return id, nil
 }
 
-func GetUserById(id *primitive.ObjectID, db *DB) (*schema.User, *model.ErrorResponse) {
+func GetUserById(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User, *map[string]schema.ErrorResponse) {
 
 	// get user from database
-	user, dbErr := GetUserByIdDB(id, db)
+	user, dbErr := GetUserByIdDB(id, dbClient)
 
 	if dbErr != nil {
 		return nil, dbErr
@@ -40,10 +40,10 @@ func GetUserById(id *primitive.ObjectID, db *DB) (*schema.User, *model.ErrorResp
 	return user, nil
 }
 
-func GetAllUsers(db *DB) ([]*schema.User, *model.ErrorResponse) {
+func GetAllUsers(dbClient *mongo.Client) ([]*schema.User, *map[string]schema.ErrorResponse) {
 
 	// get user from database
-	users, dbErr := GetAllUsersDB(db)
+	users, dbErr := GetAllUsersDB(dbClient)
 
 	if dbErr != nil {
 		return nil, dbErr
@@ -52,10 +52,10 @@ func GetAllUsers(db *DB) ([]*schema.User, *model.ErrorResponse) {
 	return users, nil
 }
 
-func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
+func UpdateUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *map[string]schema.ErrorResponse) {
 
 	// validate request body
-	if reqError := ValidateUpdateUser(id, user, db); reqError != nil {
+	if reqError := ValidateUpdateUser(id, user, dbClient); reqError != nil {
 		return nil, reqError
 	}
 
@@ -66,7 +66,7 @@ func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primiti
 	}
 
 	// update user in database
-	updatedId, dbErr := UpdateUserByIdDB(id, user, db)
+	updatedId, dbErr := UpdateUserByIdDB(id, user, dbClient)
 	if dbErr != nil {
 		return nil, dbErr
 	}
@@ -74,7 +74,7 @@ func UpdateUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primiti
 	return updatedId, nil
 }
 
-func PatchUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primitive.ObjectID, *model.ErrorResponse) {
+func PatchUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *map[string]schema.ErrorResponse) {
 
 	// update location field for each address
 	locErr := UpdateLocations(user)
@@ -83,7 +83,7 @@ func PatchUserById(id *primitive.ObjectID, user *schema.User, db *DB) (*primitiv
 	}
 
 	// update user in database
-	updatedId, dbErr := PatchUserByIdDB(id, user, db)
+	updatedId, dbErr := PatchUserByIdDB(id, user, dbClient)
 	if dbErr != nil {
 		return nil, dbErr
 	}
