@@ -13,6 +13,7 @@ import (
 	"voxeti/backend/database"
 	"voxeti/frontend"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"github.com/pterm/pterm/putils"
@@ -24,6 +25,8 @@ import (
 var (
 	devMode = false // enable at build time with: "go build -tags dev".
 )
+
+// var DATABASE_NAME string = "data"
 
 func main() {
 	// parse command line flags
@@ -41,6 +44,14 @@ func main() {
 	// notify dev mode
 	if devMode {
 		pterm.Info.Println("Running in dev mode")
+
+		// load environment variables
+		err := godotenv.Load(".env")
+		if err != nil || os.Getenv("SESSION_KEY") == "" {
+			pterm.Info.Println("Failed to load environment varibales, shutting down...")
+			pterm.Fatal.WithFatal(false).Println(err)
+			os.Exit(1)
+		}
 	}
 
 	// configure server

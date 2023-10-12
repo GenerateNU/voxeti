@@ -4,23 +4,25 @@ package schema
 import (
 	"github.com/paulmach/orb/geojson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
+
+// Database Name:
+var DatabaseName = "data"
 
 // 1. Key schema
 
 // A Voxeti User, can be both a Designer and a Producer
 type User struct {
-	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	FirstName         string             `bson:"firstName,omitempty"`
-	LastName          string             `bson:"lastName,omitempty"`
-	Email             string             `bson:"email,omitempty"`
-	Password          string             `bson:"password,omitempty"`
-	Addresses         []Address          `bson:"addresses,omitempty"`
-	PhoneNumber       *PhoneNumber       `bson:"phoneNumber,omitempty"`
-	Experience        ExperienceLevel    `bson:"experience,omitempty"`
-	Printers          []Printer          `bson:"printers,omitempty"`
-	AvailableFilament []Filament         `bson:"availableFilament,omitempty"`
+	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	FirstName         string             `bson:"firstName,omitempty" json:"firstName"`
+	LastName          string             `bson:"lastName,omitempty" json:"lastName"`
+	Email             string             `bson:"email,omitempty" json:"email"`
+	Password          string             `bson:"password,omitempty" json:"password"`
+	Addresses         []Address          `bson:"addresses,omitempty" json:"addresses"`
+	PhoneNumber       *PhoneNumber       `bson:"phoneNumber,omitempty" json:"phoneNumber"`
+	Experience        ExperienceLevel    `bson:"experience,omitempty" json:"experience"`
+	Printers          []Printer          `bson:"printers,omitempty" json:"printers"`
+	AvailableFilament []Filament         `bson:"availableFilament,omitempty" json:"availableFilament"`
 }
 
 // A Voxeti print Job
@@ -38,7 +40,11 @@ type Job struct {
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
-type Design gridfs.File
+type Design struct {
+	Id     primitive.ObjectID `bson:"_id" json:"id"`
+	Name   string             `bson:"name" json:"name"`
+	Length int64              `bson:"length" json:"length"`
+}
 
 // 2. Supporting schema
 
