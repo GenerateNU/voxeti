@@ -5,6 +5,7 @@ import (
 	"net/mail"
 	"os"
 	"reflect"
+	"strconv"
 	"voxeti/backend/schema"
 	"voxeti/backend/utilities"
 
@@ -215,14 +216,26 @@ func validateUserFields(user *schema.User) string {
 
 			if countryCode.String() == "" {
 				errors += "countryCode is missing, "
-			} else if len(countryCode.String()) < 1 || len(countryCode.String()) > 5 {
-				errors += "countryCode must have 1-5 characters, "
+			} else {
+				// check if countryCode is a number
+				_, err := strconv.Atoi(countryCode.String())
+				if err != nil {
+					errors += "countryCode must be a number, "
+				} else if len(countryCode.String()) < 1 || len(countryCode.String()) > 5 {
+					errors += "countryCode must have 1-5 characters, "
+				}
 			}
 
 			if number.String() == "" {
 				errors += "number is missing, "
-			} else if len(number.String()) != 10 {
-				errors += "number must have 10 characters, "
+			} else {
+				// check if number is a number
+				_, err := strconv.ParseInt(number.String(), 10, 64)
+				if err != nil {
+					errors += "number must be a number, "
+				} else if len(number.String()) != 10 {
+					errors += "number must have 10 digits, "
+				}
 			}
 		case "Experience":
 			if field.Int() != schema.NoExperience && field.Int() != schema.SomeExperince && field.Int() != schema.MaxExperience {
@@ -282,15 +295,6 @@ func validateUserFields(user *schema.User) string {
 	return errors
 }
 
-// Function to get all values from a map
-func Values[M ~map[K]V, K comparable, V any](m M) ([]V, bool) {
-	r := make([]V, 0, len(m))
-	for _, v := range m {
-		r = append(r, v)
-	}
-	return r, true
-}
-
 // paginate users by page and limit
 func PaginateUsers(page int, limit int, users []*schema.User) []*schema.User {
 	// get start and end indices for pagination
@@ -309,5 +313,3 @@ func PaginateUsers(page int, limit int, users []*schema.User) []*schema.User {
 
 	return users[start:end]
 }
-
-////////////////////
