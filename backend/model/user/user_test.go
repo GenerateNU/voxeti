@@ -1,9 +1,11 @@
 package user
 
 import (
+	"os"
 	"testing"
 	"voxeti/backend/schema"
 
+	"github.com/joho/godotenv"
 	"github.com/paulmach/orb/geojson"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -238,6 +240,11 @@ var (
 )
 
 func TestCreateUser(t *testing.T) {
+	// load environment variables
+	envErr := godotenv.Load("../../../.env")
+	if envErr != nil || os.Getenv("SESSION_KEY") == "" || os.Getenv("G_MAPS_API_KEY") == "" {
+		os.Exit(1)
+	}
 
 	var dbClient DB = DB{
 		RealDB: nil,

@@ -135,7 +135,8 @@ func isEmailUpdated(id *primitive.ObjectID, email string, db *DB) bool {
 // use google maps api to get location from address
 func getLocation(address *schema.Address) (*geojson.Geometry, *model.ErrorResponse) {
 	addressString := address.Line1 + " " + address.City + " " + address.State + " " + address.ZipCode
-	client, err := maps.NewClient(maps.WithAPIKey(os.Getenv("SESSION_KEY")))
+	apiKey := os.Getenv("G_MAPS_API_KEY")
+	client, err := maps.NewClient(maps.WithAPIKey(apiKey))
 	if err != nil {
 		return nil, &model.ErrorResponse{
 			Code:    500,
