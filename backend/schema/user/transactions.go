@@ -12,7 +12,7 @@ import (
 func createUserDB(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
 
 	// insert user into db
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	result, err := coll.InsertOne(context.TODO(), user)
 
 	if err != nil {
@@ -30,7 +30,7 @@ func createUserDB(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectI
 func getAllUsersDB(dbClient *mongo.Client) ([]*schema.User, *schema.ErrorResponse) {
 
 	// get all users from db
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 
 	// Currently blank filter, can be changed in the future for algorithm
 	filter := bson.D{}
@@ -69,7 +69,7 @@ func getAllUsersDB(dbClient *mongo.Client) ([]*schema.User, *schema.ErrorRespons
 func getUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
 
 	// get user from db
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	var user schema.User
 	err := coll.FindOne(context.TODO(), primitive.M{"_id": id}).Decode(&user)
 
@@ -86,7 +86,7 @@ func getUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User
 func updateUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
 
 	// update user in db
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	_, err := coll.UpdateOne(context.TODO(), primitive.M{"_id": id}, primitive.M{
 		"$set": user,
 	})
@@ -105,7 +105,7 @@ func updateUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo
 func patchUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
 
 	// update user in db
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 
 	filter := primitive.M{"_id": id}
 	update := primitive.M{"$set": user}
@@ -134,7 +134,7 @@ func DeleteUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*primitiv
 	filter := bson.D{{Key: "_id", Value: id}}
 
 	// update user in db
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	result, err := coll.DeleteOne(context.TODO(), filter)
 
 	if result.DeletedCount == 0 || err != nil {
@@ -151,7 +151,7 @@ func DeleteUserByIdDB(id *primitive.ObjectID, dbClient *mongo.Client) (*primitiv
 func checkUserExistsEmail(email string, dbClient *mongo.Client) bool {
 
 	// search for user by email
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	filter := bson.D{{Key: "email", Value: email}}
 	var result schema.User
 	err := coll.FindOne(context.Background(), filter).Decode(&result)
@@ -162,7 +162,7 @@ func checkUserExistsEmail(email string, dbClient *mongo.Client) bool {
 func checkUserExistsId(id *primitive.ObjectID, dbClient *mongo.Client) bool {
 
 	// search for user by id
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	filter := bson.D{{Key: "_id", Value: *id}}
 	var result schema.User
 	err := coll.FindOne(context.Background(), filter).Decode(&result)
@@ -173,7 +173,7 @@ func checkUserExistsId(id *primitive.ObjectID, dbClient *mongo.Client) bool {
 func isEmailUpdated(id *primitive.ObjectID, email string, dbClient *mongo.Client) bool {
 
 	// search for user by id
-	coll := dbClient.Database("data").Collection("users")
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	filter := bson.D{{Key: "_id", Value: *id}}
 	var result schema.User
 	err := coll.FindOne(context.Background(), filter).Decode(&result)
