@@ -93,7 +93,7 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Connecting to database...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	godotenv.Load(".env");
+	_ = godotenv.Load(".env");
 	dbClient, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("VOXETI_DB_URI")))
 	if err != nil || dbClient.Ping(ctx, readpref.Primary()) != nil {
 		spinnerSuccess.Fail("Failed to connect to database")

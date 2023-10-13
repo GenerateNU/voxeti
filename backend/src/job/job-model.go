@@ -16,7 +16,7 @@ import (
 
 // Find a specified job by its ID
 func GetJobById(jobId string, dbClient *mongo.Client) (schema.Job, schema.ErrorResponse) {
-	godotenv.Load()	
+	_ = godotenv.Load();
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
 	objectId, _ := primitive.ObjectIDFromHex(jobId);
 	filter := bson.M{"_id": objectId}
@@ -36,7 +36,7 @@ func GetJobById(jobId string, dbClient *mongo.Client) (schema.Job, schema.ErrorR
 // Find a specified job by either a producer or designer ID
 func GetJobsByDesignerOrProducerId(designerId string, producerId string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, schema.ErrorResponse) {
 	// load jobs collection
-	godotenv.Load()	
+	_ = godotenv.Load();
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
 	// Extract Object IDs
 	designerObjId, _ := primitive.ObjectIDFromHex(designerId)
@@ -97,7 +97,7 @@ func DeleteJob (jobId string, dbClient *mongo.Client) schema.ErrorResponse {
 		return schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
 	}
 	// load collectio
-	godotenv.Load(".env");
+	_ = godotenv.Load(".env");
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
 	// delete job and check that the job was deleted
 	deleteResult, err := jobCollection.DeleteOne(context.Background(), bson.M{"_id": jobIdObject})
@@ -114,7 +114,7 @@ func DeleteJob (jobId string, dbClient *mongo.Client) schema.ErrorResponse {
 // Creates a job
 func CreateJob(newJob schema.Job, dbClient *mongo.Client) (schema.Job, schema.ErrorResponse) {
 	// insert the job into the database
-	godotenv.Load(".env");
+	_ = godotenv.Load(".env");
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
 	result, err := jobCollection.InsertOne(context.Background(), newJob)
 	if err != nil {
@@ -132,7 +132,7 @@ func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client)  (schema.Jo
 		return schema.Job{}, schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
 	}
 	// create a new job with the given data
-	godotenv.Load(".env");
+	_ = godotenv.Load(".env");
 	jobCollection := dbClient.Database(os.Getenv("DB_NAME")).Collection("job")
 	// replace the old job with the new job
 	_, err = jobCollection.ReplaceOne(context.Background(), bson.M{"_id": jobIdObject}, job)
