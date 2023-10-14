@@ -11,11 +11,17 @@ require (
 	github.com/stretchr/testify v1.8.4
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/crypto v0.11.0
+	googlemaps.github.io/maps v1.5.0
+)
+
+require (
+	github.com/google/uuid v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	go.opencensus.io v0.22.3 // indirect
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

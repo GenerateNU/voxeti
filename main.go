@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 	"voxeti/backend/controller"
+	"voxeti/backend/database"
 	"voxeti/frontend"
 
 	"github.com/joho/godotenv"
@@ -46,8 +47,8 @@ func main() {
 
 		// load environment variables
 		err := godotenv.Load(".env")
-		if err != nil || os.Getenv("SESSION_KEY") == "" {
-			pterm.Info.Println("Failed to load environment varibales, shutting down...")
+		if err != nil || os.Getenv("SESSION_KEY") == "" || os.Getenv("G_MAPS_API_KEY") == "" {
+			pterm.Info.Println("Failed to load environment variables, shutting down...")
 			pterm.Fatal.WithFatal(false).Println(err)
 			os.Exit(1)
 		}
@@ -114,6 +115,11 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 		}
 	}
 	spinnerSuccess.Success("Connected to database")
+
+	// create needed collections
+	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Creating MongoDB collections...")
+	database.Setup(dbClient, logger)
+	spinnerSuccess.Success("Created MongoDB collections")
 
 	// register frontend handlers
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Registering frontend handlers...")
