@@ -2,6 +2,7 @@ import { Outlet, Router, Route, RootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout.tsx";
 import Index from "./pages/Index.tsx";
+import SignIn from "./pages/SignIn.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -27,8 +28,19 @@ const indexRoute = new Route({
   component: Index,
 });
 
+const signInRoute = new Route({
+  // Create a new route for the SignIn component
+  getParentRoute: () => rootRoute,
+  path: "/signin",
+  component: SignIn,
+});
+
 // Add routes to the route tree here
-const routeTree = rootRoute.addChildren([error404Route, indexRoute]);
+const routeTree = rootRoute.addChildren([
+  error404Route,
+  indexRoute,
+  signInRoute, // Add the new route to the route tree
+]);
 
 const router = new Router({ routeTree });
 declare module "@tanstack/react-router" {
