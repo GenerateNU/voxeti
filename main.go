@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 	"voxeti/backend/controller"
+	"voxeti/backend/database"
 	"voxeti/frontend"
 
 	"github.com/joho/godotenv"
@@ -24,6 +25,8 @@ import (
 var (
 	devMode = false // enable at build time with: "go build -tags dev".
 )
+
+// var DATABASE_NAME string = "data"
 
 func main() {
 	// parse command line flags
@@ -41,6 +44,14 @@ func main() {
 	// notify dev mode
 	if devMode {
 		pterm.Info.Println("Running in dev mode")
+
+		// load environment variables
+		err := godotenv.Load(".env")
+		if err != nil || os.Getenv("SESSION_KEY") == "" || os.Getenv("G_MAPS_API_KEY") == "" {
+			pterm.Info.Println("Failed to load environment variables, shutting down...")
+			pterm.Fatal.WithFatal(false).Println(err)
+			os.Exit(1)
+		}
 	}
 
 	// configure server
@@ -93,8 +104,7 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Connecting to database...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	_ = godotenv.Load(".env");
-	dbClient, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("VOXETI_DB_URI")))
+	dbClient, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUri))
 	if err != nil || dbClient.Ping(ctx, readpref.Primary()) != nil {
 		spinnerSuccess.Fail("Failed to connect to database")
 		os.Exit(1)
@@ -105,6 +115,11 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 		}
 	}
 	spinnerSuccess.Success("Connected to database")
+
+	// create needed collections
+	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Creating MongoDB collections...")
+	database.Setup(dbClient, logger)
+	spinnerSuccess.Success("Created MongoDB collections")
 
 	// register frontend handlers
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Registering frontend handlers...")

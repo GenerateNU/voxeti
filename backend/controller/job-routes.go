@@ -1,13 +1,14 @@
 package controller
 
 import (
+	// "fmt"
 	"strconv"
 	"voxeti/backend/schema"
-	"voxeti/backend/src/job"
+	"voxeti/backend/schema/job"
+	"voxeti/backend/utilities"
 
 	"net/http"
 
-	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,33 +16,37 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func RegisterJobHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *mongo.Client, logger *pterm.Logger) {
+func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/jobs")
 
 	api.GET("/:id", func(c echo.Context) error {
 		jobId := c.Param("id")
 		retrievedJob, errorResponse := job.GetJobById(jobId, dbClient)
 
-		if errorResponse.Code != 0 {
-			return c.JSON(http.StatusBadRequest, errorResponse)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message));
 		}
 
 		return c.JSON(http.StatusOK, retrievedJob)
 	})
 
-	api.GET("/", func(c echo.Context) error {
+	api.GET("", func(c echo.Context) error {
 		limit := 2 // represents the number of results we want per page
 		designerId := c.QueryParam("designer")
 		producerId := c.QueryParam("producer")
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
 		skip := limit * page_num
+		// fmt.Println(skip);
+		// fmt.Println(page_num);
+		// fmt.Println(designerId);
+		// fmt.Println(producerId);
 		
 		if page_num < 0 {
-			return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid page number"})
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page number"))
 		}
 		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerId, producerId, int64(limit), int64(skip), dbClient)
-		if errorResponse.Code != 0 {
-			return c.JSON(http.StatusBadRequest, errorResponse)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
 
 		return c.JSON(http.StatusOK, retrievedJobs)
@@ -51,23 +56,23 @@ func RegisterJobHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *m
 		// get job ID
 		jobIDStr := c.Param("id")
 		errorResponse := job.DeleteJob(jobIDStr, dbClient)
-		if errorResponse.Code != 0 {
-			return c.JSON(errorResponse.Code, errorResponse)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
 
 		return c.NoContent(http.StatusOK)
 	})
 
-	api.POST("/", func(c echo.Context) error {
+	api.POST("", func(c echo.Context) error {
 		// create new Job with given data
 		newJob := new(schema.Job)
 		if err := c.Bind(newJob); err != nil {
-			return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid job data"})
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
 		jobCreated, errorResponse := job.CreateJob(*newJob, dbClient)
 
-		if errorResponse.Code != 0 {
-			return c.JSON(errorResponse.Code, errorResponse)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
 
 		return c.JSON(http.StatusOK, jobCreated)
@@ -78,12 +83,12 @@ func RegisterJobHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *m
 		jobId := c.Param("id")
 		job_body_param := new(schema.Job)
 		if err := c.Bind(job_body_param); err != nil {
-			return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid job data"})
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
 		retrievedJob, errorResponse := job.UpdateJob(jobId, *job_body_param, dbClient)
 
-		if errorResponse.Code != 0 {
-			return c.JSON(errorResponse.Code, errorResponse)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
 
 		return c.JSON(http.StatusOK, retrievedJob)
@@ -93,15 +98,15 @@ func RegisterJobHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *m
 		jobIdStr := c.Param("id")
 		jobId, err := primitive.ObjectIDFromHex(jobIdStr)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid job ID format"})
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job ID"))
 		}
 		patchData := bson.M{}
 		if err := c.Bind(&patchData); err != nil {
-			return c.JSON(http.StatusBadRequest, schema.ErrorResponse{Code: 400, Message: "Invalid udate data"})
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid patch data"))
 		}
 		patchedJob, errorResponse := job.PatchJob(jobId, patchData, dbClient)
-		if errorResponse.Code != 0 {
-			return c.JSON(http.StatusBadRequest, errorResponse)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
 		return c.JSON(http.StatusOK, patchedJob)
 	})
