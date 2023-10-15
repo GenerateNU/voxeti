@@ -6,11 +6,12 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  password: string;
   addresses: Address[];
   phoneNumber: PhoneNumber;
-  experience?: ExperienceLevel;
-  printers?: Printer[];
-  availableFilament?: Filament[];
+  experience: ExperienceLevel;
+  printers: Printer[];
+  availableFilament: Filament[];
 }
 
 // A Voxeti print Job
