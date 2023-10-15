@@ -6,8 +6,8 @@
   :root {
     /* Brand colors */
     --primary-color: 1 7 19;
-    --secondary-color: 255 0 200;
-    --tertiary-color: 1 87 255;
+    --designer-color: 239 175 0;
+    --producer-color: 0 186 239;
     /* Application colors */
     --call-to-action-color: 255 215 0;
     --error-color: 255 0 0;
