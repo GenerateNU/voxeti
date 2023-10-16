@@ -141,36 +141,33 @@ const QuestionForm = () => {
       setCurrentSectionIndex(currentSectionIndex - 1);
     }
   };
-  return (
-    // Only show appropriate buttons based on section index
-    <div className="flex justify-center items-center py-4">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {renderQuestions()}
-        <div className="">
-          {currentSectionIndex > 0 && (
-            <div className=" float-left py-4">
-              <button
-                className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3"
-                type="button"
-                onClick={handlePrevious}
-              >
-                Previous
-              </button>
-            </div>
-          )}
-          {currentSectionIndex < questions.sections.length - 1 && (
-            <div className=" float-right py-4">
-              <button
-                className=" bg-primary text-background rounded-lg p-3"
-                type="button"
-                onClick={handleNext}
-              >
-                Continue
-              </button>
-            </div>
-          )}
-        </div>
-        ​
+
+  // Only show appropriate buttons based on section index
+  const renderButtons = () => {
+    return (
+      <div className="">
+        {currentSectionIndex > 0 && (
+          <div className=" float-left py-4">
+            <button
+              className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3"
+              type="button"
+              onClick={handlePrevious}
+            >
+              Previous
+            </button>
+          </div>
+        )}
+        {currentSectionIndex < questions.sections.length - 1 && (
+          <div className=" float-right py-4">
+            <button
+              className=" bg-primary text-background rounded-lg p-3"
+              type="button"
+              onClick={handleNext}
+            >
+              Continue
+            </button>
+          </div>
+        )}
         {currentSectionIndex == questions.sections.length - 1 && (
           <div className=" float-right py-4">
             <button
@@ -181,6 +178,14 @@ const QuestionForm = () => {
             </button>
           </div>
         )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex justify-center items-center py-4">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {renderQuestions()} {renderButtons()}
       </form>
     </div>
   );
