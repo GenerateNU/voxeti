@@ -283,7 +283,7 @@ func validateUserFields(user *schema.User, patch bool) string {
 		case "Password":
 			if field.String() == "" && patch {
 				continue
-			} else if field.String() == "" {
+			} else if field.String() == "" && user.SocialProvider == "NONE" {
 				errors += "password is missing, "
 			}
 		case "Addresses":

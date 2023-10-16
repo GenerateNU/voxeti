@@ -22,11 +22,13 @@ func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, 
 		return nil, err
 	}
 
-	// Check if the incoming password is the same as the user password:
-	if ok := CheckPasswordHash(credentials.Password, user.Password); !ok {
-		errResponse.Code = 400
-		errResponse.Message = "Invalid Password"
-		return nil, errResponse
+	// Check if the incoming password is the same as the user password (if no social provider):
+	if (user.SocialProvider == "NONE") {
+		if ok := CheckPasswordHash(credentials.Password, user.Password); !ok {
+			errResponse.Code = 400
+			errResponse.Message = "Invalid Password"
+			return nil, errResponse
+		}
 	}
 
 	// Create a new user session:
@@ -120,6 +122,31 @@ func AuthenticateSession(c echo.Context, store *sessions.CookieStore) *schema.Er
 		return errResponse
 	}
 	return nil
+}
+
+func GoogleSSOAuthentication(accessToken schema.GoogleAccessToken, dbClient *mongo.Client) (*schema.ProviderUser, *schema.ErrorResponse) {
+	googleSSOUser := &schema.ProviderUser{}
+
+	// Retrieve the email of the Google User:
+	googleUser, errResponse := GetGoogleSSOUser(accessToken)
+	if errResponse != nil {
+		return nil, errResponse
+	}
+
+	// Set initial fields:
+	googleSSOUser.Email = googleUser.Email
+	googleSSOUser.Provider = "GOOGLE"
+
+	// Check whether the user is a new or existing user:
+	_, errResponse = GetUserByEmail(googleUser.Email, dbClient)
+	if errResponse != nil {
+		googleSSOUser.UserType = "new"
+	} else {
+		googleSSOUser.UserType = "existing"
+	}
+
+	// Return the user:
+	return googleSSOUser, nil
 }
 
 func CheckPasswordHash(password, hash string) bool {

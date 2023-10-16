@@ -6,17 +6,21 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { persistor, store } from "./store/store.ts";
 import { PersistGate } from "redux-persist/integration/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const rootElement = document.getElementById("app")!;
 if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const root = ReactDOM.createRoot(rootElement);  
   root.render(
-    <React.StrictMode>
-      <Provider store={store}>
-        <PersistGate persistor={persistor}>
-          <RouterProvider router={router} />
-        </PersistGate>
-      </Provider>
-    </React.StrictMode>,
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <React.StrictMode>
+        <Provider store={store}>
+          <PersistGate persistor={persistor}>
+            <RouterProvider router={router} />
+          </PersistGate>
+        </Provider>
+      </React.StrictMode>
+    </GoogleOAuthProvider>,
   );
 }
