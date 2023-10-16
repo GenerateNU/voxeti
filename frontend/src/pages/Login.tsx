@@ -4,9 +4,10 @@ import SocialProvider from "../components/SocialProvider/SocialProvider";
 import useGoogle from "../hooks/use-google";
 import { ProviderUser, UserCredentials } from "../api/api.types";
 import { authApi } from "../api/api";
-import { setSSONewUser } from "../store/userSlice";
+import { setSSONewUser, setUser } from "../store/userSlice";
 import router from "../router";
 import { useStateDispatch } from "../hooks/use-redux";
+import Auth from "../components/Auth/Auth";
 
 export function Login() {
   const [providerLoginPending, setProviderLoginPending] = useState(false);
@@ -23,7 +24,8 @@ export function Login() {
     login(userCredentials)
       .unwrap()
       .then((res) => {
-        // WHAT TO DO AFTER US LOGIN SUCCESS:
+        dispatch(setUser(res));
+        router.navigate({ to: '/protected'})
         console.log(res);
       })
       .catch((err) => {
@@ -42,7 +44,7 @@ export function Login() {
     }
     if (providerUser?.userType === 'existing') {
       handleLogin({
-        email: providerUser.userType,
+        email: providerUser.user,
         password: ""
       });
     }
@@ -50,7 +52,7 @@ export function Login() {
   }, [providerUser])
 
   return (
-    <>
+    <Auth authRoute={false}>
       {providerLoginPending &&
         <SocialProviderPending
           provider={provider}
@@ -64,6 +66,6 @@ export function Login() {
         onClick={googleLogin}
         isLoading={isGoogleLoading}
       />
-    </>
+    </Auth>
   )
 }
