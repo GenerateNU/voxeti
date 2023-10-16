@@ -28,7 +28,7 @@ export default function Form({ defaultValues, children, onSubmit }: { defaultVal
               key: child.props.name,
             },
           })
-        : 
+        :
           child;})}
     </form>
   );

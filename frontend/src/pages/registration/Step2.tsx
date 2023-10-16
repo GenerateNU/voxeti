@@ -1,6 +1,6 @@
 import Form, { Input, Label, Select } from "../../components/FormComponents";
 import { useNavigate } from "@tanstack/react-router";
-import { setPersonalInfo } from "../../store/userSlice"; 
+import { setPersonalInfo } from "../../store/userSlice";
 
 export default function Step2() {
 
