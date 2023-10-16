@@ -4,6 +4,7 @@ import Layout from "./components/Layout.tsx";
 import Index from "./pages/Index.tsx";
 import Step1 from "./pages/registration/Step1.tsx";
 import Step2 from "./pages/registration/Step2.tsx";
+import QuestionForm from "./pages/registration/Registration.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -29,6 +30,12 @@ const indexRoute = new Route({
   component: Index,
 });
 
+const registrationRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/registration",
+  component: QuestionForm,
+});
+
 const step1Route = new Route({
   getParentRoute: () => rootRoute,
   path: "/registration/step1",
@@ -45,6 +52,7 @@ const step2Route = new Route({
 const routeTree = rootRoute.addChildren([
   error404Route,
   indexRoute,
+  registrationRoute,
   step1Route,
   step2Route,
 ]);
