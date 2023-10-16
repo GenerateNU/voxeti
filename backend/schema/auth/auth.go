@@ -23,7 +23,7 @@ func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, 
 	}
 
 	// Check if the incoming password is the same as the user password (if no social provider):
-	if (user.SocialProvider == "NONE") {
+	if user.SocialProvider == "NONE" {
 		if ok := CheckPasswordHash(credentials.Password, user.Password); !ok {
 			errResponse.Code = 400
 			errResponse.Message = "Invalid Password"

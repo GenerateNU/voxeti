@@ -2,7 +2,7 @@ import { useStateSelector } from "../hooks/use-redux";
 
 export default function Registration() {
   const { user } = useStateSelector((state) => state.user);
-  
+
   return (
     <div>
        <h1>Registration</h1>

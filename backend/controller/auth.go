@@ -54,5 +54,5 @@ func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *
 		}
 
 		return c.JSON(http.StatusOK, googleSSOUser)
-	});
+	})
 }

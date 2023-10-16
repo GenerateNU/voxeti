@@ -18,7 +18,7 @@ type User struct {
 	LastName          string             `bson:"lastName,omitempty" json:"lastName,omitempty"`
 	Email             string             `bson:"email,omitempty" json:"email,omitempty"`
 	Password          string             `bson:"password,omitempty" json:"password,omitempty"`
-	SocialProvider		SocialProvider		 `bson:"socialProvider,omityempty" json:"socialProvider,omitempty"`						
+	SocialProvider    SocialProvider     `bson:"socialProvider,omityempty" json:"socialProvider,omitempty"`
 	Addresses         []Address          `bson:"addresses,omitempty" json:"addresses,omitempty"`
 	PhoneNumber       *PhoneNumber       `bson:"phoneNumber,omitempty" json:"phoneNumber,omitempty"`
 	Experience        ExperienceLevel    `bson:"experience,omitempty" json:"experience,omitempty"`
@@ -119,6 +119,6 @@ const (
 type SocialProvider string
 
 const (
-	None = "NONE"
+	None   = "NONE"
 	Google = "GOOGLE"
 )

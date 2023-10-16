@@ -7,14 +7,14 @@ export default function SocialProviderPending({provider, onClick, setState} : So
   type Provider = {
     image: string;
   }
-  
+
   // List of possible providers:
   const providerImages : Map<string, Provider> = new Map();
   providerImages.set("Google", { image: GoogleLogo });
-  
+
   // Extract the provider logo:
   const providerLogo = providerImages.get(provider)?.image ?? '';
-  
+
   return (
     <>
     <div className='min-w-full h-[100vh] bg-[#5A5A5A] opacity-70 absolute z-40' />

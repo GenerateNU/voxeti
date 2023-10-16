@@ -31,7 +31,7 @@ export const createAuthApi = (baseUrl : string) => (
           method: 'POST',
           url: '/google-provider',
         })
-      }) 
+      })
     }),
   })
 )

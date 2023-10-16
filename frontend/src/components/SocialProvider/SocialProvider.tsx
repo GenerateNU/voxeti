@@ -10,15 +10,15 @@ export default function SocialProvider({ provider, setProvider, setState, onClic
     setProvider(provider)
     // Set the pending state to true:
     setState(true)
-    // Intialize SSO: 
+    // Intialize SSO:
     onClick()
   }
 
   return (
-    <Button 
+    <Button
       className='h-[50px] !bg-primary !normal-case !rounded-full !text-lg hover:!bg-[#5A5A5A]'
-      variant='contained' 
-      onClick={handleClick} 
+      variant='contained'
+      onClick={handleClick}
       startIcon={isLoading ? <img className='h-[30px] mr-2' src={LoadingIcon} /> : <img className='h-[25px] mr-2' src={GoogleLogo} />}
     >
       Continue with Google

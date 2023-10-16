@@ -29,7 +29,7 @@ export default function useGoogle({ setProviderLoginPending, setProviderUser, go
     onError,
     ux_mode: 'popup',
   });
-  
+
 
   return signIn;
 }

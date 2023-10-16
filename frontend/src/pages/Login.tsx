@@ -16,7 +16,7 @@ export function Login() {
   const [login] = authApi.useLoginMutation();
   const [googleSSO, { isLoading : isGoogleLoading }] = authApi.useGoogleSSOMutation();
   const dispatch = useStateDispatch()
-  
+
   const googleLogin = useGoogle({ setProviderLoginPending, setProviderUser, googleSSO });
 
   const handleLogin = (userCredentials : UserCredentials) => {
@@ -34,14 +34,14 @@ export function Login() {
 
   useEffect(() => {
     if (providerUser?.userType === 'new') {
-      dispatch(setSSONewUser({ 
-        email: providerUser.user, 
-        socialProvider: providerUser.provider 
+      dispatch(setSSONewUser({
+        email: providerUser.user,
+        socialProvider: providerUser.provider
       }))
       router.navigate({to: '/register'})
-    } 
+    }
     if (providerUser?.userType === 'existing') {
-      handleLogin({ 
+      handleLogin({
         email: providerUser.userType,
         password: ""
       });
@@ -51,13 +51,13 @@ export function Login() {
 
   return (
     <>
-      {providerLoginPending && 
-        <SocialProviderPending 
+      {providerLoginPending &&
+        <SocialProviderPending
           provider={provider}
-          setState={setProviderLoginPending} 
+          setState={setProviderLoginPending}
           onClick={googleLogin}
         />}
-      <SocialProvider 
+      <SocialProvider
         provider={'Google'}
         setState={setProviderLoginPending}
         setProvider={setProvider}

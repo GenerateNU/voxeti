@@ -34,7 +34,7 @@ func GetUserByEmail(email string, dbClient *mongo.Client) (*schema.User, *schema
 
 func GetGoogleSSOUser(accessToken schema.GoogleAccessToken) (*schema.GoogleResponse, *schema.ErrorResponse) {
 	errResponse := &schema.ErrorResponse{}
-	
+
 	// Initialize request to Google API
 	req, err := http.NewRequest("GET", "https://oauth2.googleapis.com/tokeninfo", nil)
 	if err != nil {
@@ -67,6 +67,11 @@ func GetGoogleSSOUser(accessToken schema.GoogleAccessToken) (*schema.GoogleRespo
 	// Convert data to JSON:
 	var googleRes schema.GoogleResponse
 	err = json.Unmarshal(body, &googleRes)
+	if err != nil {
+		errResponse.Code = 500
+		errResponse.Message = "Unable to unmarshal Google API response!"
+		return nil, errResponse
+	}
 
 	scopes := strings.Split(googleRes.Scope, " ")
 	if len(scopes) < 3 || !slices.Contains(scopes, "https://www.googleapis.com/auth/userinfo.profile") || !slices.Contains(scopes, "https://www.googleapis.com/auth/userinfo.email") {

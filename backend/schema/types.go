@@ -16,7 +16,7 @@ type LoginResponse struct {
 }
 
 type ProviderUser struct {
-	Email string `json:"user"`
+	Email    string `json:"user"`
 	UserType string `json:"userType"`
 	Provider string `json:"provider"`
 }
