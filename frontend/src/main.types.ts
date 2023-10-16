@@ -45,12 +45,12 @@ export type Coordinates = {
 export type Address = {
   name: string;
   line1: string;
-  line2: string;
+  line2?: string;
   zipCode: string;
   city: string;
   state: string;
   country: string;
-  location: Coordinates;
+  location?: Coordinates;
 }
 
 // Print/printer physical dimensions
