@@ -12,6 +12,10 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.13",
+    "@mui/material": "^5.14.13",
     "@reduxjs/toolkit": "^1.9.7",
     "@tanstack/react-router": "0.0.1-beta.168",
     "@tanstack/router-devtools": "0.0.1-beta.168",
@@ -24,8 +28,8 @@
   "devDependencies": {
     "@playwright/test": "^1.37.1",
     "@types/react": "^18.2.21",
-    "@types/react-redux": "^7.1.27",
     "@types/react-dom": "^18.2.7",
+    "@types/react-redux": "^7.1.27",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "@vitejs/plugin-react-swc": "^3.3.2",
