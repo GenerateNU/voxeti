@@ -10,6 +10,10 @@ type FormQuestion = {
   type?: string;
 };
 
+type QuestionGroup = {
+  questions: FormQuestion[];
+};
+
 // Each "page" of the form
 type FormSection = {
   sectionTitle: string;
@@ -100,7 +104,7 @@ const QuestionForm = () => {
   const currentSection: FormSection = questions.sections[currentSectionIndex];
   const renderQuestions = () => {
     return (
-      <div className=" w-96">
+      <div className=" w-72 sm:w-96">
         <h2 className="flex justify-center items-center text-xl">
           {currentSection?.sectionTitle}
         </h2>
@@ -114,9 +118,10 @@ const QuestionForm = () => {
                 <div className="flex flex-col">
                   <label className=" py-1">{question.prompt}</label>
                   <input
-                    className=" outline outline-1 p-2 rounded-sm"
                     {...field}
+                    className=" outline outline-1 p-2 rounded-sm"
                     type={question.type}
+                    key={question.key}
                   />
                 </div>
               )}
@@ -145,9 +150,9 @@ const QuestionForm = () => {
   // Only show appropriate buttons based on section index
   const renderButtons = () => {
     return (
-      <div className="">
+      <div className="" key="top">
         {currentSectionIndex > 0 && (
-          <div className=" float-left py-4">
+          <div className=" float-left py-4" key="previous">
             <button
               className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3"
               type="button"
@@ -158,7 +163,7 @@ const QuestionForm = () => {
           </div>
         )}
         {currentSectionIndex < questions.sections.length - 1 && (
-          <div className=" float-right py-4">
+          <div className=" float-right py-4" key="continue">
             <button
               className=" bg-primary text-background rounded-lg p-3"
               type="button"
@@ -169,7 +174,7 @@ const QuestionForm = () => {
           </div>
         )}
         {currentSectionIndex == questions.sections.length - 1 && (
-          <div className=" float-right py-4">
+          <div className=" float-right py-4" key="enter">
             <button
               className=" bg-primary text-background rounded-lg p-3"
               type="submit"
@@ -187,6 +192,8 @@ const QuestionForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {renderQuestions()} {renderButtons()}
       </form>
+
+      <button className="active:bg-designer">Test button</button>
     </div>
   );
 };
