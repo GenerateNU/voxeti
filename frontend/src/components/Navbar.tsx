@@ -55,7 +55,9 @@ export default function Navbar() {
         >
           {/* Navbar: Left-Section */}
           <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
-            <NavItem title={"Voxeti"} link={"#"} />
+            <a href="/">
+              <img src="src/assets/logo.png" width="44" height="44" />
+            </a>
             <NavItem title={"About"} link={"#"} />
             <NavItem title={"Services"} link={"#"} />
           </ul>

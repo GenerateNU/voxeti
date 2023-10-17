@@ -13,7 +13,7 @@ import (
 // Setup for when backend gets created
 func Setup(dbClient *mongo.Client, logger *pterm.Logger) {
 	CreateUserCollection(dbClient, logger)
-	CreateJobCollection(dbClient, logger)
+  CreateJobCollection(dbClient, logger)
 }
 
 func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {

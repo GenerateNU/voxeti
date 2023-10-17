@@ -5,8 +5,8 @@ export default {
     colors: {
       transparent: "transparent",
       primary: "rgb(var(--primary-color) / <alpha-value>)",
-      secondary: "rgb(var(--secondary-color) / <alpha-value>)",
-      tertiary: "rgb(var(--tertiary-color) / <alpha-value>)",
+      designer: "rgb(var(--designer-color) / <alpha-value>)",
+      producer: "rgb(var(--producer-color) / <alpha-value>)",
       "call-to-action": "rgb(var(--call-to-action-color) / <alpha-value>)",
       error: "rgb(var(--error-color) / <alpha-value>)",
       background: "rgb(var(--background-color) / <alpha-value>)",
