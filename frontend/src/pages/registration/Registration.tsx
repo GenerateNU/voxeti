@@ -32,7 +32,7 @@ const questions: MultiForm = {
     {
       sectionTitle: "Welcome to Voxeti",
       questionGroups: [
-        { 
+        {
           questions: [
             {
               prompt: "Email",
@@ -157,7 +157,7 @@ const questions: MultiForm = {
     {
       sectionTitle: "How would you describe your experience level?",
       questionGroups: [
-        { 
+        {
           questions: [
             {
               prompt: "Experience",
