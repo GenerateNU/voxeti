@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { userApi } from "../../api/api.ts";
 
 // Question being asked
-// TODO somehow allow two questions to be on same line
 type FormQuestion = {
   prompt: string;
   key: string;
@@ -10,6 +10,7 @@ type FormQuestion = {
   type?: string;
 };
 
+// Groups of questions that are displayed in the same line
 type QuestionGroup = {
   questions: FormQuestion[];
 };
@@ -17,7 +18,7 @@ type QuestionGroup = {
 // Each "page" of the form
 type FormSection = {
   sectionTitle: string;
-  questions: FormQuestion[];
+  questionGroups: QuestionGroup[];
 };
 
 // Parent form type with sections
@@ -30,105 +31,197 @@ const questions: MultiForm = {
   sections: [
     {
       sectionTitle: "Welcome to Voxeti",
-      questions: [
-        {
-          prompt: "Email",
-          key: "email",
-          rules: { required: true },
-          type: "email",
+      questionGroups: [
+        { 
+          questions: [
+            {
+              prompt: "Email",
+              key: "email",
+              rules: { required: true },
+              type: "email",
+            }
+          ]
         },
         {
-          prompt: "Password",
-          key: "password",
-          rules: { required: true },
-          type: "password",
-        },
+          questions: [
+            {
+              prompt: "Password",
+              key: "password",
+              rules: { required: true },
+              type: "password",
+            },
+          ]
+        }
+
       ],
     },
     {
       sectionTitle: "Tell us about yourself!",
-      questions: [
+      questionGroups: [
         {
-          prompt: "First Name",
-          key: "firstName",
-          rules: { required: true },
-          type: "text",
+          questions: [
+            {
+              prompt: "First Name",
+              key: "firstName",
+              rules: { required: true },
+              type: "text",
+            },
+            {
+              prompt: "Last Name",
+              key: "lastName",
+              rules: { required: true },
+              type: "text",
+            }
+          ]
         },
         {
-          prompt: "Last Name",
-          key: "lastName",
-          rules: { required: true },
-          type: "text",
+          questions: [
+            {
+              prompt: "Bio",
+              key: "bio",
+            }
+          ]
         },
         {
-          prompt: "Bio",
-          key: "bio",
+          questions: [
+            {
+              prompt: "Address Line 1",
+              key: "address.line1",
+              rules: { required: true },
+            }
+          ]
         },
         {
-          prompt: "Address Line 1",
-          key: "address.line1",
-          rules: { required: true },
+          questions: [
+            {
+              prompt: "Address Line 2",
+              key: "address.line2",
+            }
+          ]
         },
         {
-          prompt: "Address Line 2",
-          key: "address.line2",
+          questions: [
+            {
+              prompt: "Country Code",
+              key: "phoneNumber.countryCode",
+              rules: { required: true },
+              type: "text",
+            },
+            {
+              prompt: "Phone Number",
+              key: "phoneNumber.number",
+              rules: { required: true },
+              type: "text",
+            }
+          ]
         },
         {
-          prompt: "City",
-          key: "address.city",
-          rules: { required: true },
-          type: "text",
+          questions: [
+            {
+              prompt: "City",
+              key: "address.city",
+              rules: { required: true },
+              type: "text",
+            },
+            {
+              prompt: "State",
+              key: "address.state",
+              rules: { required: true },
+              type: "text",
+            },
+            {
+              prompt: "Zip",
+              key: "address.zipCode",
+              rules: { required: true },
+            }
+          ]
         },
         {
-          prompt: "State",
-          key: "address.state",
-          rules: { required: true },
-          type: "text",
-        },
-        {
-          prompt: "Zip",
-          key: "address.zipCode",
-          rules: { required: true },
-        },
-      ],
+          questions: [
+            {
+              prompt: "Name",
+              key: "address.name",
+              rules: { required: true },
+              type: "text",
+            },
+            {
+              prompt: "Country",
+              key: "address.country",
+              rules: { required: true },
+              type: "text",
+            }
+          ]
+        }
+      ]
     },
+    {
+      sectionTitle: "How would you describe your experience level?",
+      questionGroups: [
+        { 
+          questions: [
+            {
+              prompt: "Experience",
+              key: "experience",
+              rules: { required: true },
+              type: "number",
+            }
+          ]
+        }
+      ]
+    }
     // You can add more sections and questions as needed
-  ],
+  ]
 };
 const QuestionForm = () => {
   const { control, handleSubmit } = useForm();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [createUser]  = userApi.useCreateUserMutation();
+
   const onSubmit = (data: any) => {
     console.log(data);
+    data.experience = parseInt(data.experience, 10);
+    data.addresses = [data.address];
+    createUser(data)
+      .unwrap()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+    console.log(data);
   };
+
   const currentSection: FormSection = questions.sections[currentSectionIndex];
   const renderQuestions = () => {
     return (
-      <div className=" w-72 sm:w-96">
-        <h2 className="flex justify-center items-center text-xl">
-          {currentSection?.sectionTitle}
-        </h2>
-        {currentSection?.questions.map((question, _) => (
-          <div key={question.key}>
-            <Controller
-              key={question.key + "cont"}
-              name={`${question.key}`}
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col">
-                  <label className=" py-1">{question.prompt}</label>
-                  <input
-                    {...field}
-                    className=" outline outline-1 p-2 rounded-sm"
-                    type={question.type}
-                    key={question.key}
-                  />
-                </div>
-              )}
-              rules={question.rules}
-            />
+      <div className="flex flex-col justify-center min-w-[300px]">
+          <h2 className="text-xl text-center">
+            {currentSection?.sectionTitle}
+          </h2>
+          {currentSection?.questionGroups.map((group, _) => (
+            <div className="flex">
+            {group.questions.map((question, _) => (
+              <Controller
+                key={question.key + "cont"}
+                name={question.key}
+                control={control}
+                render={({ field }) => (
+                  <div className="flex flex-grow flex-col m-2">
+                    <label className=" py-1">{question.prompt}</label>
+                    <input
+                      {...field}
+                      className=" outline outline-1 p-2 rounded-sm"
+                      type={question.type}
+                      key={question.key}
+                    />
+                  </div>
+                )}
+                rules={question.rules}
+              />
+            ))}
           </div>
-        ))}
+          ))}
       </div>
     );
   };
@@ -192,8 +285,6 @@ const QuestionForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {renderQuestions()} {renderButtons()}
       </form>
-
-      <button className="active:bg-designer">Test button</button>
     </div>
   );
 };
