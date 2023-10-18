@@ -115,6 +115,7 @@ const (
 	InShipping = "INSHIPPING"
 	Complete   = "COMPLETE"
 )
+
 type SocialProvider string
 
 const (

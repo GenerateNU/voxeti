@@ -97,22 +97,22 @@ export function Login() {
             onClick={googleLogin}
           />
       }
-      <SignInWrapper img_src={PrinterImage}> 
+      <SignInWrapper img_src={PrinterImage}>
         <div className='flex flex-col h-full justify-center pb-10 w-[75%] xl:w-[60%]'>
           <h1 className='text-4xl font-light mb-12'>Sign In</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField 
+            <TextField
               {...register("email", { required: "Please provide an email" })}
               error={!!errors?.email || emailError}
               helperText={errors?.email?.message as string ?? emailError ? "Please provide a valid email" : " "}
-              className="!mb-5" 
-              type="email" 
-              label="Email" 
-              variant="outlined" 
+              className="!mb-5"
+              type="email"
+              label="Email"
+              variant="outlined"
               onBlur={() => emailChange()}
               fullWidth
             />
-            <TextField 
+            <TextField
               {...register("password", { required: "Please provide a password" })}
               className="!mb-12"
               error={!!errors.password}
