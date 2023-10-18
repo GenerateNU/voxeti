@@ -10,9 +10,16 @@ type FormQuestion = {
   type?: string;
 };
 
+type MultipleChoice = {
+  prompt?: string;
+  key: string;
+  options: { choiceLabel: string; choiceValue: any; choiceSubtitle?: string }[];
+};
+
 // Groups of questions that are displayed in the same line
 type QuestionGroup = {
-  questions: FormQuestion[];
+  questions?: FormQuestion[];
+  multipleChoice?: MultipleChoice[];
 };
 
 // Each "page" of the form
@@ -39,8 +46,8 @@ const questions: MultiForm = {
               key: "email",
               rules: { required: true },
               type: "email",
-            }
-          ]
+            },
+          ],
         },
         {
           questions: [
@@ -50,9 +57,8 @@ const questions: MultiForm = {
               rules: { required: true },
               type: "password",
             },
-          ]
-        }
-
+          ],
+        },
       ],
     },
     {
@@ -71,16 +77,16 @@ const questions: MultiForm = {
               key: "lastName",
               rules: { required: true },
               type: "text",
-            }
-          ]
+            },
+          ],
         },
         {
           questions: [
             {
               prompt: "Bio",
               key: "bio",
-            }
-          ]
+            },
+          ],
         },
         {
           questions: [
@@ -88,16 +94,16 @@ const questions: MultiForm = {
               prompt: "Address Line 1",
               key: "address.line1",
               rules: { required: true },
-            }
-          ]
+            },
+          ],
         },
         {
           questions: [
             {
               prompt: "Address Line 2",
               key: "address.line2",
-            }
-          ]
+            },
+          ],
         },
         {
           questions: [
@@ -112,8 +118,8 @@ const questions: MultiForm = {
               key: "phoneNumber.number",
               rules: { required: true },
               type: "text",
-            }
-          ]
+            },
+          ],
         },
         {
           questions: [
@@ -133,8 +139,8 @@ const questions: MultiForm = {
               prompt: "Zip",
               key: "address.zipCode",
               rules: { required: true },
-            }
-          ]
+            },
+          ],
         },
         {
           questions: [
@@ -149,10 +155,10 @@ const questions: MultiForm = {
               key: "address.country",
               rules: { required: true },
               type: "text",
-            }
-          ]
-        }
-      ]
+            },
+          ],
+        },
+      ],
     },
     {
       sectionTitle: "How would you describe your experience level?",
@@ -164,18 +170,39 @@ const questions: MultiForm = {
               key: "experience",
               rules: { required: true },
               type: "number",
-            }
-          ]
-        }
-      ]
-    }
+            },
+          ],
+        },
+      ],
+    },
+    {
+      sectionTitle: "What kind of 3D printers do you own?",
+      questionGroups: [
+        {
+          multipleChoice: [
+            {
+              prompt: "Printers",
+              key: "printer",
+              options: [
+                {
+                  choiceLabel: "Creality",
+                  choiceValue: "creality",
+                  choiceSubtitle: "with subtitle",
+                },
+                { choiceLabel: "Prusa", choiceValue: "prusa" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
     // You can add more sections and questions as needed
-  ]
+  ],
 };
 const QuestionForm = () => {
   const { control, handleSubmit } = useForm();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [createUser]  = userApi.useCreateUserMutation();
+  const [createUser] = userApi.useCreateUserMutation();
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -188,7 +215,7 @@ const QuestionForm = () => {
       })
       .catch((err) => {
         console.log(err);
-      })
+      });
     console.log(data);
   };
 
@@ -196,12 +223,10 @@ const QuestionForm = () => {
   const renderQuestions = () => {
     return (
       <div className="flex flex-col justify-center min-w-[300px]">
-          <h2 className="text-xl text-center">
-            {currentSection?.sectionTitle}
-          </h2>
-          {currentSection?.questionGroups.map((group, _) => (
-            <div className="flex">
-            {group.questions.map((question, _) => (
+        <h2 className="text-xl text-center">{currentSection?.sectionTitle}</h2>
+        {currentSection?.questionGroups.map((group, _) => (
+          <div className="flex">
+            {group.questions?.map((question, _) => (
               <Controller
                 key={question.key + "cont"}
                 name={question.key}
@@ -220,8 +245,43 @@ const QuestionForm = () => {
                 rules={question.rules}
               />
             ))}
+            {group.multipleChoice?.map((multiChoice, _) => (
+              <Controller
+                key={multiChoice.key + "cont"}
+                name={multiChoice.key}
+                control={control}
+                render={() => (
+                  <ul className="flex flex-grow flex-col m-2">
+                    {multiChoice.options.map((option, _) => (
+                      <li>
+                        <input
+                          type="checkbox"
+                          id={option.choiceValue}
+                          value={option.choiceValue}
+                          className="hidden peer"
+                          key={option.choiceValue}
+                        ></input>
+                        <label
+                          htmlFor={option.choiceValue}
+                          className="inline-flex items-center justify-between w-full p-5 cursor-pointer outline outline-1 rounded-md bg-designer peer-checked:bg-producer hover:bg-call-to-action"
+                        >
+                          <div className="block">
+                            <div className="w-full text-lg font-semibold">
+                              {option.choiceLabel}
+                            </div>
+                            <div className="w-full text-sm">
+                              {option.choiceSubtitle}
+                            </div>
+                          </div>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              />
+            ))}
           </div>
-          ))}
+        ))}
       </div>
     );
   };
