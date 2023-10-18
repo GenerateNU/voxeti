@@ -30,7 +30,7 @@ func CreateUser(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID,
 	}
 
 	// hash the user password:
-	hashedPassword, err := HashPassword(user.Password);
+	hashedPassword, err := HashPassword(user.Password)
 	if err != nil {
 		return nil, err
 	}
