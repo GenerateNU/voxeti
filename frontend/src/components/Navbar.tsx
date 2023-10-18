@@ -25,7 +25,7 @@ function NavItem({ title, link }: NavItemDetails) {
 function NavButton({ title, link }: NavItemDetails) {
   return (
     <li>
-      <a 
+      <a
         href={ link }
         className="bg-primary !border-primary !border-2 pt-3 pb-3 pl-8 pr-8 rounded-md text-background font-semibold transition-all ease-in-out hover:bg-background hover:text-primary"
       >
@@ -66,7 +66,7 @@ export default function Navbar() {
             aria-controls="navbar-default"
             aria-expanded="false"
           >
-            <MenuIcon 
+            <MenuIcon
               className='!w-full !h-full'
               color={'disabled'}
             />
