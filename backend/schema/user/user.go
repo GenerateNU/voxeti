@@ -10,6 +10,7 @@ import (
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
+	"golang.org/x/crypto/bcrypt"
 	"googlemaps.github.io/maps"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -27,6 +28,13 @@ func CreateUser(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID,
 	if locErr != nil {
 		return nil, locErr
 	}
+
+	// hash the user password:
+	hashedPassword, err := HashPassword(user.Password);
+	if err != nil {
+		return nil, err
+	}
+	user.Password = *hashedPassword
 
 	// insert user into database
 	id, dbErr := createUserDB(user, dbClient)
@@ -439,4 +447,17 @@ func paginateUsers(page int, limit int, users []*schema.User) []*schema.User {
 	}
 
 	return users[start:end]
+}
+
+func HashPassword(password string) (*string, *schema.ErrorResponse) {
+	errResponse := &schema.ErrorResponse{}
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		errResponse.Code = 500
+		errResponse.Message = "Failed to hash password!"
+		return nil, errResponse
+	}
+	hashedPassword := string(bytes)
+
+	return &hashedPassword, nil
 }
