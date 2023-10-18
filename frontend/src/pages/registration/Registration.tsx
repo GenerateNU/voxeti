@@ -4,22 +4,21 @@ import { userApi } from "../../api/api.ts";
 
 // Question being asked
 type FormQuestion = {
-  prompt: string;
+  prompt?: string;
+  format: string;
   key: string;
   rules?: {};
   type?: string;
-};
-
-type MultipleChoice = {
-  prompt?: string;
-  key: string;
-  options: { choiceLabel: string; choiceValue: any; choiceSubtitle?: string }[];
+  options?: {
+    choiceLabel: string;
+    choiceValue: any;
+    choiceSubtitle?: string;
+  }[];
 };
 
 // Groups of questions that are displayed in the same line
 type QuestionGroup = {
   questions?: FormQuestion[];
-  multipleChoice?: MultipleChoice[];
 };
 
 // Each "page" of the form
@@ -42,7 +41,24 @@ const questions: MultiForm = {
         {
           questions: [
             {
+              key: "userType",
+              format: "selection",
+              type: "radio",
+              options: [
+                {
+                  choiceLabel: "Producer",
+                  choiceValue: "producer",
+                },
+                { choiceLabel: "Designer", choiceValue: "designer" },
+              ],
+            },
+          ],
+        },
+        {
+          questions: [
+            {
               prompt: "Email",
+              format: "default",
               key: "email",
               rules: { required: true },
               type: "email",
@@ -53,6 +69,7 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "Password",
+              format: "default",
               key: "password",
               rules: { required: true },
               type: "password",
@@ -68,12 +85,14 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "First Name",
+              format: "default",
               key: "firstName",
               rules: { required: true },
               type: "text",
             },
             {
               prompt: "Last Name",
+              format: "default",
               key: "lastName",
               rules: { required: true },
               type: "text",
@@ -84,6 +103,7 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "Bio",
+              format: "default",
               key: "bio",
             },
           ],
@@ -92,6 +112,7 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "Address Line 1",
+              format: "default",
               key: "address.line1",
               rules: { required: true },
             },
@@ -101,6 +122,7 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "Address Line 2",
+              format: "default",
               key: "address.line2",
             },
           ],
@@ -109,12 +131,14 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "Country Code",
+              format: "default",
               key: "phoneNumber.countryCode",
               rules: { required: true },
               type: "text",
             },
             {
               prompt: "Phone Number",
+              format: "default",
               key: "phoneNumber.number",
               rules: { required: true },
               type: "text",
@@ -125,18 +149,21 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "City",
+              format: "default",
               key: "address.city",
               rules: { required: true },
               type: "text",
             },
             {
               prompt: "State",
+              format: "default",
               key: "address.state",
               rules: { required: true },
               type: "text",
             },
             {
               prompt: "Zip",
+              format: "default",
               key: "address.zipCode",
               rules: { required: true },
             },
@@ -146,12 +173,14 @@ const questions: MultiForm = {
           questions: [
             {
               prompt: "Name",
+              format: "default",
               key: "address.name",
               rules: { required: true },
               type: "text",
             },
             {
               prompt: "Country",
+              format: "default",
               key: "address.country",
               rules: { required: true },
               type: "text",
@@ -168,8 +197,28 @@ const questions: MultiForm = {
             {
               prompt: "Experience",
               key: "experience",
-              rules: { required: true },
-              type: "number",
+              format: "selection",
+              type: "radio",
+              options: [
+                {
+                  choiceLabel: "Beginner",
+                  choiceValue: "beginner",
+                  choiceSubtitle:
+                    "I have never touched a 3D printer or designed anything.",
+                },
+                {
+                  choiceLabel: "Intermediate",
+                  choiceValue: "intermediate",
+                  choiceSubtitle:
+                    "I have interacted with a 3D printer and have created a design.",
+                },
+                {
+                  choiceLabel: "Expert",
+                  choiceValue: "expert",
+                  choiceSubtitle:
+                    "I'm very comfortable with 3D printers and their designs.",
+                },
+              ],
             },
           ],
         },
@@ -179,10 +228,12 @@ const questions: MultiForm = {
       sectionTitle: "What kind of 3D printers do you own?",
       questionGroups: [
         {
-          multipleChoice: [
+          questions: [
             {
               prompt: "Printers",
               key: "printer",
+              format: "selection",
+              type: "checkbox",
               options: [
                 {
                   choiceLabel: "Creality",
@@ -231,53 +282,53 @@ const QuestionForm = () => {
                 key={question.key + "cont"}
                 name={question.key}
                 control={control}
-                render={({ field }) => (
-                  <div className="flex flex-grow flex-col m-2">
-                    <label className=" py-1">{question.prompt}</label>
-                    <input
-                      {...field}
-                      className=" outline outline-1 p-2 rounded-sm"
-                      type={question.type}
-                      key={question.key}
-                    />
-                  </div>
-                )}
+                render={({ field }) => {
+                  switch (question.format) {
+                    case "selection":
+                      return (
+                        <ul className="flex flex-grow flex-col m-2">
+                          {question.options?.map((option, _) => (
+                            <li>
+                              <input
+                                type={question.type}
+                                id={option.choiceValue}
+                                value={option.choiceValue}
+                                className="hidden peer"
+                                key={option.choiceValue}
+                                name={question.key}
+                              ></input>
+                              <label
+                                htmlFor={option.choiceValue}
+                                className="inline-flex items-center justify-between w-full p-5 cursor-pointer outline outline-1 rounded-md peer-checked:bg-primary peer-checked:bg-opacity-10 hover:bg-primary hover:bg-opacity-5"
+                              >
+                                <div className="block">
+                                  <div className="w-full text-lg font-semibold">
+                                    {option.choiceLabel}
+                                  </div>
+                                  <div className="w-full text-sm">
+                                    {option.choiceSubtitle}
+                                  </div>
+                                </div>
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    default:
+                      return (
+                        <div className="flex flex-grow flex-col m-2">
+                          <label className=" py-1">{question.prompt}</label>
+                          <input
+                            {...field}
+                            className=" outline outline-1 p-2 rounded-sm"
+                            type={question.type}
+                            key={question.key}
+                          />
+                        </div>
+                      );
+                  }
+                }}
                 rules={question.rules}
-              />
-            ))}
-            {group.multipleChoice?.map((multiChoice, _) => (
-              <Controller
-                key={multiChoice.key + "cont"}
-                name={multiChoice.key}
-                control={control}
-                render={() => (
-                  <ul className="flex flex-grow flex-col m-2">
-                    {multiChoice.options.map((option, _) => (
-                      <li>
-                        <input
-                          type="checkbox"
-                          id={option.choiceValue}
-                          value={option.choiceValue}
-                          className="hidden peer"
-                          key={option.choiceValue}
-                        ></input>
-                        <label
-                          htmlFor={option.choiceValue}
-                          className="inline-flex items-center justify-between w-full p-5 cursor-pointer outline outline-1 rounded-md bg-designer peer-checked:bg-producer hover:bg-call-to-action"
-                        >
-                          <div className="block">
-                            <div className="w-full text-lg font-semibold">
-                              {option.choiceLabel}
-                            </div>
-                            <div className="w-full text-sm">
-                              {option.choiceSubtitle}
-                            </div>
-                          </div>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               />
             ))}
           </div>
