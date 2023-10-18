@@ -1,7 +1,8 @@
+import StyledButton from "../components/Button/Button";
 import { useStateSelector } from "../hooks/use-redux";
 
 export default function Registration() {
-  const { user } = useStateSelector((state) => state.user);
+  const { user } = useStateSelector((state) => state.user)
 
   return (
     <div>

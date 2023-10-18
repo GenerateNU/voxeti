@@ -91,3 +91,5 @@ export type FilamentType = 'PLA' | 'ABS' | 'TPE';
 export type ExperienceLevel = 0 | 1 | 2
 
 export type SocialProvider = 'NONE' | 'GOOGLE'
+
+// 4. Extra Types:
