@@ -2,7 +2,7 @@ export default function Index() {
   return (
     // TODO: This is a placeholder for All-Hands. Replace this and make sure the mobile design looks good
     <>
-      <div id="hero" className="flex flex-row p-10 max-w-7xl mx-auto">
+      <div id="hero" className="flex flex-row p-10 max-w-7xl mx-auto mt-28">
         <div id="hero-text" className="basis-2/5 my-auto p-10 grow">
           <h1 className="font-bold text-6xl">No Printer?</h1>
           <h1 className="font-bold text-6xl">No Problem.</h1>
