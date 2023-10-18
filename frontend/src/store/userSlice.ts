@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { UserSliceState } from "./store.types";
+import { NewSSOUser, UserSliceState } from "./store.types";
 
 // Base user state:
 const initialState : UserSliceState = {
@@ -17,6 +17,7 @@ const initialState : UserSliceState = {
     experience: 0,
     printers: [],
     availableFilament: [],
+    socialProvider: 'NONE',
   },
 };
 
@@ -35,6 +36,12 @@ export const userSlice = createSlice({
 
     // 2. Reset user state on logout or session revocation:
     resetUser: () => initialState,
+
+    // 3. Set email and social provider on SSO user creation:
+    setSSONewUser: (state, action: PayloadAction<NewSSOUser>) => {
+      state.user.email = action.payload.email;
+      state.user.socialProvider = action.payload.socialProvider;
+    }
   }
 })
 
@@ -42,6 +49,7 @@ export const userSlice = createSlice({
 export const {
   setUser,
   resetUser,
+  setSSONewUser,
 } = userSlice.actions;
 
 export default userSlice.reducer;
