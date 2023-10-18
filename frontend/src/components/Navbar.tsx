@@ -70,7 +70,7 @@ export default function Navbar() {
 
           <div className='flex lg:hidden items-center'>
             <a className="w-8 h-8 text-sm rounded-lg mr-4" href="/login">
-              <PersonIcon 
+              <PersonIcon
                 className='!w-full !h-full'
                 color={'disabled'}
               />
@@ -91,7 +91,7 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-        <div 
+        <div
           className={`${navOpen ? '' : 'hidden'} lg:hidden w-full absolute mt-5 bg-background shadow-md`}
           onAnimationEnd={() => setAnimation(false)}
         >
