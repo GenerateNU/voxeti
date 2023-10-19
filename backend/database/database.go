@@ -13,7 +13,7 @@ import (
 // Setup for when backend gets created
 func Setup(dbClient *mongo.Client, logger *pterm.Logger) {
 	CreateUserCollection(dbClient, logger)
-  CreateJobCollection(dbClient, logger)
+	CreateJobCollection(dbClient, logger)
 }
 
 func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
@@ -230,7 +230,7 @@ func CreateJobCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 		logger.Fatal(dropErr.Error())
 	}
 
-	opts := options.CreateCollection();
+	opts := options.CreateCollection()
 
 	createErr := database.CreateCollection(context.TODO(), "jobs", opts)
 	if createErr != nil {

@@ -2,8 +2,8 @@ import { Outlet, Router, Route, RootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout/Layout.tsx";
 import Index from "./pages/Index.tsx";
+import QuestionForm from "./pages/registration/Registration.tsx";
 import { Login } from "./pages/Login.tsx";
-import Registration from "./pages/Registration.tsx";
 import Protected from "./pages/Protected.tsx";
 
 const rootRoute = new RootRoute({
@@ -30,16 +30,15 @@ const indexRoute = new Route({
   component: Index,
 });
 
+const registrationRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/register",
+  component: QuestionForm,
+});
 const loginRoute = new Route({
   getParentRoute: () => rootRoute,
   path: '/login',
   component: Login,
-})
-
-const registrationRoute = new Route({
-  getParentRoute: () => rootRoute,
-  path: '/register',
-  component: Registration,
 })
 
 const protectedRoute = new Route({
@@ -52,8 +51,8 @@ const protectedRoute = new Route({
 const routeTree = rootRoute.addChildren([
   error404Route,
   indexRoute,
-  loginRoute,
   registrationRoute,
+  loginRoute,
   protectedRoute,
 ]);
 
