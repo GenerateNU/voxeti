@@ -65,7 +65,7 @@ export default function Navbar() {
           <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
             <NavItem title={"Help"} link={"#"} />
             <NavItem title={"Log in"} link={"#"} />
-            <NavItem title={"Sign up"} link={"#"} />
+            <NavItem title={"Sign up"} link={"/registration"} />
           </ul>
         </div>
       </div>

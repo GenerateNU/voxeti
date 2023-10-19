@@ -172,16 +172,16 @@ const questions: MultiForm = {
         {
           questions: [
             {
-              prompt: "Name",
+              prompt: "Country",
               format: "default",
-              key: "address.name",
+              key: "address.country",
               rules: { required: true },
               type: "text",
             },
             {
-              prompt: "Country",
+              prompt: "Address Name",
               format: "default",
-              key: "address.country",
+              key: "address.name",
               rules: { required: true },
               type: "text",
             },
@@ -202,19 +202,19 @@ const questions: MultiForm = {
               options: [
                 {
                   choiceLabel: "Beginner",
-                  choiceValue: "beginner",
+                  choiceValue: 1,
                   choiceSubtitle:
                     "I have never touched a 3D printer or designed anything.",
                 },
                 {
                   choiceLabel: "Intermediate",
-                  choiceValue: "intermediate",
+                  choiceValue: 2,
                   choiceSubtitle:
                     "I have interacted with a 3D printer and have created a design.",
                 },
                 {
                   choiceLabel: "Expert",
-                  choiceValue: "expert",
+                  choiceValue: 3,
                   choiceSubtitle:
                     "I'm very comfortable with 3D printers and their designs.",
                 },
@@ -236,11 +236,29 @@ const questions: MultiForm = {
               type: "checkbox",
               options: [
                 {
-                  choiceLabel: "Creality",
-                  choiceValue: "creality",
-                  choiceSubtitle: "with subtitle",
+                  choiceLabel: "Bambu Lab P1S",
+                  choiceValue: "bambu"
                 },
-                { choiceLabel: "Prusa", choiceValue: "prusa" },
+                {
+                  choiceLabel: "Creality K1",
+                  choiceValue: "creality"
+                },
+                {
+                  choiceLabel: "Sovol SV07",
+                  choiceValue: "sovol"
+                },
+                {
+                  choiceLabel: "Elegoo Mars 2",
+                  choiceValue: "elegoo"
+                },
+                {
+                  choiceLabel: "Prusa MK4",
+                  choiceValue: "prusa"
+                },
+                {
+                  choiceLabel: "Other +",
+                  choiceValue: "other"
+                },
               ],
             },
           ],
@@ -254,11 +272,11 @@ const QuestionForm = () => {
   const { control, handleSubmit } = useForm();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [createUser] = userApi.useCreateUserMutation();
+  const [experience, setExperience] = useState(0);
 
   const onSubmit = (data: any) => {
-    console.log(data);
-    data.experience = parseInt(data.experience, 10);
     data.addresses = [data.address];
+    data.experience = experience;
     createUser(data)
       .unwrap()
       .then((res) => {
@@ -267,14 +285,21 @@ const QuestionForm = () => {
       .catch((err) => {
         console.log(err);
       });
-    console.log(data);
   };
+
+  const handleSelection = (e: any) => {
+    switch (e.target.name) {
+      case "experience":
+        setExperience(parseInt(e.target.value, 10));
+        break;
+    }
+  }
 
   const currentSection: FormSection = questions.sections[currentSectionIndex];
   const renderQuestions = () => {
     return (
       <div className="flex flex-col justify-center min-w-[300px]">
-        <h2 className="text-xl text-center">{currentSection?.sectionTitle}</h2>
+        <h2 className="text-xl text-center font-semibold">{currentSection?.sectionTitle}</h2>
         {currentSection?.questionGroups.map((group, _) => (
           <div className="flex">
             {group.questions?.map((question, _) => (
@@ -288,8 +313,9 @@ const QuestionForm = () => {
                       return (
                         <ul className="flex flex-grow flex-col m-2">
                           {question.options?.map((option, _) => (
-                            <li>
+                            <li className=" m-2">
                               <input
+                                onChange={(e) => handleSelection(e)}
                                 type={question.type}
                                 id={option.choiceValue}
                                 value={option.choiceValue}
@@ -299,13 +325,13 @@ const QuestionForm = () => {
                               ></input>
                               <label
                                 htmlFor={option.choiceValue}
-                                className="inline-flex items-center justify-between w-full p-5 cursor-pointer outline outline-1 rounded-md peer-checked:bg-primary peer-checked:bg-opacity-10 hover:bg-primary hover:bg-opacity-5"
+                                className={`inline-flex items-center ${option.choiceSubtitle ? "justify-between" : "justify-center"} w-full p-5 cursor-pointer outline outline-[0.5px] rounded-md peer-checked:bg-primary peer-checked:bg-opacity-10 hover:bg-primary hover:bg-opacity-5`}
                               >
-                                <div className="block">
-                                  <div className="w-full text-lg font-semibold">
+                                <div className="block p-4">
+                                  <div className={"w-full text-lg font-normal"}>
                                     {option.choiceLabel}
                                   </div>
-                                  <div className="w-full text-sm">
+                                  <div className="w-full text-sm font-light">
                                     {option.choiceSubtitle}
                                   </div>
                                 </div>
@@ -317,10 +343,10 @@ const QuestionForm = () => {
                     default:
                       return (
                         <div className="flex flex-grow flex-col m-2">
-                          <label className=" py-1">{question.prompt}</label>
+                          <label className=" py-1 font-normal">{question.prompt}</label>
                           <input
                             {...field}
-                            className=" outline outline-1 p-2 rounded-sm"
+                            className=" outline outline-[0.5px] p-2 rounded-sm"
                             type={question.type}
                             key={question.key}
                           />

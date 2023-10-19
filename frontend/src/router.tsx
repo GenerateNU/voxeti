@@ -2,8 +2,6 @@ import { Outlet, Router, Route, RootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout.tsx";
 import Index from "./pages/Index.tsx";
-import Step1 from "./pages/registration/Step1.tsx";
-import Step2 from "./pages/registration/Step2.tsx";
 import QuestionForm from "./pages/registration/Registration.tsx";
 
 const rootRoute = new RootRoute({
@@ -36,25 +34,11 @@ const registrationRoute = new Route({
   component: QuestionForm,
 });
 
-const step1Route = new Route({
-  getParentRoute: () => rootRoute,
-  path: "/registration/step1",
-  component: Step1,
-});
-
-const step2Route = new Route({
-  getParentRoute: () => rootRoute,
-  path: "/registration/step2",
-  component: Step2,
-});
-
 // Add routes to the route tree here
 const routeTree = rootRoute.addChildren([
   error404Route,
   indexRoute,
   registrationRoute,
-  step1Route,
-  step2Route,
 ]);
 
 const router = new Router({ routeTree });
