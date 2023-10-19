@@ -1,9 +1,18 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import userReducer from './userSlice';
-import { authApi, userApi } from '../api/api';
-import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import userReducer from "./userSlice";
+import { authApi, userApi } from "../api/api";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
 
 const combinedReducers = combineReducers({
   user: userReducer,
@@ -11,16 +20,19 @@ const combinedReducers = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
 });
 
-type RootReducer = ReturnType<typeof combinedReducers>
+type RootReducer = ReturnType<typeof combinedReducers>;
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
   stateReconciler: autoMergeLevel2,
-  blacklist: [authApi.reducerPath, userApi.reducerPath]
-}
+  blacklist: [authApi.reducerPath, userApi.reducerPath],
+};
 
-const persistedReducer = persistReducer<RootReducer>(persistConfig, combinedReducers);
+const persistedReducer = persistReducer<RootReducer>(
+  persistConfig,
+  combinedReducers,
+);
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) => (
@@ -33,5 +45,5 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

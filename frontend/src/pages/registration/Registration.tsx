@@ -243,27 +243,27 @@ const questions: MultiForm = {
               options: [
                 {
                   choiceLabel: "Bambu Lab P1S",
-                  choiceValue: "bambu"
+                  choiceValue: "bambu",
                 },
                 {
                   choiceLabel: "Creality K1",
-                  choiceValue: "creality"
+                  choiceValue: "creality",
                 },
                 {
                   choiceLabel: "Sovol SV07",
-                  choiceValue: "sovol"
+                  choiceValue: "sovol",
                 },
                 {
                   choiceLabel: "Elegoo Mars 2",
-                  choiceValue: "elegoo"
+                  choiceValue: "elegoo",
                 },
                 {
                   choiceLabel: "Prusa MK4",
-                  choiceValue: "prusa"
+                  choiceValue: "prusa",
                 },
                 {
                   choiceLabel: "Other +",
-                  choiceValue: "other"
+                  choiceValue: "other",
                 },
               ],
             },
@@ -285,7 +285,7 @@ const QuestionForm = () => {
   const onSubmit = (data: FieldValues) => {
     // create new user object
     const newUser: User = {
-      id: '',
+      id: "",
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
@@ -307,7 +307,7 @@ const QuestionForm = () => {
       },
       experience: experience,
       printers: data.printer,
-      socialProvider: 'NONE'
+      socialProvider: "NONE",
     };
 
     createUser(newUser)
@@ -328,23 +328,27 @@ const QuestionForm = () => {
       });
   };
 
-
   const handleSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
       case "experience": {
-          const selectedExperience = parseInt(e.target.value, 10) as ExperienceLevel;
-          setExperience(selectedExperience);
-          break;
-        }
+        const selectedExperience = parseInt(
+          e.target.value,
+          10,
+        ) as ExperienceLevel;
+        setExperience(selectedExperience);
+        break;
+      }
     }
-  }
+  };
 
   const currentSection: FormSection = questions.sections[currentSectionIndex];
   const renderQuestions = () => {
     return (
       <Auth authRoute={false}>
         <div className="flex flex-col justify-center min-w-[300px]">
-          <h2 className="text-xl text-center font-semibold">{currentSection?.sectionTitle}</h2>
+          <h2 className="text-xl text-center font-semibold">
+          {currentSection?.sectionTitle}
+        </h2>
           {currentSection?.questionGroups.map((group) => (
             <div className="flex">
               {group.questions?.map((question) => (
@@ -370,7 +374,11 @@ const QuestionForm = () => {
                                 ></input>
                                 <label
                                   htmlFor={option.choiceValue}
-                                  className={`inline-flex items-center ${option.choiceSubtitle ? "justify-between" : "justify-center"} w-full p-5 cursor-pointer outline outline-[0.5px] rounded-md peer-checked:bg-primary peer-checked:bg-opacity-10 hover:bg-primary hover:bg-opacity-5`}
+                                  className={`inline-flex items-center ${
+                                  option.choiceSubtitle
+                                    ? "justify-between"
+                                    : "justify-center"
+                                } w-full p-5 cursor-pointer outline outline-[0.5px] rounded-md peer-checked:bg-primary peer-checked:bg-opacity-10 hover:bg-primary hover:bg-opacity-5`}
                                 >
                                   <div className="block p-4">
                                     <div className={"w-full text-lg font-normal"}>
@@ -388,7 +396,9 @@ const QuestionForm = () => {
                       default:
                         return (
                           <div className="flex flex-grow flex-col m-2">
-                            <label className=" py-1 font-normal">{question.prompt}</label>
+                            <label className=" py-1 font-normal">
+                            {question.prompt}
+                          </label>
                             <input
                               {...field}
                               className=" outline outline-[0.5px] p-2 rounded-sm"

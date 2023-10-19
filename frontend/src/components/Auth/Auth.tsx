@@ -3,21 +3,17 @@ import { useStateSelector } from "../../hooks/use-redux";
 import router from "../../router";
 import { AuthProps } from "./Auth.types";
 
-export default function Auth({ children, authRoute } : AuthProps) {
-  const { user } = useStateSelector(state => state.user)
+export default function Auth({ children, authRoute }: AuthProps) {
+  const { user } = useStateSelector((state) => state.user);
   const userId = user?.id;
 
   useEffect(() => {
     if (authRoute) {
-      !userId && router.navigate({ to: '/login'})
+      !userId && router.navigate({ to: "/login" });
     } else {
-      userId && router.navigate({ to: '/protected' })
+      userId && router.navigate({ to: "/protected" });
     }
-  }, [authRoute, userId])
+  }, [authRoute, userId]);
 
-  return (
-    <>
-      {children}
-    </>
-  )
+  return <>{children}</>;
 }

@@ -1,7 +1,11 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { GoogleSSOResponse, UseGoogleProps } from "./hooks.types";
 
-export default function useGoogle({ setProviderLoginPending, setProviderUser, googleSSO } : UseGoogleProps) {
+export default function useGoogle({
+  setProviderLoginPending,
+  setProviderUser,
+  googleSSO,
+}: UseGoogleProps) {
   // Google login succeeds:
   function onSuccess(response: GoogleSSOResponse) {
     // Set provider pending to false:
@@ -11,12 +15,12 @@ export default function useGoogle({ setProviderLoginPending, setProviderUser, go
     googleSSO(response.access_token as string)
       .unwrap()
       .then((res) => {
-        setProviderUser(res)
+        setProviderUser(res);
       })
       .catch((err) => {
         // ERROR HANDLING NOT YET SETUP
         console.log(err);
-      })
+      });
   }
 
   function onError() {
@@ -27,9 +31,8 @@ export default function useGoogle({ setProviderLoginPending, setProviderUser, go
   const signIn = useGoogleLogin({
     onSuccess,
     onError,
-    ux_mode: 'popup',
+    ux_mode: "popup",
   });
-
 
   return signIn;
 }

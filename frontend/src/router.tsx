@@ -37,15 +37,15 @@ const registrationRoute = new Route({
 });
 const loginRoute = new Route({
   getParentRoute: () => rootRoute,
-  path: '/login',
+  path: "/login",
   component: Login,
-})
+});
 
 const protectedRoute = new Route({
   getParentRoute: () => rootRoute,
-  path: '/protected',
+  path: "/protected",
   component: Protected,
-})
+});
 
 // Add routes to the route tree here
 const routeTree = rootRoute.addChildren([
