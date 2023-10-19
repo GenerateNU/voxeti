@@ -279,7 +279,7 @@ const QuestionForm = () => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [createUser] = userApi.useCreateUserMutation();
   const [login] = authApi.useLoginMutation();
-  const dispatch = useStateDispatch(); 
+  const dispatch = useStateDispatch();
   const [experience, setExperience] = useState<ExperienceLevel>(1);
 
   const onSubmit = (data: FieldValues) => {

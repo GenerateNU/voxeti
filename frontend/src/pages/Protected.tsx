@@ -8,15 +8,15 @@ export default function Protected() {
   const { csrfToken } = useStateSelector(state => state.user);
   const dispatch = useStateDispatch();
   const [logout] = authApi.useLogoutMutation();
-  
-  const handleLogout = () => { 
+
+  const handleLogout = () => {
     logout(csrfToken)
       .unwrap()
       .then(() => {
         dispatch(resetUser());
       })
   }
-  
+
   return (
     <Auth authRoute={true}>
       <h1 className='mt-20'>
