@@ -8,3 +8,10 @@ export type UserCredentials = {
 export type IdResponse = {
   id: string;
 }
+
+// Google SSO Response:
+export type ProviderUser = {
+  user: string;
+  userType: "new" | "existing"
+  provider: "GOOGLE"
+}

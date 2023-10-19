@@ -301,6 +301,7 @@ const QuestionForm = () => {
       },
       experience: experience,
       printers: data.printer,
+      socialProvider: 'NONE'
     };
 
     createUser(newUser)
@@ -447,7 +448,7 @@ const QuestionForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center py-4">
+    <div className="flex justify-center items-center pt-32">
       <form onSubmit={handleSubmit(onSubmit)}>
         {renderQuestions()} {renderButtons()}
       </form>

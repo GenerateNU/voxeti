@@ -12,6 +12,7 @@ export interface User {
   experience: ExperienceLevel;
   printers?: Printer[];
   availableFilament?: Filament[];
+  socialProvider: SocialProvider;
 }
 
 // A Voxeti print Job
@@ -89,3 +90,7 @@ export type FilamentType = 'PLA' | 'ABS' | 'TPE';
 
 // The experience level of a user:
 export type ExperienceLevel = 1 | 2 | 3
+
+export type SocialProvider = 'NONE' | 'GOOGLE'
+
+// 4. Extra Types:
