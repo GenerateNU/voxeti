@@ -13,7 +13,7 @@ type FormQuestion = {
   type?: string;
   options?: {
     choiceLabel: string;
-    choiceValue: any;
+    choiceValue: string;
     choiceSubtitle?: string;
   }[];
 };
@@ -204,19 +204,19 @@ const questions: MultiForm = {
               options: [
                 {
                   choiceLabel: "Beginner",
-                  choiceValue: 1,
+                  choiceValue: "1",
                   choiceSubtitle:
                     "I have never touched a 3D printer or designed anything.",
                 },
                 {
                   choiceLabel: "Intermediate",
-                  choiceValue: 2,
+                  choiceValue: "2",
                   choiceSubtitle:
                     "I have interacted with a 3D printer and have created a design.",
                 },
                 {
                   choiceLabel: "Expert",
-                  choiceValue: 3,
+                  choiceValue: "3",
                   choiceSubtitle:
                     "I'm very comfortable with 3D printers and their designs.",
                 },
@@ -316,10 +316,11 @@ const QuestionForm = () => {
 
   const handleSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
-      case "experience":
-        const selectedExperience = parseInt(e.target.value, 10) as ExperienceLevel;
-        setExperience(selectedExperience);
-        break;
+      case "experience": {
+          const selectedExperience = parseInt(e.target.value, 10) as ExperienceLevel;
+          setExperience(selectedExperience);
+          break;
+        }
     }
   }
 
