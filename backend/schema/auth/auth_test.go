@@ -43,8 +43,8 @@ func TestLogin(t *testing.T) {
 			},
 			prepMongoMock: func(mt *mtest.T) {
 				user := schema.User{
-					Email:    "user1@example.com",
-					Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
+					Email:          "user1@example.com",
+					Password:       "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
 					SocialProvider: "NONE",
 				}
 
@@ -68,8 +68,8 @@ func TestLogin(t *testing.T) {
 			},
 			expectedResponse: schema.LoginResponse{
 				User: schema.User{
-					Email:    "user1@example.com",
-					Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
+					Email:          "user1@example.com",
+					Password:       "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
 					SocialProvider: "NONE",
 				},
 			},
@@ -83,8 +83,8 @@ func TestLogin(t *testing.T) {
 			},
 			prepMongoMock: func(mt *mtest.T) {
 				user := schema.User{
-					Email:    "user1@example.com",
-					Password: "someRandomPassword",
+					Email:          "user1@example.com",
+					Password:       "someRandomPassword",
 					SocialProvider: "NONE",
 				}
 
