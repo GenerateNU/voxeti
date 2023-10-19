@@ -21,7 +21,7 @@ export function Login() {
   const [providerUser, setProviderUser] = useState<ProviderUser>();
   const [provider, setProvider] = useState("");
   const [emailError, setEmailError] = useState(false);
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState("");
 
   const [login] = authApi.useLoginMutation();
   const [googleSSO, { isLoading: isGoogleLoading }] =
@@ -41,7 +41,7 @@ export function Login() {
         dispatch(setUser(res));
         router.navigate({ to: "/protected" });
       })
-      .catch(({ data : { error } }) => {
+      .catch(({ data: { error } }) => {
         setLoginError(error.message);
       });
   };
@@ -52,7 +52,7 @@ export function Login() {
         setSSONewUser({
           email: providerUser.user,
           socialProvider: providerUser.provider,
-        })
+        }),
       );
       router.navigate({ to: "/register" });
     }
@@ -173,7 +173,11 @@ export function Login() {
                 </Link>
               </Grid>
             </Grid>
-            {loginError && <h1 className='pb-5 w-full text-center text-[#FF0000]'>{ loginError }</h1>}
+            {loginError && (
+              <h1 className="pb-5 w-full text-center text-[#FF0000]">
+                {loginError}
+              </h1>
+            )}
             <StyledButton title={"Sign In"} color={"primary"} type="submit">
               Sign In
             </StyledButton>

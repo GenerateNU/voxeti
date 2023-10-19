@@ -12,6 +12,7 @@ import (
 var (
 	embedFrontend = false // enable at build time with: "go build -tags embed"
 	distDirFS     fs.FS
+	srcDirFS      fs.FS
 	distIndexHTML fs.FS
 )
 
@@ -19,6 +20,7 @@ func RegisterFrontendHandlers(e *echo.Echo) {
 	if embedFrontend {
 		e.FileFS("/", "index.html", distIndexHTML)
 		e.StaticFS("/", distDirFS)
+		e.StaticFS("src/", srcDirFS)
 		return
 	}
 	setupProxy(e)
