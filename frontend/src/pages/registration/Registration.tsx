@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FieldValues } from "react-hook-form";
 import { userApi } from "../../api/api.ts";
+import { User } from "../../main.types.ts";
+import { ExperienceLevel } from "../../main.types.ts";
 
 // Question being asked
 type FormQuestion = {
@@ -272,12 +274,36 @@ const QuestionForm = () => {
   const { control, handleSubmit } = useForm();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [createUser] = userApi.useCreateUserMutation();
-  const [experience, setExperience] = useState(0);
+  const [experience, setExperience] = useState<ExperienceLevel>(1);
 
-  const onSubmit = (data: any) => {
-    data.addresses = [data.address];
-    data.experience = experience;
-    createUser(data)
+  const onSubmit = (data: FieldValues) => {
+    // create new user object
+    const newUser: User = {
+      id: '',
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      password: data.password,
+      addresses: [
+        {
+          line1: data.address.line1,
+          line2: data.address.line2,
+          city: data.address.city,
+          state: data.address.state,
+          zipCode: data.address.zipCode,
+          country: data.address.country,
+          name: data.address.name,
+        },
+      ],
+      phoneNumber: {
+        countryCode: data.phoneNumber.countryCode,
+        number: data.phoneNumber.number,
+      },
+      experience: experience,
+      printers: data.printer,
+    };
+
+    createUser(newUser)
       .unwrap()
       .then((res) => {
         console.log(res);
@@ -287,10 +313,12 @@ const QuestionForm = () => {
       });
   };
 
-  const handleSelection = (e: any) => {
+
+  const handleSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
       case "experience":
-        setExperience(parseInt(e.target.value, 10));
+        const selectedExperience = parseInt(e.target.value, 10) as ExperienceLevel;
+        setExperience(selectedExperience);
         break;
     }
   }
@@ -300,9 +328,9 @@ const QuestionForm = () => {
     return (
       <div className="flex flex-col justify-center min-w-[300px]">
         <h2 className="text-xl text-center font-semibold">{currentSection?.sectionTitle}</h2>
-        {currentSection?.questionGroups.map((group, _) => (
+        {currentSection?.questionGroups.map((group) => (
           <div className="flex">
-            {group.questions?.map((question, _) => (
+            {group.questions?.map((question) => (
               <Controller
                 key={question.key + "cont"}
                 name={question.key}
@@ -312,7 +340,7 @@ const QuestionForm = () => {
                     case "selection":
                       return (
                         <ul className="flex flex-grow flex-col m-2">
-                          {question.options?.map((option, _) => (
+                          {question.options?.map((option) => (
                             <li className=" m-2">
                               <input
                                 onChange={(e) => handleSelection(e)}

@@ -10,8 +10,8 @@ export interface User {
   addresses: Address[];
   phoneNumber: PhoneNumber;
   experience: ExperienceLevel;
-  printers: Printer[];
-  availableFilament: Filament[];
+  printers?: Printer[];
+  availableFilament?: Filament[];
 }
 
 // A Voxeti print Job
@@ -75,7 +75,7 @@ export type Printer = {
 
 // A phone number
 export type PhoneNumber = {
-  areaCode: string;
+  countryCode: string;
   number: string;
 }
 
@@ -88,4 +88,4 @@ export type JobStatus = 'PENDING' | 'ACCEPTED' | 'INPROGRESS' | 'INSHIPPING' | '
 export type FilamentType = 'PLA' | 'ABS' | 'TPE';
 
 // The experience level of a user:
-export type ExperienceLevel = 0 | 1 | 2
+export type ExperienceLevel = 1 | 2 | 3

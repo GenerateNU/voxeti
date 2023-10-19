@@ -12,10 +12,10 @@ const initialState : UserSliceState = {
     password: '',
     addresses: [],
     phoneNumber: {
-      areaCode: '',
+      countryCode: '',
       number: '',
     },
-    experience: 0,
+    experience: 1,
     printers: [],
     availableFilament: [],
   },
