@@ -9,7 +9,7 @@ type FormQuestion = {
   prompt?: string;
   format: string;
   key: string;
-  rules?: {};
+  rules?: object;
   type?: string;
   options?: {
     choiceLabel: string;
