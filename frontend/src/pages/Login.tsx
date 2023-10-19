@@ -21,9 +21,7 @@ export function Login() {
   const [providerUser, setProviderUser] = useState<ProviderUser>();
   const [provider, setProvider] = useState("");
   const [emailError, setEmailError] = useState(false);
-  // To replace with error handling:
-  const [loginError, setLoginError] = useState(false);
-  console.log(loginError);
+  const [loginError, setLoginError] = useState('');
 
   const [login] = authApi.useLoginMutation();
   const [googleSSO, { isLoading: isGoogleLoading }] =
@@ -43,10 +41,8 @@ export function Login() {
         dispatch(setUser(res));
         router.navigate({ to: "/protected" });
       })
-      .catch((err) => {
-        // ERROR HANDLING NEEDS TO BE SETUP:
-        console.log(err);
-        setLoginError(true);
+      .catch(({ data : { error } }) => {
+        setLoginError(error.message);
       });
   };
 
@@ -63,7 +59,7 @@ export function Login() {
     if (providerUser?.userType === "existing") {
       handleLogin({
         email: providerUser.user,
-        password: "",
+        password: "thisisabspassword",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,8 +88,6 @@ export function Login() {
     }
   };
 
-  console.log(emailError);
-
   return (
     <Auth authRoute={false}>
       {providerLoginPending && (
@@ -116,7 +110,6 @@ export function Login() {
                   : " "
               }
               className="!mb-5"
-              type="email"
               label="Email"
               variant="outlined"
               onBlur={() => emailChange()}
@@ -151,7 +144,7 @@ export function Login() {
                   Don't have an account? &nbsp;
                 </Typography>
                 <Link
-                  href="#"
+                  href="/register"
                   variant="body2"
                   sx={{
                     py: 1,
@@ -180,6 +173,7 @@ export function Login() {
                 </Link>
               </Grid>
             </Grid>
+            {loginError && <h1 className='pb-5 w-full text-center text-[#FF0000]'>{ loginError }</h1>}
             <StyledButton title={"Sign In"} color={"primary"} type="submit">
               Sign In
             </StyledButton>
