@@ -45,6 +45,7 @@ func TestLogin(t *testing.T) {
 				user := schema.User{
 					Email:    "user1@example.com",
 					Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
+					SocialProvider: "NONE",
 				}
 
 				userBSON, _ := bson.Marshal(user)
@@ -69,6 +70,7 @@ func TestLogin(t *testing.T) {
 				User: schema.User{
 					Email:    "user1@example.com",
 					Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
+					SocialProvider: "NONE",
 				},
 			},
 			wantError: false,
@@ -83,6 +85,7 @@ func TestLogin(t *testing.T) {
 				user := schema.User{
 					Email:    "user1@example.com",
 					Password: "someRandomPassword",
+					SocialProvider: "NONE",
 				}
 
 				userBSON, _ := bson.Marshal(user)
