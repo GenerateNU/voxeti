@@ -12,7 +12,7 @@ import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
 import PrinterImage from "../assets/peopleprinting.jpg"
 import SignInOr from "../assets/SignInOr.png"
 import StyledButton from "../components/Button/Button";
-import { TextField } from "@mui/material";
+import { Grid, Link, TextField } from "@mui/material";
 import { useForm } from "react-hook-form"
 import { validateEmail } from "../utilities/strings";
 
@@ -90,21 +90,25 @@ export function Login() {
 
   return (
     <Auth authRoute={false}>
-      {providerLoginPending &&
-          <SocialProviderPending
-            provider={provider}
-            setState={setProviderLoginPending}
-            onClick={googleLogin}
-          />
-      }
+      {providerLoginPending && (
+        <SocialProviderPending
+          provider={provider}
+          setState={setProviderLoginPending}
+          onClick={googleLogin}
+        />
+      )}
       <SignInWrapper img_src={PrinterImage}>
-        <div className='flex flex-col h-full justify-center pb-10 w-[75%] xl:w-[60%]'>
-          <h1 className='text-4xl font-light mb-12'>Sign In</h1>
+        <div className="flex flex-col h-full justify-center pb-10 w-[75%] xl:w-[60%]">
+          <h1 className="text-4xl font-light mb-12">Sign In</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register("email", { required: "Please provide an email" })}
               error={!!errors?.email || emailError}
-              helperText={errors?.email?.message as string ?? emailError ? "Please provide a valid email" : " "}
+              helperText={
+                (errors?.email?.message as string) ?? emailError
+                  ? "Please provide a valid email"
+                  : " "
+              }
               className="!mb-5"
               type="email"
               label="Email"
@@ -113,22 +117,54 @@ export function Login() {
               fullWidth
             />
             <TextField
-              {...register("password", { required: "Please provide a password" })}
-              className="!mb-12"
+              {...register("password", {
+                required: "Please provide a password",
+              })}
               error={!!errors.password}
-              helperText={errors?.password?.message as string ?? " "}
+              helperText={(errors?.password?.message as string) ?? " "}
               type="password"
               label="Password"
               fullWidth
               variant="outlined"
+              sx={{ mb: 0 }}
             />
-            <StyledButton title={"Sign In"} color={"primary"} type='submit'>
+            <Grid container className="!mb-5 !mt-0 justify-between">
+              <Grid item>
+                <Link
+                  href="#"
+                  variant="body2"
+                  sx={{
+                    py: 1,
+                    color: "black",
+                    textDecoration: "none",
+                    fontSize: "10px",
+                  }}
+                >
+                  {"Don't have an account?"}
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link
+                  href="#"
+                  variant="body2"
+                  sx={{
+                    py: 1,
+                    color: "black",
+                    textDecoration: "none",
+                    fontSize: "10px",
+                  }}
+                >
+                  {"Forgot Password?"}
+                </Link>
+              </Grid>
+            </Grid>
+            <StyledButton title={"Sign In"} color={"primary"} type="submit">
               Sign In
             </StyledButton>
           </form>
-          <img className="mt-10" src={SignInOr}/>
+          <img className="mt-10" src={SignInOr} />
           <SocialProvider
-            provider={'Google'}
+            provider={"Google"}
             setState={setProviderLoginPending}
             setProvider={setProvider}
             onClick={googleLogin}
@@ -137,5 +173,5 @@ export function Login() {
         </div>
       </SignInWrapper>
     </Auth>
-  )
+  );
 }
