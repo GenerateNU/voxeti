@@ -17,7 +17,7 @@ const persistConfig = {
   key: 'root',
   storage,
   stateReconciler: autoMergeLevel2,
-  blacklist: [authApi.reducerPath]
+  blacklist: [authApi.reducerPath, userApi.reducerPath]
 }
 
 const persistedReducer = persistReducer<RootReducer>(persistConfig, combinedReducers);
@@ -26,6 +26,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) => (
     getDefaultMiddleware({ serializableCheck: { ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER] }})
       .concat(authApi.middleware)
+      .concat(userApi.middleware)
   ),
   reducer: persistedReducer
 });
