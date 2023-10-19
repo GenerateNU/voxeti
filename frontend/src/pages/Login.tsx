@@ -9,72 +9,78 @@ import router from "../router";
 import { useStateDispatch } from "../hooks/use-redux";
 import Auth from "../components/Auth/Auth";
 import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
-import PrinterImage from "../assets/peopleprinting.jpg"
-import SignInOr from "../assets/SignInOr.png"
+import PrinterImage from "../assets/peopleprinting.jpg";
+import SignInOr from "../assets/SignInOr.png";
 import StyledButton from "../components/Button/Button";
-import { Grid, Link, TextField } from "@mui/material";
-import { useForm } from "react-hook-form"
+import { Grid, Link, TextField, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { validateEmail } from "../utilities/strings";
-
 
 export function Login() {
   const [providerLoginPending, setProviderLoginPending] = useState(false);
   const [providerUser, setProviderUser] = useState<ProviderUser>();
-  const [provider, setProvider] = useState('');
+  const [provider, setProvider] = useState("");
   const [emailError, setEmailError] = useState(false);
   // To replace with error handling:
   const [loginError, setLoginError] = useState(false);
   console.log(loginError);
 
   const [login] = authApi.useLoginMutation();
-  const [googleSSO, { isLoading : isGoogleLoading }] = authApi.useGoogleSSOMutation();
-  const dispatch = useStateDispatch()
+  const [googleSSO, { isLoading: isGoogleLoading }] =
+    authApi.useGoogleSSOMutation();
+  const dispatch = useStateDispatch();
 
-  const googleLogin = useGoogle({ setProviderLoginPending, setProviderUser, googleSSO });
+  const googleLogin = useGoogle({
+    setProviderLoginPending,
+    setProviderUser,
+    googleSSO,
+  });
 
-  const handleLogin = (userCredentials : UserCredentials) => {
+  const handleLogin = (userCredentials: UserCredentials) => {
     login(userCredentials)
       .unwrap()
       .then((res) => {
         dispatch(setUser(res));
-        router.navigate({ to: '/protected'})
+        router.navigate({ to: "/protected" });
       })
       .catch((err) => {
         // ERROR HANDLING NEEDS TO BE SETUP:
         console.log(err);
         setLoginError(true);
-      })
-  }
+      });
+  };
 
   useEffect(() => {
-    if (providerUser?.userType === 'new') {
-      dispatch(setSSONewUser({
-        email: providerUser.user,
-        socialProvider: providerUser.provider
-      }))
-      router.navigate({to: '/register'})
+    if (providerUser?.userType === "new") {
+      dispatch(
+        setSSONewUser({
+          email: providerUser.user,
+          socialProvider: providerUser.provider,
+        })
+      );
+      router.navigate({ to: "/register" });
     }
-    if (providerUser?.userType === 'existing') {
+    if (providerUser?.userType === "existing") {
       handleLogin({
         email: providerUser.user,
-        password: ""
+        password: "",
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [providerUser])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providerUser]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues
-  } = useForm<UserCredentials>()
+    getValues,
+  } = useForm<UserCredentials>();
 
-  const onSubmit = (formData : UserCredentials) => {
+  const onSubmit = (formData: UserCredentials) => {
     if (!emailError) {
-      handleLogin(formData)
+      handleLogin(formData);
     }
-  }
+  };
 
   const emailChange = () => {
     const email = getValues("email");
@@ -84,9 +90,9 @@ export function Login() {
     } else {
       setEmailError(false);
     }
-  }
+  };
 
-  console.log(emailError)
+  console.log(emailError);
 
   return (
     <Auth authRoute={false}>
@@ -128,19 +134,34 @@ export function Login() {
               variant="outlined"
               sx={{ mb: 0 }}
             />
-            <Grid container className="!mb-5 !mt-0 justify-between">
+            <Grid
+              container
+              className="!mb-5 !mt-0 justify-between"
+              sx={{ typography: "body2" }}
+            >
               <Grid item>
+                <Typography
+                  display="inline"
+                  sx={{
+                    py: 1,
+                    color: "black",
+                    fontSize: "12px",
+                  }}
+                >
+                  Don't have an account? &nbsp;
+                </Typography>
                 <Link
                   href="#"
                   variant="body2"
                   sx={{
                     py: 1,
                     color: "black",
-                    textDecoration: "none",
-                    fontSize: "10px",
+                    fontSize: "12px",
+                    textUnderlineOffset: "3px",
+                    textDecorationColor: "black",
                   }}
                 >
-                  {"Don't have an account?"}
+                  {"Register here"}
                 </Link>
               </Grid>
               <Grid item>
@@ -150,11 +171,12 @@ export function Login() {
                   sx={{
                     py: 1,
                     color: "black",
-                    textDecoration: "none",
-                    fontSize: "10px",
+                    fontSize: "12px",
+                    textUnderlineOffset: "3px",
+                    textDecorationColor: "black",
                   }}
                 >
-                  {"Forgot Password?"}
+                  {"Forgot Password"}
                 </Link>
               </Grid>
             </Grid>
