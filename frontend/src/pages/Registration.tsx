@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm, Controller, FieldValues } from "react-hook-form";
+import { useForm, Controller, FieldValues, FieldErrors } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
 import { User } from "../main.types.ts";
 import { ExperienceLevel, Printer, FilamentType } from "../main.types.ts";
@@ -338,7 +338,7 @@ const QuestionForm = () => {
   const [experience, setExperience] = useState<ExperienceLevel>(1);
   const [printers, setPrinters] = useState<Printer[]>([]);
   const [totalSections, setTotalSections] = useState<number>(
-    questions.sections.length,
+    questions.sections.length
   );
   const [filamentType, setFilamentType] = useState<FilamentType>("PLA");
 
@@ -401,7 +401,7 @@ const QuestionForm = () => {
       case "experience": {
         const selectedExperience = parseInt(
           e.target.value,
-          10,
+          10
         ) as ExperienceLevel;
         setExperience(selectedExperience);
         break;
@@ -410,7 +410,7 @@ const QuestionForm = () => {
         console.log("printers");
         console.log(printers);
         const selectedPrinters = commonPrinters.filter(
-          (printer) => printer.name === e.target.value,
+          (printer) => printer.name === e.target.value
         );
         setPrinters(selectedPrinters);
         break;
@@ -546,6 +546,11 @@ const QuestionForm = () => {
                           <div className="flex flex-grow flex-col m-2">
                             <label className=" py-1 font-normal">
                               {question.prompt}
+                              <span className=" text-error">
+                                {question.rules && "required" in question.rules
+                                  ? "*"
+                                  : ""}
+                              </span>
                             </label>
                             <input
                               {...field}
@@ -569,6 +574,7 @@ const QuestionForm = () => {
 
   // Go to next section
   const handleNext = () => {
+    console.log("Need to validate here");
     if (currentSectionIndex < totalSections - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
     }
