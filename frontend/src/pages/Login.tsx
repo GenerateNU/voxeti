@@ -2,54 +2,35 @@ import { useEffect, useState } from "react";
 import SocialProviderPending from "../components/SocialProviderPopUp/SocialProviderPending";
 import SocialProvider from "../components/SocialProvider/SocialProvider";
 import useGoogle from "../hooks/use-google";
-import { ProviderUser, UserCredentials } from "../api/api.types";
 import { authApi } from "../api/api";
 import { setSSONewUser, setUser } from "../store/userSlice";
-import router from "../router";
 import { useStateDispatch } from "../hooks/use-redux";
 import Auth from "../components/Auth/Auth";
+import { UserSliceState } from "../store/store.types";
 
 export function Login() {
+  const NEW_USER_ID = '000000000000000000000000'
   const [providerLoginPending, setProviderLoginPending] = useState(false);
-  const [providerUser, setProviderUser] = useState<ProviderUser>();
+  const [providerUser, setProviderUser] = useState<UserSliceState>();
   const [provider, setProvider] = useState('');
 
-  const [login] = authApi.useLoginMutation();
   const [googleSSO, { isLoading : isGoogleLoading }] = authApi.useGoogleSSOMutation();
   const dispatch = useStateDispatch()
 
   const googleLogin = useGoogle({ setProviderLoginPending, setProviderUser, googleSSO });
 
-  const handleLogin = (userCredentials : UserCredentials) => {
-    login(userCredentials)
-      .unwrap()
-      .then((res) => {
-        dispatch(setUser(res));
-        router.navigate({ to: '/protected'})
-        console.log(res);
-      })
-      .catch((err) => {
-        // ERROR HANDLING NEEDS TO BE SETUP:
-        console.log(err);
-      })
-  }
-
   useEffect(() => {
-    if (providerUser?.userType === 'new') {
-      dispatch(setSSONewUser({
-        email: providerUser.user,
-        socialProvider: providerUser.provider
-      }))
-      router.navigate({to: '/register'})
+    if (providerUser) {
+      if (providerUser.user.id === NEW_USER_ID) {
+        dispatch(setSSONewUser({
+          email: providerUser.user.email,
+          socialProvider: providerUser.user.socialProvider
+        }))
+      } else {
+        dispatch(setUser(providerUser));
+      }
     }
-    if (providerUser?.userType === 'existing') {
-      handleLogin({
-        email: providerUser.user,
-        password: ""
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [providerUser])
+  }, [dispatch, providerUser])
 
   return (
     <Auth authRoute={false}>

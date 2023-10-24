@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { ProviderUser, UserCredentials } from './api.types';
+import { UserCredentials } from './api.types';
 import { UserSliceState } from '../store/store.types';
 
 // Auth API:
@@ -25,7 +25,7 @@ export const createAuthApi = (baseUrl : string) => (
           url: '/logout',
         })
       }),
-      googleSSO: builder.mutation<ProviderUser, string>({
+      googleSSO: builder.mutation<UserSliceState, string>({
         query: (accessToken) => ({
           body: { accessToken },
           method: 'POST',

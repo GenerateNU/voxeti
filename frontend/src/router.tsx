@@ -3,8 +3,6 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout/Layout.tsx";
 import Index from "./pages/Index.tsx";
 import { Login } from "./pages/Login.tsx";
-import Registration from "./pages/Registration.tsx";
-import Protected from "./pages/Protected.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -36,25 +34,11 @@ const loginRoute = new Route({
   component: Login,
 })
 
-const registrationRoute = new Route({
-  getParentRoute: () => rootRoute,
-  path: '/register',
-  component: Registration,
-})
-
-const protectedRoute = new Route({
-  getParentRoute: () => rootRoute,
-  path: '/protected',
-  component: Protected,
-})
-
 // Add routes to the route tree here
 const routeTree = rootRoute.addChildren([
   error404Route,
   indexRoute,
   loginRoute,
-  registrationRoute,
-  protectedRoute,
 ]);
 
 const router = new Router({ routeTree });
