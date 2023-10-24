@@ -12,7 +12,7 @@ const SignInWrapper: React.FC<RouteProps> = ({ img_src, children }) => {
         {children}
       </div>
       <div className="hidden lg:flex h-full">
-        <img className="w-full h-full object-cover" src={img_src}/>
+        <img className="w-full h-full object-cover" src={img_src} />
       </div>
     </div>
   );

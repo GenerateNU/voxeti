@@ -15,19 +15,19 @@ export default {
     },
     extend: {
       animation: {
-        rotateOpen: 'rotateOpen 0.2s ease-in-out',
-        rotateClose: 'rotateClose 0.2s ease-in-out',
+        rotateOpen: "rotateOpen 0.2s ease-in-out",
+        rotateClose: "rotateClose 0.2s ease-in-out",
       },
       keyframes: {
         rotateOpen: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(-90deg)' },
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(-90deg)" },
         },
         rotateClose: {
-          '0%': { transform: 'rotate(90deg)' },
-          '100%': { transform: 'rotate(0)' },
+          "0%": { transform: "rotate(90deg)" },
+          "100%": { transform: "rotate(0)" },
         },
-      }
+      },
     },
   },
   plugins: [],
