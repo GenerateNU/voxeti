@@ -56,8 +56,8 @@ const questions: MultiForm = {
                   choiceLabel: "I'm a Producer",
                   choiceValue: "producer",
                 },
-                { 
-                  choiceLabel: "I'm a Designer", 
+                {
+                  choiceLabel: "I'm a Designer",
                   choiceValue: "designer",
                 },
               ],
@@ -337,7 +337,9 @@ const QuestionForm = () => {
   const dispatch = useStateDispatch();
   const [experience, setExperience] = useState<ExperienceLevel>(1);
   const [printers, setPrinters] = useState<Printer[]>([]);
-  const [totalSections, setTotalSections] = useState<number>(questions.sections.length);
+  const [totalSections, setTotalSections] = useState<number>(
+    questions.sections.length,
+  );
   const [filamentType, setFilamentType] = useState<FilamentType>("PLA");
 
   const onSubmit = (data: FieldValues) => {
@@ -370,7 +372,7 @@ const QuestionForm = () => {
           type: filamentType,
           color: data.filament.color,
           pricePerUnit: data.filament.pricePerUnit,
-        }
+        },
       ],
       socialProvider: "NONE",
     };
@@ -383,7 +385,7 @@ const QuestionForm = () => {
           .unwrap()
           .then((res) => {
             dispatch(setUser(res));
-            router.navigate({ to: '/protected' })
+            router.navigate({ to: "/protected" });
           })
           .catch((err) => {
             console.log(err);
@@ -433,32 +435,30 @@ const QuestionForm = () => {
   const peerCheckedColors = {
     producer: "peer-checked:bg-producer",
     designer: "peer-checked:bg-designer",
-    default: "peer-checked:bg-primary"
-  }
+    default: "peer-checked:bg-primary",
+  };
 
   const peerCheckedOpacity = {
     100: "peer-checked:bg-opacity-100",
-    10: "peer-checked:bg-opacity-10"
-  }
+    10: "peer-checked:bg-opacity-10",
+  };
 
   const hoverColors = {
     producer: "hover:bg-producer",
     designer: "hover:bg-designer",
-    default: "hover:bg-primary"
-  }
+    default: "hover:bg-primary",
+  };
 
   const hoverOpacity = {
     50: "hover:bg-opacity-50",
-    5: "hover:bg-opacity-5"
-  }
+    5: "hover:bg-opacity-5",
+  };
 
   const gridColumns = {
     1: "grid-cols-1",
     2: "grid-cols-2",
     3: "grid-cols-3",
-  }
-
-
+  };
 
   const currentSection: FormSection = questions.sections[currentSectionIndex];
   const renderQuestions = () => {
@@ -466,8 +466,8 @@ const QuestionForm = () => {
       <Auth authRoute={false}>
         <div className="flex flex-col justify-center lg:min-w-[450px]">
           <h2 className="text-xl text-center font-semibold m-2">
-          {currentSection?.sectionTitle}
-        </h2>
+            {currentSection?.sectionTitle}
+          </h2>
           {currentSection?.questionGroups.map((group) => (
             <div className="flex flex-wrap lg:flex-nowrap">
               {group.questions?.map((question) => (
@@ -479,13 +479,21 @@ const QuestionForm = () => {
                     switch (question.format) {
                       case "selection":
                         return (
-                          <div className={` w-full m-2 grid ${question.key==='userType' && gridColumns[2]}
-                          ${question.key==='experience' && gridColumns[1]}
-                          ${question.key==='printers' && gridColumns[3]}
-                          ${question.key==='filament.type' && gridColumns[3]}
-                          ${currentSectionIndex!==0 && " gap-2"}`}>
+                          <div
+                            className={` w-full m-2 grid ${
+                              question.key === "userType" && gridColumns[2]
+                            }
+                          ${question.key === "experience" && gridColumns[1]}
+                          ${question.key === "printers" && gridColumns[3]}
+                          ${question.key === "filament.type" && gridColumns[3]}
+                          ${currentSectionIndex !== 0 && " gap-2"}`}
+                          >
                             {question.options?.map((option) => (
-                              <div className={`${currentSectionIndex!==0 && "m-2"}`}>
+                              <div
+                                className={`${
+                                  currentSectionIndex !== 0 && "m-2"
+                                }`}
+                              >
                                 <input
                                   onChange={(e) => handleSelection(e)}
                                   type={question.type}
@@ -498,16 +506,30 @@ const QuestionForm = () => {
                                 <label
                                   htmlFor={option.choiceValue}
                                   className={`inline-flex items-center ${
-                                  option.choiceSubtitle
-                                    ? "justify-between"
-                                    : "justify-center"
-                                } w-full ${currentSectionIndex!==0 && " p-5"} cursor-pointer outline outline-[0.5px] rounded-md 
-                                ${option.choiceValue==="producer" && `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]}`}
-                                ${option.choiceValue==="designer" && `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]}`}
-                                ${option.choiceValue!=="producer" && option.choiceValue!=="designer" && `${peerCheckedColors["default"]} ${peerCheckedOpacity["10"]} ${hoverColors["default"]} ${hoverOpacity["5"]}`}`}
+                                    option.choiceSubtitle
+                                      ? "justify-between"
+                                      : "justify-center"
+                                  } w-full ${
+                                    currentSectionIndex !== 0 && " p-5"
+                                  } cursor-pointer outline outline-[0.5px] rounded-md
+                                ${
+                                  option.choiceValue === "producer" &&
+                                  `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]}`
+                                }
+                                ${
+                                  option.choiceValue === "designer" &&
+                                  `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]}`
+                                }
+                                ${
+                                  option.choiceValue !== "producer" &&
+                                  option.choiceValue !== "designer" &&
+                                  `${peerCheckedColors["default"]} ${peerCheckedOpacity["10"]} ${hoverColors["default"]} ${hoverOpacity["5"]}`
+                                }`}
                                 >
                                   <div className="block p-4">
-                                    <div className={"w-full text-lg font-normal"}>
+                                    <div
+                                      className={"w-full text-lg font-normal"}
+                                    >
                                       {option.choiceLabel}
                                     </div>
                                     <div className="w-full text-sm font-light">
@@ -515,7 +537,7 @@ const QuestionForm = () => {
                                     </div>
                                   </div>
                                 </label>
-                              </div> 
+                              </div>
                             ))}
                           </div>
                         );
@@ -523,7 +545,7 @@ const QuestionForm = () => {
                         return (
                           <div className="flex flex-grow flex-col m-2">
                             <label className=" py-1 font-normal">
-                            {question.prompt}
+                              {question.prompt}
                             </label>
                             <input
                               {...field}
@@ -561,8 +583,6 @@ const QuestionForm = () => {
 
   // Only show appropriate buttons based on section index
   const renderButtons = () => {
-
-
     return (
       <div className="m-2" key="top">
         {currentSectionIndex === 0 && (
@@ -614,7 +634,7 @@ const QuestionForm = () => {
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     console.log("key press");
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
       if (currentSectionIndex < totalSections - 1) {
         handleNext();
@@ -627,13 +647,19 @@ const QuestionForm = () => {
 
   return (
     <div className="flex justify-center h-full items-center">
-      {currentSectionIndex===0 && 
-      <div className=" hidden bg-primary h-full w-3/5 lg:flex justify-center items-cente">
-        <img src="src/assets/relaxedguy.png" className=" p-32" />
-      </div>}
-      <div className={` flex items-center justify-center h-full ${currentSectionIndex===0 && "lg:w-2/5"}`}>
+      {currentSectionIndex === 0 && (
+        <div className=" hidden bg-primary h-full w-3/5 lg:flex justify-center items-cente">
+          <img src="src/assets/relaxedguy.png" className=" p-32" />
+        </div>
+      )}
+      <div
+        className={` flex items-center justify-center h-full ${
+          currentSectionIndex === 0 && "lg:w-2/5"
+        }`}
+      >
         <form onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyPress}>
-          {renderQuestions()}{renderButtons()}
+          {renderQuestions()}
+          {renderButtons()}
         </form>
       </div>
     </div>
