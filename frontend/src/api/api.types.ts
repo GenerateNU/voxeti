@@ -9,11 +9,6 @@ export type IdResponse = {
   id: string;
 };
 
-// Id Response:
-export type IdResponse = {
-  id: string;
-};
-
 // Google SSO Response:
 export type ProviderUser = {
   user: string;
