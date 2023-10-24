@@ -70,8 +70,9 @@ export type Filament = {
 
 // A 3D printer
 export type Printer = {
+  name?: string;
   supportedFilament: FilamentType[];
-  dimensions: Dimensions[];
+  dimensions: Dimensions;
 };
 
 // A phone number

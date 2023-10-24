@@ -2,7 +2,7 @@ import { Outlet, Router, Route, RootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout/Layout.tsx";
 import Index from "./pages/Index.tsx";
-import QuestionForm from "./pages/registration/Registration.tsx";
+import QuestionForm from "./pages/Registration.tsx";
 import { Login } from "./pages/Login.tsx";
 import Protected from "./pages/Protected.tsx";
 

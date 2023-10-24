@@ -47,7 +47,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-background w-full fixed shadow-md pt-5 pb-5">
+    <nav className="bg-background w-full sticky top-0 shadow-md pt-5 pb-5">
       <div
         className="w-full flex lg:w-full justify-between"
         id="navbar-default"
