@@ -13,6 +13,7 @@ import (
 // Setup for when backend gets created
 func Setup(dbClient *mongo.Client, logger *pterm.Logger) {
 	CreateUserCollection(dbClient, logger)
+  CreateJobCollection(dbClient, logger)
 }
 
 func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
@@ -216,5 +217,23 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 	_, indexErr := database.Collection("users").Indexes().CreateOne(context.TODO(), indexModel)
 	if indexErr != nil {
 		logger.Fatal(indexErr.Error())
+	}
+}
+
+func CreateJobCollection(dbClient *mongo.Client, logger *pterm.Logger) {
+
+	// insert job into real db
+	database := dbClient.Database("data")
+
+	dropErr := database.Collection("jobs").Drop(context.TODO())
+	if dropErr != nil {
+		logger.Fatal(dropErr.Error())
+	}
+
+	opts := options.CreateCollection();
+
+	createErr := database.CreateCollection(context.TODO(), "jobs", opts)
+	if createErr != nil {
+		logger.Fatal(createErr.Error())
 	}
 }
