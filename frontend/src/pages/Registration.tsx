@@ -507,7 +507,7 @@ const QuestionForm = () => {
                           ${question.key === "experience" && gridColumns[1]}
                           ${question.key === "printers" && gridColumns[3]}
                           ${question.key === "filament.type" && gridColumns[3]}
-                          ${currentSectionIndex !== 0 && " gap-2"}`}
+                          ${question.key !== "userType" && " gap-2"}`}
                           >
                             {question.options?.map((option) => (
                               <div
@@ -531,8 +531,11 @@ const QuestionForm = () => {
                                       ? "justify-between"
                                       : "justify-center"
                                   } w-full ${
-                                    currentSectionIndex !== 0 && " p-5"
-                                  } cursor-pointer outline outline-[0.5px] rounded-md
+                                    question.key !== "userType" &&
+                                    question.key !== "filament.type" &&
+                                    " p-5"
+                                  }
+                                  cursor-pointer outline outline-[0.5px] rounded-md
                                 ${
                                   option.choiceValue === "producer" &&
                                   `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]} peer-checked:text-background`
