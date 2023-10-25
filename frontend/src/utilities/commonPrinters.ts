@@ -2,7 +2,7 @@ import { Printer } from "../main.types";
 
 export const commonPrinters: Printer[] = [
   {
-    name: "Bambu",
+    name: "bambu",
     supportedFilament: ["PLA", "ABS"],
     dimensions: {
       height: 200,
@@ -11,7 +11,7 @@ export const commonPrinters: Printer[] = [
     },
   },
   {
-    name: "Creality",
+    name: "creality",
     supportedFilament: ["PLA", "ABS"],
     dimensions: {
       height: 200,
@@ -20,7 +20,7 @@ export const commonPrinters: Printer[] = [
     },
   },
   {
-    name: "Sovol",
+    name: "sovol",
     supportedFilament: ["PLA", "ABS"],
     dimensions: {
       height: 200,
@@ -29,7 +29,7 @@ export const commonPrinters: Printer[] = [
     },
   },
   {
-    name: "Elegoo",
+    name: "elegoo",
     supportedFilament: ["PLA", "ABS"],
     dimensions: {
       height: 200,
@@ -38,7 +38,7 @@ export const commonPrinters: Printer[] = [
     },
   },
   {
-    name: "Prusa",
+    name: "prusa",
     supportedFilament: ["PLA", "ABS"],
     dimensions: {
       height: 200,

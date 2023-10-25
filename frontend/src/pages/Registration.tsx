@@ -343,6 +343,11 @@ const QuestionForm = () => {
   const [filamentType, setFilamentType] = useState<FilamentType>("PLA");
 
   const onSubmit = (data: FieldValues) => {
+    // remove name from each printer
+    printers.forEach((printer) => {
+      delete printer.name;
+    });
+
     // create new user object
     const newUser: User = {
       id: "",
@@ -367,13 +372,16 @@ const QuestionForm = () => {
       },
       experience: experience,
       printers: printers,
-      availableFilament: [
-        {
-          type: filamentType,
-          color: data.filament.color,
-          pricePerUnit: data.filament.pricePerUnit,
-        },
-      ],
+      availableFilament:
+        data.filament !== undefined
+          ? [
+              {
+                type: filamentType,
+                color: data.filament.color,
+                pricePerUnit: parseInt(data.filament.pricePerUnit, 10),
+              },
+            ]
+          : [],
       socialProvider: "NONE",
     };
     console.log(newUser);
@@ -407,12 +415,25 @@ const QuestionForm = () => {
         break;
       }
       case "printers": {
-        console.log("printers");
-        console.log(printers);
-        const selectedPrinters = commonPrinters.filter(
-          (printer) => printer.name === e.target.value,
+        const selectedPrinterName = e.target.value;
+        // use filter to try to remove printer if it has same name as selectedPrinterName
+        const filteredPrinters = printers.filter(
+          (printer) => printer.name !== selectedPrinterName,
         );
-        setPrinters(selectedPrinters);
+        // if filter removed a printer, then set printers to filteredPrinters
+        if (filteredPrinters.length !== printers.length) {
+          setPrinters(filteredPrinters);
+          break;
+        } else {
+          // else add printer to printers
+          const selectedPrinter = commonPrinters.find(
+            (printer) => printer.name === selectedPrinterName,
+          );
+
+          if (selectedPrinter !== undefined) {
+            setPrinters([...printers, selectedPrinter]);
+          }
+        }
         break;
       }
       case "userType": {
@@ -514,11 +535,11 @@ const QuestionForm = () => {
                                   } cursor-pointer outline outline-[0.5px] rounded-md
                                 ${
                                   option.choiceValue === "producer" &&
-                                  `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]}`
+                                  `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]} peer-checked:text-background`
                                 }
                                 ${
                                   option.choiceValue === "designer" &&
-                                  `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]}`
+                                  `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]} peer-checked:text-background`
                                 }
                                 ${
                                   option.choiceValue !== "producer" &&
@@ -633,14 +654,12 @@ const QuestionForm = () => {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
-    console.log("key press");
     if (event.key === "Enter") {
       event.preventDefault();
       if (currentSectionIndex < totalSections - 1) {
         handleNext();
       } else if (currentSectionIndex === totalSections - 1) {
-        console.log("here");
-        handleSubmit(onSubmit)();
+        handleSubmit(onSubmit);
       }
     }
   };
