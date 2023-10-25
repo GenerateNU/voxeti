@@ -605,12 +605,28 @@ const QuestionForm = () => {
     }
   };
 
+  const renderProgressBar = () => {
+    return (
+      <div className="flex space-x-1 self-center">
+        {Array.from(Array(totalSections).keys()).map((index) => {
+          return (
+            <div
+              className={`w-3 h-[2px] bg-producer ${
+                currentSectionIndex === index ? "opacity-75" : "opacity-25"
+              } rounded-full`}
+            ></div>
+          );
+        })}
+      </div>
+    );
+  };
+
   // Only show appropriate buttons based on section index
   const renderButtons = () => {
     return (
-      <div className="m-2" key="top">
+      <div className="m-2 flex justify-between" key="top">
         {currentSectionIndex === 0 && (
-          <div className="py-4" key="create">
+          <div className="py-4 w-full" key="create">
             <button
               className=" bg-primary text-background rounded-lg p-3 w-full"
               type="button"
@@ -621,7 +637,7 @@ const QuestionForm = () => {
           </div>
         )}
         {currentSectionIndex > 0 && (
-          <div className=" float-left py-4" key="previous">
+          <div className=" float-left py-4 self-start" key="previous">
             <button
               className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3"
               type="button"
@@ -631,10 +647,11 @@ const QuestionForm = () => {
             </button>
           </div>
         )}
+        {currentSectionIndex > 0 && renderProgressBar()}
         {currentSectionIndex < totalSections - 1 && currentSectionIndex > 0 && (
           <div className=" float-right py-4" key="continue">
             <button
-              className=" bg-primary text-background rounded-lg p-3"
+              className=" bg-primary text-background rounded-lg p-3 self-end"
               type="button"
               onClick={handleNext}
             >
@@ -645,7 +662,7 @@ const QuestionForm = () => {
         {currentSectionIndex == totalSections - 1 && (
           <div className=" float-right py-4" key="enter">
             <button
-              className=" bg-primary text-background rounded-lg p-3"
+              className=" bg-primary text-background rounded-lg p-3 self-end"
               type="submit"
             >
               Submit
