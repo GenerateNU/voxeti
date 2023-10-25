@@ -15,7 +15,7 @@ export const createAuthApi = (baseUrl : string) => (
         query: (body) => ({
           body,
           method: 'POST',
-          url: '/login'
+          url: '/login',
         })
       }),
       logout: builder.mutation<void, string>({
@@ -23,6 +23,13 @@ export const createAuthApi = (baseUrl : string) => (
           body: { csrfToken },
           method: 'POST',
           url: '/logout',
+        })
+      }),
+      googleSSO: builder.mutation<UserSliceState, string>({
+        query: (accessToken) => ({
+          body: { accessToken },
+          method: 'POST',
+          url: '/google-provider',
         })
       })
     }),

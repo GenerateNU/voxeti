@@ -14,7 +14,7 @@ import (
 // Find a specified job by its ID
 func getJobByIdDb(jobId string, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
-	objectId, _ := primitive.ObjectIDFromHex(jobId);
+	objectId, _ := primitive.ObjectIDFromHex(jobId)
 	filter := bson.M{"_id": objectId}
 
 	// Retrieve the specified job from the collection
@@ -36,23 +36,23 @@ func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, limit
 	// Extract Object IDs
 	designerObjId, _ := primitive.ObjectIDFromHex(designerId)
 	producerObjId, _ := primitive.ObjectIDFromHex(producerId)
-	
+
 	// Create filter
-	var filter primitive.D;
-	if (designerId != "" && producerId != "")  {
+	var filter primitive.D
+	if designerId != "" && producerId != "" {
 		filter = bson.D{{Key: "designerId", Value: designerObjId}, {Key: "producerId", Value: producerObjId}}
-	} else if (designerId != "" && producerId == "") {
+	} else if designerId != "" && producerId == "" {
 		filter = bson.D{{Key: "designerId", Value: designerObjId}}
-	} else if (designerId == "" && producerId != "") {
+	} else if designerId == "" && producerId != "" {
 		filter = bson.D{{Key: "producerId", Value: producerObjId}}
 	}
-	
+
 	var jobs []schema.Job
 
 	// pagination options
-	paginationOptions := options.Find();
-	paginationOptions.SetLimit(limit);
-	paginationOptions.SetSkip(skip);
+	paginationOptions := options.Find()
+	paginationOptions.SetLimit(limit)
+	paginationOptions.SetSkip(skip)
 
 	// If jobs are not found, throw an error
 	cursor, err := jobCollection.Find(context.Background(), filter, paginationOptions)
@@ -84,7 +84,7 @@ func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, limit
 }
 
 // Delete a job
-func deleteJobDb (jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
+func deleteJobDb(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
 	jobIdObject, err := primitive.ObjectIDFromHex(jobId)
 	if err != nil {
 		return &schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
@@ -117,7 +117,7 @@ func createJobDb(newJob schema.Job, dbClient *mongo.Client) (schema.Job, *schema
 }
 
 // Updates a job
-func updateJobDb(jobId string, job schema.Job, dbClient *mongo.Client)  (schema.Job, *schema.ErrorResponse) {
+func updateJobDb(jobId string, job schema.Job, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
 	jobIdObject, err := primitive.ObjectIDFromHex(jobId)
 	if err != nil {
 		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}

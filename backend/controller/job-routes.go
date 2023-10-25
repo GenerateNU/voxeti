@@ -24,7 +24,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		retrievedJob, errorResponse := job.GetJobById(jobId, dbClient)
 
 		if errorResponse != nil {
-			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message));
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
 
 		return c.JSON(http.StatusOK, retrievedJob)
@@ -40,7 +40,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		// fmt.Println(page_num);
 		// fmt.Println(designerId);
 		// fmt.Println(producerId);
-		
+
 		if page_num < 0 {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page number"))
 		}
@@ -110,5 +110,5 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		}
 		return c.JSON(http.StatusOK, patchedJob)
 	})
-	
+
 }
