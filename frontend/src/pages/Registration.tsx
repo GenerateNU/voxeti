@@ -513,12 +513,11 @@ const QuestionForm = () => {
     return (
       <Controller
         name={question.key}
+        key={question.key}
         control={control}
         rules={question.rules}
-        render={({
-          field: { value, ref, onChange, ...field },
-          fieldState: { error },
-        }) => (
+        defaultValue={getValues(question.key)}
+        render={({ field: { onChange, ...field }, fieldState: { error } }) => (
           <div className=" flex flex-row flex-grow w-auto">
             {question.options?.map((option, index) => (
               <div className={`${currentSectionIndex !== 0 && "m-2"}`}>
@@ -527,9 +526,8 @@ const QuestionForm = () => {
                   {getValues(question.key) ? getValues(question.key) : ""}
                 </p>
                 <input
-                  ref={ref}
-                  key={question.key + index}
-                  defaultValue={undefined}
+                  {...field}
+                  key={question.key + option.choiceValue}
                   onChange={(e) => {
                     onChange(e);
                     handleSelection(e);
@@ -588,8 +586,8 @@ const QuestionForm = () => {
   const defaultQuestionRender = (question: FormQuestion) => {
     return (
       <Controller
-        key={question.key + "cont"}
         name={question.key}
+        key={question.key}
         control={control}
         rules={question.rules}
         render={({ field: { ref, ...field }, fieldState: { error } }) => {
