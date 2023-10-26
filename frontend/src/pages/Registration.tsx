@@ -17,12 +17,10 @@ type FormQuestion = {
   key: string;
   rules?: object;
   type?: string;
-  defaultOption?: string;
   options?: {
     choiceLabel: string;
     choiceValue: string | number;
     choiceSubtitle?: string;
-    default?: boolean;
   }[];
 };
 
@@ -54,7 +52,6 @@ const questions: MultiForm = {
               key: "userType",
               format: "selection",
               type: "radio",
-              defaultOption: "designer",
               rules: { required: true },
               options: [
                 {
@@ -64,7 +61,6 @@ const questions: MultiForm = {
                 {
                   choiceLabel: "I'm a Designer",
                   choiceValue: "designer",
-                  default: true,
                 },
               ],
             },
@@ -245,15 +241,14 @@ const questions: MultiForm = {
               type: "radio",
               rules: {
                 required: true,
+                valueAsNumber: true,
               },
-              defaultOption: "1",
               options: [
                 {
                   choiceLabel: "Beginner",
                   choiceValue: 1,
                   choiceSubtitle:
                     "I have never touched a 3D printer or designed anything.",
-                  default: true,
                 },
                 {
                   choiceLabel: "Intermediate",
@@ -284,7 +279,6 @@ const questions: MultiForm = {
               format: "selection",
               type: "radio",
               rules: { required: true },
-              defaultOption: "other",
               options: [
                 {
                   choiceLabel: "Bambu Lab P1S",
@@ -309,7 +303,6 @@ const questions: MultiForm = {
                 {
                   choiceLabel: "Other +",
                   choiceValue: "other",
-                  default: true,
                 },
               ],
             },
@@ -327,7 +320,6 @@ const questions: MultiForm = {
               key: "filament.type",
               format: "selection",
               type: "radio",
-              defaultOption: "PLA",
               rules: {
                 required: true,
               },
@@ -335,7 +327,6 @@ const questions: MultiForm = {
                 {
                   choiceLabel: "PLA",
                   choiceValue: "PLA",
-                  default: true,
                 },
                 {
                   choiceLabel: "ABS",
@@ -394,12 +385,9 @@ const QuestionForm = () => {
   const [createUser] = userApi.useCreateUserMutation();
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
-  const [experience, setExperience] = useState<ExperienceLevel>(1);
-  const [printers, setPrinters] = useState<Printer[]>([]);
   const [totalSections, setTotalSections] = useState<number>(
     questions.sections.length
   );
-  const [filamentType, setFilamentType] = useState<FilamentType>("PLA");
 
   console.log("errors", errors);
   console.log("valid?", isValid);
@@ -429,10 +417,10 @@ const QuestionForm = () => {
         number: data.phoneNumber.number,
       },
       experience: data.experience,
-      printers: printers,
+      printers: data.printers,
       availableFilament: [
         {
-          type: filamentType,
+          type: data.filament.type,
           color: data.filament.color,
           pricePerUnit: data.filament.pricePerUnit,
         },
@@ -460,26 +448,15 @@ const QuestionForm = () => {
   };
 
   const handleSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("e.target.name", e.target.name);
+    console.log("e.target.value", e.target.value);
     switch (e.target.name) {
-      case "printers": {
-        console.log("printers");
-        console.log(printers);
-        const selectedPrinters = commonPrinters.filter(
-          (printer) => printer.name === e.target.value
-        );
-        setPrinters(selectedPrinters);
-        break;
-      }
       case "userType": {
         if (e.target.value === "producer") {
           setTotalSections(questions.sections.length);
         } else {
           setTotalSections(questions.sections.length - 2);
         }
-        break;
-      }
-      case "filament.type": {
-        setFilamentType(e.target.value as FilamentType);
         break;
       }
     }
@@ -515,23 +492,17 @@ const QuestionForm = () => {
         name={question.key}
         control={control}
         rules={question.rules}
-        render={({
-          field: { value, ref, onChange, ...field },
-          fieldState: { error },
-        }) => (
+        render={({ field: { onChange }, fieldState: { error } }) => (
           <div className=" flex flex-row flex-grow w-auto">
-            {question.options?.map((option, index) => (
+            {question.options?.map((option) => (
               <div className={`${currentSectionIndex !== 0 && "m-2"}`}>
                 <p>
-                  {question.key}:
-                  {getValues(question.key) ? getValues(question.key) : ""}
+                  {question.key}:{getValues(question.key)}
                 </p>
                 <input
-                  ref={ref}
-                  key={question.key + index}
-                  defaultValue={undefined}
+                  key={question.key + option.choiceValue}
                   onChange={(e) => {
-                    onChange(e);
+                    onChange(e.target.value);
                     handleSelection(e);
                   }}
                   type={question.type}
@@ -588,7 +559,6 @@ const QuestionForm = () => {
   const defaultQuestionRender = (question: FormQuestion) => {
     return (
       <Controller
-        key={question.key + "cont"}
         name={question.key}
         control={control}
         rules={question.rules}
