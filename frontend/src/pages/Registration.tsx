@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm, Controller, FieldValues, FieldErrors } from "react-hook-form";
+import { useForm, Controller, FieldValues } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
 import { User } from "../main.types.ts";
 import { ExperienceLevel, Printer, FilamentType } from "../main.types.ts";
@@ -8,6 +8,7 @@ import { useStateDispatch } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
 import Auth from "../components/Auth/Auth.tsx";
 import { commonPrinters } from "../utilities/commonPrinters.ts";
+import { urlToHttpOptions } from "url";
 
 // Question being asked
 type FormQuestion = {
@@ -16,10 +17,12 @@ type FormQuestion = {
   key: string;
   rules?: object;
   type?: string;
+  defaultOption?: string;
   options?: {
     choiceLabel: string;
-    choiceValue: string;
+    choiceValue: string | number;
     choiceSubtitle?: string;
+    default?: boolean;
   }[];
 };
 
@@ -51,6 +54,8 @@ const questions: MultiForm = {
               key: "userType",
               format: "selection",
               type: "radio",
+              defaultOption: "designer",
+              rules: { required: true },
               options: [
                 {
                   choiceLabel: "I'm a Producer",
@@ -59,6 +64,7 @@ const questions: MultiForm = {
                 {
                   choiceLabel: "I'm a Designer",
                   choiceValue: "designer",
+                  default: true,
                 },
               ],
             },
@@ -70,7 +76,13 @@ const questions: MultiForm = {
               prompt: "Email",
               format: "default",
               key: "email",
-              rules: { required: true },
+              rules: {
+                required: { value: true, message: "Required" },
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: "Entered value does not match email format",
+                },
+              },
               type: "email",
             },
           ],
@@ -81,7 +93,13 @@ const questions: MultiForm = {
               prompt: "Password",
               format: "default",
               key: "password",
-              rules: { required: true },
+              rules: {
+                required: true,
+                minLength: {
+                  value: 8,
+                  message: "Password must have at least 8 characters",
+                },
+              },
               type: "password",
             },
           ],
@@ -97,14 +115,20 @@ const questions: MultiForm = {
               prompt: "First Name",
               format: "default",
               key: "firstName",
-              rules: { required: true },
+              rules: {
+                required: true,
+                minLength: { value: 2, message: "min length is 2" },
+              },
               type: "text",
             },
             {
               prompt: "Last Name",
               format: "default",
               key: "lastName",
-              rules: { required: true },
+              rules: {
+                required: true,
+                minLength: { value: 2, message: "min length is 2" },
+              },
               type: "text",
             },
           ],
@@ -124,7 +148,10 @@ const questions: MultiForm = {
               prompt: "Address Line 1",
               format: "default",
               key: "address.line1",
-              rules: { required: true },
+              rules: {
+                required: true,
+                minLength: { value: 2, message: "min length is 2" },
+              },
             },
           ],
         },
@@ -143,15 +170,22 @@ const questions: MultiForm = {
               prompt: "Country Code",
               format: "default",
               key: "phoneNumber.countryCode",
-              rules: { required: true },
+              rules: {
+                required: true,
+                minLength: { value: 1, message: "Min length of 1" },
+              },
               type: "text",
             },
             {
               prompt: "Phone Number",
               format: "default",
               key: "phoneNumber.number",
-              rules: { required: true },
-              type: "text",
+              rules: {
+                required: true,
+                minLength: { value: 10, message: "Must be 10 digits" },
+                maxLength: { value: 10, message: "Must be 10 digits" },
+              },
+              type: "number",
             },
           ],
         },
@@ -209,22 +243,27 @@ const questions: MultiForm = {
               key: "experience",
               format: "selection",
               type: "radio",
+              rules: {
+                required: true,
+              },
+              defaultOption: "1",
               options: [
                 {
                   choiceLabel: "Beginner",
-                  choiceValue: "1",
+                  choiceValue: 1,
                   choiceSubtitle:
                     "I have never touched a 3D printer or designed anything.",
+                  default: true,
                 },
                 {
                   choiceLabel: "Intermediate",
-                  choiceValue: "2",
+                  choiceValue: 2,
                   choiceSubtitle:
                     "I have interacted with a 3D printer and have created a design.",
                 },
                 {
                   choiceLabel: "Expert",
-                  choiceValue: "3",
+                  choiceValue: 3,
                   choiceSubtitle:
                     "I'm very comfortable with 3D printers and their designs.",
                 },
@@ -243,7 +282,9 @@ const questions: MultiForm = {
               prompt: "Printers",
               key: "printers",
               format: "selection",
-              type: "checkbox",
+              type: "radio",
+              rules: { required: true },
+              defaultOption: "other",
               options: [
                 {
                   choiceLabel: "Bambu Lab P1S",
@@ -268,6 +309,7 @@ const questions: MultiForm = {
                 {
                   choiceLabel: "Other +",
                   choiceValue: "other",
+                  default: true,
                 },
               ],
             },
@@ -285,10 +327,15 @@ const questions: MultiForm = {
               key: "filament.type",
               format: "selection",
               type: "radio",
+              defaultOption: "PLA",
+              rules: {
+                required: true,
+              },
               options: [
                 {
                   choiceLabel: "PLA",
                   choiceValue: "PLA",
+                  default: true,
                 },
                 {
                   choiceLabel: "ABS",
@@ -319,8 +366,15 @@ const questions: MultiForm = {
               prompt: "Cost Per Kilogram",
               format: "default",
               key: "filament.pricePerUnit",
-              rules: { required: true },
-              type: "text",
+              rules: {
+                required: true,
+                valueAsNumber: true,
+                pattern: {
+                  value: /^[+]?\d+([.]\d+)?$/,
+                  message: "Must be positive",
+                },
+              },
+              type: "number",
             },
           ],
         },
@@ -330,7 +384,12 @@ const questions: MultiForm = {
 };
 
 const QuestionForm = () => {
-  const { control, handleSubmit, reset } = useForm();
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: { errors, isValid, isDirty },
+  } = useForm({ mode: "onChange" });
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [createUser] = userApi.useCreateUserMutation();
   const [login] = authApi.useLoginMutation();
@@ -342,7 +401,11 @@ const QuestionForm = () => {
   );
   const [filamentType, setFilamentType] = useState<FilamentType>("PLA");
 
+  console.log("errors", errors);
+  console.log("valid?", isValid);
+
   const onSubmit = (data: FieldValues) => {
+    console.log("errors:", errors);
     // create new user object
     const newUser: User = {
       id: "",
@@ -365,7 +428,7 @@ const QuestionForm = () => {
         countryCode: data.phoneNumber.countryCode,
         number: data.phoneNumber.number,
       },
-      experience: experience,
+      experience: data.experience,
       printers: printers,
       availableFilament: [
         {
@@ -398,14 +461,6 @@ const QuestionForm = () => {
 
   const handleSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
-      case "experience": {
-        const selectedExperience = parseInt(
-          e.target.value,
-          10
-        ) as ExperienceLevel;
-        setExperience(selectedExperience);
-        break;
-      }
       case "printers": {
         console.log("printers");
         console.log(printers);
@@ -421,8 +476,6 @@ const QuestionForm = () => {
         } else {
           setTotalSections(questions.sections.length - 2);
         }
-
-        reset();
         break;
       }
       case "filament.type": {
@@ -454,64 +507,46 @@ const QuestionForm = () => {
     5: "hover:bg-opacity-5",
   };
 
-  const gridColumns = {
-    1: "grid-cols-1",
-    2: "grid-cols-2",
-    3: "grid-cols-3",
-  };
-
   const currentSection: FormSection = questions.sections[currentSectionIndex];
-  const renderQuestions = () => {
+
+  const selectQuestionRender = (question: FormQuestion) => {
     return (
-      <Auth authRoute={false}>
-        <div className="flex flex-col justify-center lg:min-w-[450px]">
-          <h2 className="text-xl text-center font-semibold m-2">
-            {currentSection?.sectionTitle}
-          </h2>
-          {currentSection?.questionGroups.map((group) => (
-            <div className="flex flex-wrap lg:flex-nowrap">
-              {group.questions?.map((question) => (
-                <Controller
-                  key={question.key + "cont"}
-                  name={question.key}
-                  control={control}
-                  render={({ field }) => {
-                    switch (question.format) {
-                      case "selection":
-                        return (
-                          <div
-                            className={` w-full m-2 grid ${
-                              question.key === "userType" && gridColumns[2]
-                            }
-                          ${question.key === "experience" && gridColumns[1]}
-                          ${question.key === "printers" && gridColumns[3]}
-                          ${question.key === "filament.type" && gridColumns[3]}
-                          ${currentSectionIndex !== 0 && " gap-2"}`}
-                          >
-                            {question.options?.map((option) => (
-                              <div
-                                className={`${
-                                  currentSectionIndex !== 0 && "m-2"
-                                }`}
-                              >
-                                <input
-                                  onChange={(e) => handleSelection(e)}
-                                  type={question.type}
-                                  id={option.choiceValue}
-                                  value={option.choiceValue}
-                                  className="hidden peer"
-                                  key={option.choiceValue}
-                                  name={question.key}
-                                ></input>
-                                <label
-                                  htmlFor={option.choiceValue}
-                                  className={`inline-flex items-center ${
-                                    option.choiceSubtitle
-                                      ? "justify-between"
-                                      : "justify-center"
-                                  } w-full ${
-                                    currentSectionIndex !== 0 && " p-5"
-                                  } cursor-pointer outline outline-[0.5px] rounded-md
+      <Controller
+        name={question.key}
+        control={control}
+        rules={question.rules}
+        render={({
+          field: { value, ref, onChange, ...field },
+          fieldState: { error },
+        }) => (
+          <div className=" flex flex-row flex-grow w-auto">
+            {question.options?.map((option, index) => (
+              <div className={`${currentSectionIndex !== 0 && "m-2"}`}>
+                <p>
+                  {question.key}:
+                  {getValues(question.key) ? getValues(question.key) : ""}
+                </p>
+                <input
+                  ref={ref}
+                  key={question.key + index}
+                  defaultValue={undefined}
+                  onChange={(e) => {
+                    onChange(e);
+                    handleSelection(e);
+                  }}
+                  type={question.type}
+                  id={question.key + option.choiceValue}
+                  value={option.choiceValue}
+                  className="hidden peer"
+                  checked={option.choiceValue == getValues(question.key)}
+                ></input>
+                <label
+                  htmlFor={question.key + option.choiceValue}
+                  className={`inline-flex items-center ${
+                    option.choiceSubtitle ? "justify-between" : "justify-center"
+                  } w-full ${
+                    currentSectionIndex !== 0 && " p-5"
+                  } cursor-pointer outline outline-[0.5px] rounded-md
                                 ${
                                   option.choiceValue === "producer" &&
                                   `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]}`
@@ -525,46 +560,81 @@ const QuestionForm = () => {
                                   option.choiceValue !== "designer" &&
                                   `${peerCheckedColors["default"]} ${peerCheckedOpacity["10"]} ${hoverColors["default"]} ${hoverOpacity["5"]}`
                                 }`}
-                                >
-                                  <div className="block p-4">
-                                    <div
-                                      className={"w-full text-lg font-normal"}
-                                    >
-                                      {option.choiceLabel}
-                                    </div>
-                                    <div className="w-full text-sm font-light">
-                                      {option.choiceSubtitle}
-                                    </div>
-                                  </div>
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      default:
-                        return (
-                          <div className="flex flex-grow flex-col m-2">
-                            <label className=" py-1 font-normal">
-                              {question.prompt}
-                              <span className=" text-error">
-                                {question.rules && "required" in question.rules
-                                  ? "*"
-                                  : ""}
-                              </span>
-                            </label>
-                            <input
-                              {...field}
-                              className=" outline outline-[0.5px] p-2 rounded-sm"
-                              type={question.type}
-                              key={question.key}
-                            />
-                          </div>
-                        );
-                    }
-                  }}
-                  rules={question.rules}
-                />
-              ))}
+                >
+                  <div className="block p-4">
+                    <div className={"w-full text-lg font-normal"}>
+                      {option.choiceLabel}
+                    </div>
+                    <div className="w-full text-sm font-light">
+                      {option.choiceSubtitle}
+                    </div>
+                  </div>
+                </label>
+              </div>
+            ))}
+            <span className=" text-error">
+              {question.rules && "required" in question.rules ? "*" : ""}
+            </span>
+            <span className=" text-error italic text-sm">
+              {" "}
+              {error ? error.message : ""}
+            </span>
+          </div>
+        )}
+      />
+    );
+  };
+
+  const defaultQuestionRender = (question: FormQuestion) => {
+    return (
+      <Controller
+        key={question.key + "cont"}
+        name={question.key}
+        control={control}
+        rules={question.rules}
+        render={({ field: { ref, ...field }, fieldState: { error } }) => {
+          return (
+            <div className="flex flex-grow flex-col m-2">
+              <label className=" py-1 font-normal">
+                {question.prompt}
+                <span className=" text-error">
+                  {question.rules && "required" in question.rules ? "*" : ""}
+                </span>
+                <span className=" text-error italic text-sm">
+                  {" "}
+                  {error ? error.message : ""}
+                </span>
+              </label>
+              <input
+                {...field}
+                className=" outline outline-[0.5px] p-2 rounded-sm"
+                type={question.type}
+                key={question.key}
+              />
+            </div>
+          );
+        }}
+      />
+    );
+  };
+
+  const renderQuestions = () => {
+    return (
+      <Auth authRoute={false}>
+        <div className="flex flex-col justify-center lg:min-w-[450px]">
+          <h2 className="text-xl text-center font-semibold m-2">
+            {currentSection?.sectionTitle}
+          </h2>
+          {currentSection?.questionGroups.map((group) => (
+            <div className="flex flex-wrap lg:flex-nowrap">
+              {group.questions?.map((question) => {
+                switch (question.format) {
+                  case "selection":
+                    return selectQuestionRender(question);
+                  default:
+                    return defaultQuestionRender(question);
+                }
+              })}
             </div>
           ))}
         </div>
@@ -574,7 +644,7 @@ const QuestionForm = () => {
 
   // Go to next section
   const handleNext = () => {
-    console.log("Need to validate here");
+    console.log("errors:", errors);
     if (currentSectionIndex < totalSections - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
     }
@@ -594,8 +664,9 @@ const QuestionForm = () => {
         {currentSectionIndex === 0 && (
           <div className="py-4" key="create">
             <button
-              className=" bg-primary text-background rounded-lg p-3 w-full"
+              className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-full"
               type="button"
+              disabled={!isValid || !isDirty}
               onClick={handleNext}
             >
               Create Account
@@ -616,8 +687,9 @@ const QuestionForm = () => {
         {currentSectionIndex < totalSections - 1 && currentSectionIndex > 0 && (
           <div className=" float-right py-4" key="continue">
             <button
-              className=" bg-primary text-background rounded-lg p-3"
+              className=" bg-primary disabled:bg-error text-background rounded-lg p-3"
               type="button"
+              disabled={!isValid || !isDirty}
               onClick={handleNext}
             >
               Continue
@@ -627,8 +699,9 @@ const QuestionForm = () => {
         {currentSectionIndex == totalSections - 1 && (
           <div className=" float-right py-4" key="enter">
             <button
-              className=" bg-primary text-background rounded-lg p-3"
+              className=" bg-primary disabled:bg-error text-background rounded-lg p-3"
               type="submit"
+              disabled={!isValid || !isDirty}
             >
               Submit
             </button>
