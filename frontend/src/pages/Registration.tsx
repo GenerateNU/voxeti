@@ -2,13 +2,10 @@ import { useState } from "react";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
 import { User } from "../main.types.ts";
-import { ExperienceLevel, Printer, FilamentType } from "../main.types.ts";
 import router from "../router.tsx";
 import { useStateDispatch } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
 import Auth from "../components/Auth/Auth.tsx";
-import { commonPrinters } from "../utilities/commonPrinters.ts";
-import { urlToHttpOptions } from "url";
 
 // Question being asked
 type FormQuestion = {
@@ -395,9 +392,8 @@ const QuestionForm = () => {
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
   const [totalSections, setTotalSections] = useState<number>(
-    questions.sections.length
+    questions.sections.length,
   );
-  const [filamentType, setFilamentType] = useState<FilamentType>("PLA");
 
   console.log("errors", errors);
   console.log("valid?", isValid);
@@ -433,7 +429,7 @@ const QuestionForm = () => {
         data.filament !== undefined
           ? [
               {
-                type: filamentType,
+                type: data.filament.type,
                 color: data.filament.color,
                 pricePerUnit: parseInt(data.filament.pricePerUnit, 10),
               },
@@ -512,7 +508,7 @@ const QuestionForm = () => {
         control={control}
         rules={question.rules}
         defaultValue={getValues(question.key)}
-        render={({ field: { onChange, ...field }, fieldState: { error } }) => (
+        render={({ field: { onChange, ...field } }) => (
           <div
             className={` w-full m-2 grid ${
               question.key === "userType" && gridColumns[2]
@@ -582,7 +578,7 @@ const QuestionForm = () => {
         key={question.key}
         control={control}
         rules={question.rules}
-        render={({ field: { ref, ...field }, fieldState: { error } }) => {
+        render={({ field: { ...field }, fieldState: { error } }) => {
           return (
             <div className="flex flex-grow flex-col m-2">
               <label className=" py-1 font-normal">
