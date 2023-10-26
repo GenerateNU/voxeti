@@ -524,10 +524,6 @@ const QuestionForm = () => {
           >
             {question.options?.map((option) => (
               <div className={`${currentSectionIndex !== 0 && "m-2"}`}>
-                <p>
-                  {question.key}:
-                  {getValues(question.key) ? getValues(question.key) : ""}
-                </p>
                 <input
                   {...field}
                   key={question.key + option.choiceValue}
