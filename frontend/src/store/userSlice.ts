@@ -2,28 +2,29 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { NewSSOUser, UserSliceState } from "./store.types";
 
 // Base user state:
-const initialState : UserSliceState = {
-  csrfToken: '',
+const initialState: UserSliceState = {
+  csrfToken: "",
   user: {
-    id: '',
-    firstName: '',
-    lastName: '',
-    email: '',
+    id: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
     addresses: [],
     phoneNumber: {
-      areaCode: '',
-      number: '',
+      countryCode: "",
+      number: "",
     },
-    experience: 0,
+    experience: 1,
     printers: [],
     availableFilament: [],
-    socialProvider: 'NONE',
+    socialProvider: "NONE",
   },
 };
 
 // Users Slice:
 export const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: initialState,
   reducers: {
     // 1. Set the user state on login:

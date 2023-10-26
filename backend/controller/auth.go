@@ -55,4 +55,19 @@ func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *
 
 		return c.JSON(http.StatusOK, googleSSOUser)
 	})
+
+	api.POST("/google-provider", func(c echo.Context) error {
+		var accessToken schema.GoogleAccessToken
+
+		if err := c.Bind(&accessToken); err != nil {
+			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal accessToken"))
+		}
+
+		googleSSOUser, err := auth.GoogleSSOAuthentication(accessToken, dbClient)
+		if err != nil {
+			return c.JSON(utilities.CreateErrorResponse(err.Code, err.Message))
+		}
+
+		return c.JSON(http.StatusOK, googleSSOUser)
+	})
 }

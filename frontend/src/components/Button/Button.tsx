@@ -9,8 +9,8 @@ export default function StyledButton({
   icon,
   disabled,
   color,
-  onClick = () => {}
-} : StyledButtonProps) {
+  onClick = () => {},
+}: StyledButtonProps) {
   return (
     <Button
       className={`h-12 w-full !bg-${color} !rounded-full !text-background hover:!bg-[#565656] !normal-case !font-light !text-lg`}
@@ -23,5 +23,5 @@ export default function StyledButton({
     >
       {children}
     </Button>
-  )
+  );
 }
