@@ -394,8 +394,6 @@ const QuestionForm = () => {
   const [createUser] = userApi.useCreateUserMutation();
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
-  const [experience, setExperience] = useState<ExperienceLevel>(1);
-  const [printers, setPrinters] = useState<Printer[]>([]);
   const [totalSections, setTotalSections] = useState<number>(
     questions.sections.length
   );
@@ -406,6 +404,7 @@ const QuestionForm = () => {
 
   const onSubmit = (data: FieldValues) => {
     console.log("errors:", errors);
+
     // create new user object
     const newUser: User = {
       id: "",
@@ -429,14 +428,17 @@ const QuestionForm = () => {
         number: data.phoneNumber.number,
       },
       experience: data.experience,
-      printers: printers,
-      availableFilament: [
-        {
-          type: filamentType,
-          color: data.filament.color,
-          pricePerUnit: data.filament.pricePerUnit,
-        },
-      ],
+      printers: data.printers,
+      availableFilament:
+        data.filament !== undefined
+          ? [
+              {
+                type: filamentType,
+                color: data.filament.color,
+                pricePerUnit: parseInt(data.filament.pricePerUnit, 10),
+              },
+            ]
+          : [],
       socialProvider: "NONE",
     };
     console.log(newUser);
@@ -461,25 +463,12 @@ const QuestionForm = () => {
 
   const handleSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
-      case "printers": {
-        console.log("printers");
-        console.log(printers);
-        const selectedPrinters = commonPrinters.filter(
-          (printer) => printer.name === e.target.value
-        );
-        setPrinters(selectedPrinters);
-        break;
-      }
       case "userType": {
         if (e.target.value === "producer") {
           setTotalSections(questions.sections.length);
         } else {
           setTotalSections(questions.sections.length - 2);
         }
-        break;
-      }
-      case "filament.type": {
-        setFilamentType(e.target.value as FilamentType);
         break;
       }
     }
@@ -509,6 +498,12 @@ const QuestionForm = () => {
 
   const currentSection: FormSection = questions.sections[currentSectionIndex];
 
+  const gridColumns = {
+    1: "grid-cols-1",
+    2: "grid-cols-2",
+    3: "grid-cols-3",
+  };
+
   const selectQuestionRender = (question: FormQuestion) => {
     return (
       <Controller
@@ -518,8 +513,16 @@ const QuestionForm = () => {
         rules={question.rules}
         defaultValue={getValues(question.key)}
         render={({ field: { onChange, ...field }, fieldState: { error } }) => (
-          <div className=" flex flex-row flex-grow w-auto">
-            {question.options?.map((option, index) => (
+          <div
+            className={` w-full m-2 grid ${
+              question.key === "userType" && gridColumns[2]
+            }
+                          ${question.key === "experience" && gridColumns[1]}
+                          ${question.key === "printers" && gridColumns[3]}
+                          ${question.key === "filament.type" && gridColumns[3]}
+                          ${question.key !== "userType" && " gap-2"}`}
+          >
+            {question.options?.map((option) => (
               <div className={`${currentSectionIndex !== 0 && "m-2"}`}>
                 <p>
                   {question.key}:
@@ -547,11 +550,11 @@ const QuestionForm = () => {
                   } cursor-pointer outline outline-[0.5px] rounded-md
                                 ${
                                   option.choiceValue === "producer" &&
-                                  `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]}`
+                                  `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]} peer-checked:text-background`
                                 }
                                 ${
                                   option.choiceValue === "designer" &&
-                                  `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]}`
+                                  `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]} peer-checked:text-background`
                                 }
                                 ${
                                   option.choiceValue !== "producer" &&
@@ -570,13 +573,6 @@ const QuestionForm = () => {
                 </label>
               </div>
             ))}
-            <span className=" text-error">
-              {question.rules && "required" in question.rules ? "*" : ""}
-            </span>
-            <span className=" text-error italic text-sm">
-              {" "}
-              {error ? error.message : ""}
-            </span>
           </div>
         )}
       />
@@ -655,12 +651,28 @@ const QuestionForm = () => {
     }
   };
 
+  const renderProgressBar = () => {
+    return (
+      <div className="flex space-x-1 self-center">
+        {Array.from(Array(totalSections).keys()).map((index) => {
+          return (
+            <div
+              className={`w-3 h-[2px] bg-producer ${
+                currentSectionIndex === index ? "opacity-75" : "opacity-25"
+              } rounded-full`}
+            ></div>
+          );
+        })}
+      </div>
+    );
+  };
+
   // Only show appropriate buttons based on section index
   const renderButtons = () => {
     return (
-      <div className="m-2" key="top">
+      <div className="m-2 flex justify-between" key="top">
         {currentSectionIndex === 0 && (
-          <div className="py-4" key="create">
+          <div className="py-4 w-full" key="create">
             <button
               className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-full"
               type="button"
@@ -672,7 +684,7 @@ const QuestionForm = () => {
           </div>
         )}
         {currentSectionIndex > 0 && (
-          <div className=" float-left py-4" key="previous">
+          <div className=" float-left py-4 self-start" key="previous">
             <button
               className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3"
               type="button"
@@ -682,6 +694,7 @@ const QuestionForm = () => {
             </button>
           </div>
         )}
+        {currentSectionIndex > 0 && renderProgressBar()}
         {currentSectionIndex < totalSections - 1 && currentSectionIndex > 0 && (
           <div className=" float-right py-4" key="continue">
             <button
@@ -710,14 +723,12 @@ const QuestionForm = () => {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
-    console.log("key press");
     if (event.key === "Enter") {
       event.preventDefault();
       if (currentSectionIndex < totalSections - 1) {
         handleNext();
       } else if (currentSectionIndex === totalSections - 1) {
-        console.log("here");
-        handleSubmit(onSubmit)();
+        handleSubmit(onSubmit);
       }
     }
   };
