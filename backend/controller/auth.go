@@ -63,7 +63,7 @@ func RegisterAuthHandlers(e *echo.Group, store *sessions.CookieStore, dbClient *
 			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal accessToken"))
 		}
 
-		googleSSOUser, err := auth.GoogleSSOAuthentication(accessToken, dbClient)
+		googleSSOUser, err := auth.GoogleSSOAuthentication(c, store, accessToken, dbClient)
 		if err != nil {
 			return c.JSON(utilities.CreateErrorResponse(err.Code, err.Message))
 		}
