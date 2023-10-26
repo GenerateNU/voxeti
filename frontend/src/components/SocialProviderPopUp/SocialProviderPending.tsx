@@ -1,5 +1,5 @@
-import GoogleLogo from '../../assets/googleLogo.png'
-import GrayDots from '../../assets/grayDots.png'
+import GoogleLogo from '../../assets/signIn/googleLogo.png'
+import GrayDots from '../../assets/signIn/grayDots.png'
 import { SocialProviderPendingProps } from './SocialProviderPending.types'
 
 export default function SocialProviderPending({provider, onClick, setState} : SocialProviderPendingProps) {

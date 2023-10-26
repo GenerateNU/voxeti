@@ -1,7 +1,7 @@
 import { SocialProviderProps } from "./SocialProvider.types"
 import Button from '@mui/material/Button';
-import GoogleLogo from '../../assets/googleLogo.png'
-import LoadingIcon from '../../assets/loadingIcon.gif'
+import GoogleLogo from '../../assets/signIn/googleLogo.png'
+import LoadingIcon from '../../assets/signIn/loadingIcon.gif'
 
 
 export default function SocialProvider({ provider, setProvider, setState, onClick, isLoading } : SocialProviderProps) {
