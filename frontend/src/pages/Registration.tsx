@@ -737,7 +737,11 @@ const QuestionForm = () => {
     return (
       <Auth authRoute={false}>
         <div className="flex flex-col justify-center lg:min-w-[450px]">
-          <h2 className="text-xl text-center font-semibold mt-10 mb-6">
+          <h2
+            className={`text-xl text-center font-semibold mb-6 ${
+              currentSectionIndex !== 0 && "mt-10"
+            }`}
+          >
             {currentSection?.sectionTitle}
           </h2>
           {currentSection?.questionGroups.map((group) => (
@@ -865,12 +869,12 @@ const QuestionForm = () => {
     <div className="flex justify-center h-full items-center">
       {currentSectionIndex === 0 && (
         <div className=" hidden h-full w-3/5 lg:flex justify-center items-center">
-          <img src="src/assets/relaxedguy.png" className=" p-32" />
+          <img src="src/assets/registration.png" className=" p-32" />
         </div>
       )}
       <div
         className={`flex justify-center h-full ${
-          currentSectionIndex === 0 && "lg:w-2/5"
+          currentSectionIndex === 0 && "lg:w-2/5 items-center"
         }`}
       >
         <form onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyPress}>
