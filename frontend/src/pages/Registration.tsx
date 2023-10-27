@@ -385,6 +385,7 @@ const QuestionForm = () => {
     control,
     handleSubmit,
     getValues,
+    trigger,
     formState: { errors, isValid, isDirty },
   } = useForm({ mode: "onChange" });
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
@@ -392,7 +393,7 @@ const QuestionForm = () => {
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
   const [totalSections, setTotalSections] = useState<number>(
-    questions.sections.length,
+    questions.sections.length
   );
 
   console.log("errors", errors);
@@ -633,6 +634,8 @@ const QuestionForm = () => {
     console.log("errors:", errors);
     if (currentSectionIndex < totalSections - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
+
+      trigger();
     }
   };
 
@@ -640,6 +643,8 @@ const QuestionForm = () => {
   const handlePrevious = () => {
     if (currentSectionIndex > 0) {
       setCurrentSectionIndex(currentSectionIndex - 1);
+
+      trigger();
     }
   };
 
