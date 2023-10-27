@@ -13,7 +13,7 @@ export default function StyledButton({
 }: StyledButtonProps) {
   return (
     <Button
-      className={`h-12 w-full !bg-${color} !rounded-full !text-background hover:!bg-[#565656] !normal-case !font-light !text-lg`}
+      className={`h-12 w-full !bg-${color} !rounded-[5px] !text-background hover:!bg-[#565656] !normal-case !font-light !text-lg`}
       title={title}
       type={type}
       disabled={disabled}

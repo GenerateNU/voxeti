@@ -11,10 +11,10 @@ import { UserCredentials } from "../api/api.types";
 // import router from "../router";
 import { useForm } from "react-hook-form";
 import { validateEmail } from "../utils/strings";
-import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
 import { Grid, TextField, Typography, Link } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import SignInImage from "../assets/signIn/SignInImage.png"
+import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
 
 export function Login() {
   // SSO Auth State:
@@ -96,7 +96,7 @@ export function Login() {
         />}
       <SignInWrapper img_src={SignInImage}>
         <div className="flex flex-col justify-center pb-10 w-[75%] xl:w-[60%]">
-          <h1 className="text-4xl font-light mb-12">Sign In</h1>
+          <h1 className="text-4xl font-semibold mb-12">Sign In</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register("email", { required: "Please provide an email" })}
@@ -126,7 +126,7 @@ export function Login() {
             />
             <Grid
               container
-              className="!mb-5 !mt-0 justify-between"
+              className="!mb-20 !mt-0 justify-between"
               sx={{ typography: "body2" }}
             >
               <Grid item>

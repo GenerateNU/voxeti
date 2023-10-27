@@ -1,21 +1,15 @@
-import React from "react";
+import { Grid } from "@mui/material";
+import { SignInWrapperProps } from "./SignInWrapper.types";
 
-export interface RouteProps {
-  img_src: string;
-  children: React.ReactNode;
-}
-
-const SignInWrapper: React.FC<RouteProps> = ({ img_src, children }) => {
+export default function SignInWrapper({ img_src, children } : SignInWrapperProps) {
   return (
-    <div className="h-full grow grid grid-cols-1 lg:grid-cols-2 bg-background text-body-text">
-      <div className="flex flex-col justify-center items-center pb-10 pt-10 h-full">
+    <Grid container className="grow flex mt-16 min-h-[667px]">
+      <Grid lg={6} className="flex grow justify-center items-center">
         {children}
-      </div>
-      <div className="hidden lg:flex h-full">
-        <img className="w-full h-full object-cover" src={img_src} />
-      </div>
-    </div>
-  );
-};
-
-export default SignInWrapper;
+      </Grid>
+      <Grid item sm={6} className="hidden lg:flex justify-center items-center">
+        <img src={img_src} className="max-w-[85%] max-h-[85%]"/>
+      </Grid>
+    </Grid>
+  )
+}
