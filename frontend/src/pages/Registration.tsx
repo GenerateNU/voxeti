@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
-import { User } from "../main.types.ts";
+import { ExperienceLevel, User } from "../main.types.ts";
 import router from "../router.tsx";
 import { useStateDispatch } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
@@ -30,6 +30,7 @@ type QuestionGroup = {
 
 // Each "page" of the form
 type FormSection = {
+  userType?: string;
   sectionTitle: string;
   questionGroups: QuestionGroup[];
 };
@@ -40,7 +41,7 @@ type MultiForm = {
 };
 
 // Current questions for user registrations
-const questions: MultiForm = {
+const allQuestions: MultiForm = {
   sections: [
     {
       sectionTitle: "Welcome to Voxeti",
@@ -271,6 +272,7 @@ const questions: MultiForm = {
       ],
     },
     {
+      userType: "producer",
       sectionTitle: "What kind of 3D printers do you own?",
       questionGroups: [
         {
@@ -315,63 +317,157 @@ const questions: MultiForm = {
       ],
     },
     {
-      sectionTitle: "Add your first filament!",
+      userType: "producer",
+      sectionTitle: "What kind of material do you use?",
       questionGroups: [
         {
           questions: [
             {
-              prompt: "Filament",
-              key: "filament.type",
+              prompt: "Materials",
+              key: "materials",
               format: "selection",
               type: "radio",
-              defaultOption: "PLA",
-              rules: {
-                required: true,
-              },
+              rules: { required: true },
+              defaultOption: "other",
               options: [
                 {
-                  choiceLabel: "PLA",
-                  choiceValue: "PLA",
+                  choiceLabel: "Plastic",
+                  choiceValue: "plastic",
+                },
+                {
+                  choiceLabel: "Powders",
+                  choiceValue: "powders",
+                },
+                {
+                  choiceLabel: "Resin",
+                  choiceValue: "resin",
+                },
+                {
+                  choiceLabel: "Carbon Fiber",
+                  choiceValue: "carbonFiber",
+                },
+                {
+                  choiceLabel: "Other",
+                  choiceValue: "other",
                   default: true,
-                },
-                {
-                  choiceLabel: "ABS",
-                  choiceValue: "ABS",
-                },
-                {
-                  choiceLabel: "TPE",
-                  choiceValue: "TPE",
                 },
               ],
             },
           ],
         },
+      ],
+    },
+    {
+      sectionTitle: "What is your shipping preference?",
+      questionGroups: [
         {
           questions: [
             {
-              prompt: "Color",
-              format: "default",
-              key: "filament.color",
-              rules: { required: true },
-              type: "text",
+              prompt: "Shipping",
+              key: "shipping",
+              format: "selection",
+              type: "radio",
+              rules: {
+                required: true,
+              },
+              defaultOption: "shipping",
+              options: [
+                {
+                  choiceLabel: "Pickup",
+                  choiceValue: "pickup",
+                  choiceSubtitle:
+                    "I would like the item picked up by the designer",
+                },
+                {
+                  choiceLabel: "Shipping",
+                  choiceValue: "shipping",
+                  choiceSubtitle:
+                    "I'm open to shipping the final item to the designer",
+                  default: true,
+                },
+              ],
             },
           ],
         },
+      ],
+    },
+    {
+      userType: "producer",
+      sectionTitle: "What's the scope of projects you're interested in?",
+      questionGroups: [
         {
           questions: [
             {
-              prompt: "Cost Per Kilogram",
-              format: "default",
-              key: "filament.pricePerUnit",
+              prompt: "Scope",
+              key: "scope",
+              format: "selection",
+              type: "radio",
               rules: {
                 required: true,
-                valueAsNumber: true,
-                pattern: {
-                  value: /^[+]?\d+([.]\d+)?$/,
-                  message: "Must be positive",
-                },
               },
-              type: "number",
+              defaultOption: "small",
+              options: [
+                {
+                  choiceLabel: "Small",
+                  choiceValue: "small",
+                  choiceSubtitle: "Quick & straightforward, done within days",
+                  default: true,
+                },
+                {
+                  choiceLabel: "Medium",
+                  choiceValue: "medium",
+                  choiceSubtitle: "In depth, usually about 1-2 weeks",
+                },
+                {
+                  choiceLabel: "Large",
+                  choiceValue: "large",
+                  choiceSubtitle: "Mass orders, can take up to 2-4 weeks",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      sectionTitle: "What kind of projects are you looking to print?",
+      questionGroups: [
+        {
+          questions: [
+            {
+              prompt: "Projects",
+              key: "projects",
+              format: "selection",
+              type: "radio",
+              rules: { required: true },
+              defaultOption: "other",
+              options: [
+                {
+                  choiceLabel: "Technology",
+                  choiceValue: "technology",
+                },
+                {
+                  choiceLabel: "Small Items",
+                  choiceValue: "smallItems",
+                },
+                {
+                  choiceLabel: "Tools",
+                  choiceValue: "tools",
+                },
+                {
+                  choiceLabel: "Electronics",
+                  choiceValue: "electronics",
+                },
+                {
+                  choiceLabel: "Keychains",
+                  choiceValue: "keychains",
+                },
+                {
+                  choiceLabel: "Other +",
+                  choiceValue: "other",
+                  default: true,
+                },
+              ],
             },
           ],
         },
@@ -379,6 +475,11 @@ const questions: MultiForm = {
     },
   ],
 };
+
+const producerQuestions = allQuestions.sections;
+const designerQuestions = allQuestions.sections.filter(
+  (section) => section.userType !== "producer",
+);
 
 const QuestionForm = () => {
   const {
@@ -393,7 +494,10 @@ const QuestionForm = () => {
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
   const [totalSections, setTotalSections] = useState<number>(
-    questions.sections.length
+    allQuestions.sections.length,
+  );
+  const [questions, setQuestions] = useState<FormSection[]>(
+    allQuestions.sections,
   );
 
   console.log("errors", errors);
@@ -424,18 +528,7 @@ const QuestionForm = () => {
         countryCode: data.phoneNumber.countryCode,
         number: data.phoneNumber.number,
       },
-      experience: data.experience,
-      printers: data.printers,
-      availableFilament:
-        data.filament !== undefined
-          ? [
-              {
-                type: data.filament.type,
-                color: data.filament.color,
-                pricePerUnit: parseInt(data.filament.pricePerUnit, 10),
-              },
-            ]
-          : [],
+      experience: parseInt(data.experience, 10) as ExperienceLevel,
       socialProvider: "NONE",
     };
     console.log(newUser);
@@ -462,9 +555,11 @@ const QuestionForm = () => {
     switch (e.target.name) {
       case "userType": {
         if (e.target.value === "producer") {
-          setTotalSections(questions.sections.length);
+          setQuestions(producerQuestions);
+          setTotalSections(producerQuestions.length);
         } else {
-          setTotalSections(questions.sections.length - 2);
+          setQuestions(designerQuestions);
+          setTotalSections(designerQuestions.length);
         }
         break;
       }
@@ -493,12 +588,13 @@ const QuestionForm = () => {
     5: "hover:bg-opacity-5",
   };
 
-  const currentSection: FormSection = questions.sections[currentSectionIndex];
+  const currentSection: FormSection = questions[currentSectionIndex];
 
   const gridColumns = {
     1: "grid-cols-1",
-    2: "grid-cols-2",
-    3: "grid-cols-3",
+    2: "grid-cols-1 lg:grid-cols-2",
+    3: "grid-cols-1 lg:grid-cols-3",
+    4: "grid-cols-1 lg:grid-cols-4",
   };
 
   const selectQuestionRender = (question: FormQuestion) => {
@@ -517,10 +613,20 @@ const QuestionForm = () => {
                           ${question.key === "experience" && gridColumns[1]}
                           ${question.key === "printers" && gridColumns[3]}
                           ${question.key === "filament.type" && gridColumns[3]}
+                          ${question.key === "materials" && gridColumns[3]}
+                          ${question.key === "shipping" && gridColumns[1]}
+                          ${question.key === "scope" && gridColumns[1]}
+                          ${question.key === "projects" && gridColumns[3]}
                           ${question.key !== "userType" && " gap-2"}`}
           >
             {question.options?.map((option) => (
-              <div className={`${currentSectionIndex !== 0 && "m-2"}`}>
+              <div
+                className={`${
+                  question.key === "materials" &&
+                  option.choiceValue === "other" &&
+                  ""
+                } ${currentSectionIndex !== 0 && "m-2"}`}
+              >
                 <input
                   {...field}
                   key={question.key + option.choiceValue}
@@ -540,20 +646,20 @@ const QuestionForm = () => {
                     option.choiceSubtitle ? "justify-between" : "justify-center"
                   } w-full ${
                     currentSectionIndex !== 0 && " p-5"
-                  } cursor-pointer outline outline-[0.5px] rounded-md
-                                ${
-                                  option.choiceValue === "producer" &&
-                                  `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]} peer-checked:text-background`
-                                }
-                                ${
-                                  option.choiceValue === "designer" &&
-                                  `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]} peer-checked:text-background`
-                                }
-                                ${
-                                  option.choiceValue !== "producer" &&
-                                  option.choiceValue !== "designer" &&
-                                  `${peerCheckedColors["default"]} ${peerCheckedOpacity["10"]} ${hoverColors["default"]} ${hoverOpacity["5"]}`
-                                }`}
+                  } cursor-pointer outline outline-primary/50 outline-[0.5px] rounded-md
+                                  ${
+                                    option.choiceValue === "producer" &&
+                                    `${peerCheckedColors["producer"]} ${peerCheckedOpacity["100"]} ${hoverColors["producer"]} ${hoverOpacity["50"]} peer-checked:text-background`
+                                  }
+                                  ${
+                                    option.choiceValue === "designer" &&
+                                    `${peerCheckedColors["designer"]} ${peerCheckedOpacity["100"]} ${hoverColors["designer"]} ${hoverOpacity["50"]} peer-checked:text-background`
+                                  }
+                                  ${
+                                    option.choiceValue !== "producer" &&
+                                    option.choiceValue !== "designer" &&
+                                    `${peerCheckedColors["default"]} ${peerCheckedOpacity["10"]} ${hoverColors["default"]} ${hoverOpacity["5"]}`
+                                  }`}
                 >
                   <div className="block p-4">
                     <div className={"w-full text-lg font-normal"}>
@@ -594,7 +700,7 @@ const QuestionForm = () => {
               </label>
               <input
                 {...field}
-                className=" outline outline-[0.5px] p-2 rounded-sm"
+                className=" outline outline-primary/50 outline-[0.5px] p-2 rounded-sm"
                 type={question.type}
                 key={question.key}
               />
@@ -609,7 +715,7 @@ const QuestionForm = () => {
     return (
       <Auth authRoute={false}>
         <div className="flex flex-col justify-center lg:min-w-[450px]">
-          <h2 className="text-xl text-center font-semibold m-2">
+          <h2 className="text-xl text-center font-semibold mt-10 mb-6">
             {currentSection?.sectionTitle}
           </h2>
           {currentSection?.questionGroups.map((group) => (
@@ -655,7 +761,7 @@ const QuestionForm = () => {
           return (
             <div
               className={`w-3 h-[2px] bg-producer ${
-                currentSectionIndex === index ? "opacity-75" : "opacity-25"
+                currentSectionIndex === index ? "opacity-100" : "opacity-50"
               } rounded-full`}
             ></div>
           );
@@ -667,7 +773,7 @@ const QuestionForm = () => {
   // Only show appropriate buttons based on section index
   const renderButtons = () => {
     return (
-      <div className="m-2 flex justify-between" key="top">
+      <div className="m-2 mt-4 flex justify-between" key="top">
         {currentSectionIndex === 0 && (
           <div className="py-4 w-full" key="create">
             <button
@@ -683,7 +789,7 @@ const QuestionForm = () => {
         {currentSectionIndex > 0 && (
           <div className=" float-left py-4 self-start" key="previous">
             <button
-              className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3"
+              className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3 w-24"
               type="button"
               onClick={handlePrevious}
             >
@@ -695,7 +801,7 @@ const QuestionForm = () => {
         {currentSectionIndex < totalSections - 1 && currentSectionIndex > 0 && (
           <div className=" float-right py-4" key="continue">
             <button
-              className=" bg-primary disabled:bg-error text-background rounded-lg p-3"
+              className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-24"
               type="button"
               disabled={!isValid || !isDirty}
               onClick={handleNext}
@@ -707,7 +813,7 @@ const QuestionForm = () => {
         {currentSectionIndex == totalSections - 1 && (
           <div className=" float-right py-4" key="enter">
             <button
-              className=" bg-primary disabled:bg-error text-background rounded-lg p-3"
+              className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-24"
               type="submit"
               disabled={!isValid || !isDirty}
             >
@@ -733,12 +839,12 @@ const QuestionForm = () => {
   return (
     <div className="flex justify-center h-full items-center">
       {currentSectionIndex === 0 && (
-        <div className=" hidden bg-primary h-full w-3/5 lg:flex justify-center items-cente">
+        <div className=" hidden bg-primary h-full w-3/5 lg:flex justify-center items-center">
           <img src="src/assets/relaxedguy.png" className=" p-32" />
         </div>
       )}
       <div
-        className={` flex items-center justify-center h-full ${
+        className={`flex justify-center h-full ${
           currentSectionIndex === 0 && "lg:w-2/5"
         }`}
       >
