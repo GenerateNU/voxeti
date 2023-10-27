@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
 import { ExperienceLevel, User } from "../main.types.ts";
@@ -500,6 +500,18 @@ const QuestionForm = () => {
     allQuestions.sections,
   );
 
+  const useFocus = () => {
+    const htmlElRef = useRef<HTMLButtonElement>(null);
+    const setFocus = () => {
+      htmlElRef.current && htmlElRef.current.focus();
+    };
+
+    return [htmlElRef, setFocus] as const;
+  };
+
+  const [submitButtonRef, setSubmitButtonRef] = useFocus();
+  const [continueButtonRef, setContinueButtonRef] = useFocus();
+
   console.log("errors", errors);
   console.log("valid?", isValid);
 
@@ -641,6 +653,16 @@ const QuestionForm = () => {
                   checked={option.choiceValue == getValues(question.key)}
                 ></input>
                 <label
+                  onClick={() => {
+                    setSubmitButtonRef();
+                    setContinueButtonRef();
+                    setTimeout(() => {
+                      submitButtonRef.current &&
+                        submitButtonRef.current.focus();
+                      continueButtonRef.current &&
+                        continueButtonRef.current.focus();
+                    }, 0);
+                  }}
                   htmlFor={question.key + option.choiceValue}
                   className={`inline-flex items-center ${
                     option.choiceSubtitle ? "justify-between" : "justify-center"
@@ -805,6 +827,7 @@ const QuestionForm = () => {
               type="button"
               disabled={!isValid || !isDirty}
               onClick={handleNext}
+              ref={continueButtonRef}
             >
               Continue
             </button>
@@ -816,6 +839,7 @@ const QuestionForm = () => {
               className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-24"
               type="submit"
               disabled={!isValid || !isDirty}
+              ref={submitButtonRef}
             >
               Submit
             </button>
@@ -828,10 +852,11 @@ const QuestionForm = () => {
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
       event.preventDefault();
+      if (!isValid || !isDirty) return;
       if (currentSectionIndex < totalSections - 1) {
         handleNext();
       } else if (currentSectionIndex === totalSections - 1) {
-        handleSubmit(onSubmit);
+        handleSubmit(onSubmit)();
       }
     }
   };
