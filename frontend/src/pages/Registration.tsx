@@ -799,7 +799,7 @@ const QuestionForm = () => {
         {currentSectionIndex === 0 && (
           <div className="py-4 w-full" key="create">
             <button
-              className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-full"
+              className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-full"
               type="button"
               disabled={!isValid || !isDirty}
               onClick={handleNext}
@@ -823,7 +823,7 @@ const QuestionForm = () => {
         {currentSectionIndex < totalSections - 1 && currentSectionIndex > 0 && (
           <div className=" float-right py-4" key="continue">
             <button
-              className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-24"
+              className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-24"
               type="button"
               disabled={!isValid || !isDirty}
               onClick={handleNext}
@@ -836,7 +836,7 @@ const QuestionForm = () => {
         {currentSectionIndex == totalSections - 1 && (
           <div className=" float-right py-4" key="enter">
             <button
-              className=" bg-primary disabled:bg-error text-background rounded-lg p-3 w-24"
+              className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-24"
               type="submit"
               disabled={!isValid || !isDirty}
               ref={submitButtonRef}
@@ -864,7 +864,7 @@ const QuestionForm = () => {
   return (
     <div className="flex justify-center h-full items-center">
       {currentSectionIndex === 0 && (
-        <div className=" hidden bg-primary h-full w-3/5 lg:flex justify-center items-center">
+        <div className=" hidden h-full w-3/5 lg:flex justify-center items-center">
           <img src="src/assets/relaxedguy.png" className=" p-32" />
         </div>
       )}
