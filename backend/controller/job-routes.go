@@ -12,7 +12,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -96,15 +95,11 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 
 	api.PATCH("/:id", func(c echo.Context) error {
 		jobIdStr := c.Param("id")
-		jobId, err := primitive.ObjectIDFromHex(jobIdStr)
-		if err != nil {
-			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job ID"))
-		}
 		patchData := bson.M{}
 		if err := c.Bind(&patchData); err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid patch data"))
 		}
-		patchedJob, errorResponse := job.PatchJob(jobId, patchData, dbClient)
+		patchedJob, errorResponse := job.PatchJob(jobIdStr, patchData, dbClient)
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}

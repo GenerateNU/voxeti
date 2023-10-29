@@ -14,7 +14,10 @@ import (
 // Find a specified job by its ID
 func getJobByIdDb(jobId string, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
-	objectId, _ := primitive.ObjectIDFromHex(jobId)
+	objectId, err := primitive.ObjectIDFromHex(jobId)
+	if err != nil {
+		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
+	}
 	filter := bson.M{"_id": objectId}
 
 	// Retrieve the specified job from the collection
@@ -133,13 +136,20 @@ func updateJobDb(jobId string, job schema.Job, dbClient *mongo.Client) (schema.J
 }
 
 // Updates a specific field in a job
-func patchJobDb(jobId primitive.ObjectID, patchData bson.M, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
+func patchJobDb(jobIdStr string, patchData bson.M, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
+	// Convert jobId string to ObjectId
+	jobId, parseError := primitive.ObjectIDFromHex(jobIdStr)
+	if parseError != nil {
+		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Invalid JobID"}
+	}
+	// Update Job in Database
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
 	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, bson.M{"$set": patchData})
 	if err != nil {
 		return schema.Job{}, &schema.ErrorResponse{Code: 500, Message: "Unable to update job"}
 	}
 	updatedJob := schema.Job{}
+	// Confirm job exists
 	err = jobCollection.FindOne(context.Background(), bson.M{"_id": jobId}).Decode(&updatedJob)
 	if err != nil {
 		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Unable to retrieve updated job"}
