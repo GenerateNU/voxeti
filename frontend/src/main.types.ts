@@ -6,9 +6,10 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  password: string;
   addresses: Address[];
   phoneNumber: PhoneNumber;
-  experience?: ExperienceLevel;
+  experience: ExperienceLevel;
   printers?: Printer[];
   availableFilament?: Filament[];
   socialProvider: SocialProvider;
@@ -39,53 +40,58 @@ export interface Design {
 export type Coordinates = {
   latitude: number;
   longitude: number;
-}
+};
 
 // An address
 export type Address = {
   name: string;
   line1: string;
-  line2: string;
+  line2?: string;
   zipCode: string;
   city: string;
   state: string;
   country: string;
-  location: Coordinates;
-}
+  location?: Coordinates;
+};
 
 // Print/printer physical dimensions
 export type Dimensions = {
   height: number;
   width: number;
   depth: number;
-}
+};
 
 // A filament
 export type Filament = {
   type: FilamentType;
   color: string;
   pricePerUnit: number;
-}
+};
 
 // A 3D printer
 export type Printer = {
   supportedFilament: FilamentType[];
   dimensions: Dimensions[];
-}
+};
 
 // A phone number
 export type PhoneNumber = {
-  areaCode: string;
+  countryCode: string;
   number: string;
-}
+};
 
 // 3. Enums:
 
 // The status of a job:
-export type JobStatus = 'PENDING' | 'ACCEPTED' | 'INPROGRESS' | 'INSHIPPING' | 'COMPLETE';
+export type JobStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "INPROGRESS"
+  | "INSHIPPING"
+  | "COMPLETE";
 
 // The type of a filament:
-export type FilamentType = 'PLA' | 'ABS' | 'TPE';
+export type FilamentType = "PLA" | "ABS" | "TPE";
 
 // The experience level of a user:
 export type ExperienceLevel = 0 | 1 | 2

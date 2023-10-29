@@ -12,6 +12,9 @@ var (
 	//go:embed dist/*
 	dist embed.FS
 
+	//go:embed src/*
+	src embed.FS
+
 	//go:embed dist/index.html
 	indexHTML embed.FS
 )
@@ -19,5 +22,6 @@ var (
 func init() {
 	embedFrontend = true
 	distDirFS = echo.MustSubFS(dist, "dist")
+	srcDirFS = echo.MustSubFS(src, "src")
 	distIndexHTML = echo.MustSubFS(indexHTML, "dist")
 }
