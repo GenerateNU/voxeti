@@ -1,8 +1,6 @@
 package job
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"testing"
 	"voxeti/backend/schema"
@@ -12,36 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
-
-var (
-	mockDB = map[string]*schema.Job{
-		"someJobId1": {
-			Id:         primitive.NewObjectID(),
-			DesignerId: primitive.NewObjectID(),
-			ProducerId: primitive.NewObjectID(),
-			DesignId:   primitive.NewObjectID(),
-			Status:     schema.Pending,
-			Price:      123,
-			Color:      "purple",
-			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
-		},
-	}
-)
-
-type MockJobRepository struct {
-	Jobs map[string]*schema.Job
-}
-
-func (m *MockJobRepository) FindByID(ctx context.Context, id primitive.ObjectID) (*schema.Job, error) {
-	for _, job := range m.Jobs {
-		if job.Id == id {
-			return job, nil
-		}
-	}
-	return nil, errors.New("job not found")
-}
 
 func TestGetJobById(t *testing.T) {
 	assert := assert.New(t)
@@ -101,6 +69,7 @@ func TestGetJobById(t *testing.T) {
 		_, err := GetJobById(nonExistingJobId, mt.Client)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
 		}
 		assert.Equal(err.Code, 404)
 		assert.Equal(err.Message, "Job does not exist!")
@@ -111,6 +80,7 @@ func TestGetJobById(t *testing.T) {
 		_, err := GetJobById("INCORRECT FORMAT", mt.Client)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
 		}
 		assert.Equal(err.Code, 404)
 		assert.Equal(err.Message, "Invalid JobId")
@@ -139,6 +109,7 @@ func TestDeleteJob(t *testing.T) {
 		err := DeleteJob("INCORRECT FORMAT", mt.Client)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
 		}
 		assert.Equal(err.Code, 404)
 		assert.Equal(err.Message, "Invalid JobId")
@@ -165,6 +136,7 @@ func TestCreateJob(t *testing.T) {
 		_, err := CreateJob(schema.Job{}, mt.Client)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
 		}
 		assert.Equal(err.Code, 500)
 		assert.Equal(err.Message, "Unable to create job")
@@ -198,11 +170,14 @@ func TestPatchJob(t *testing.T) {
 			assert.Fail("Failed to marshal mock job")
 		}
 		var mockJobM primitive.M
-		bson.Unmarshal(mockJobMap, &mockJobM)
+		if marshalErr := bson.Unmarshal(mockJobMap, &mockJobM); marshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
 		// Assertions
 		_, err := PatchJob("INVALID JOB ID", mockJobM, mt.Client)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
 		}
 		assert.Equal(err.Code, 404)
 		assert.Equal(err.Message, "Invalid JobID")
@@ -222,13 +197,20 @@ func TestPatchJob(t *testing.T) {
 			Scale:      89,
 		}
 		// Convert mockJob to primitive.M
-		mockJobMap, _ := bson.Marshal(mockJob)
+		mockJobMap, marshalerr := bson.Marshal(mockJob)
+		if marshalerr != nil {
+			assert.Fail("Failed to marshal mock job")
+		}
 		var mockJobM primitive.M
-		bson.Unmarshal(mockJobMap, &mockJobM)
+		if unmarshalErr := bson.Unmarshal(mockJobMap, &mockJobM); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
 		// Convert to bson.D
 		jobBSON, _ := bson.Marshal(mockJob)
 		var jobBsonData bson.D
-		bson.Unmarshal(jobBSON, &jobBsonData)
+		if unmarshalErr := bson.Unmarshal(jobBSON, &jobBsonData); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
 
 		// mock update response
 		mt.AddMockResponses(bson.D{
