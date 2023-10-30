@@ -21,7 +21,7 @@ export default function SocialProvider({
 
   return (
     <Button
-      className="h-[50px] !bg-primary !normal-case !rounded-full !text-lg hover:!bg-[#5A5A5A] !font-light !mt-10"
+      className="h-[50px] !bg-background !normal-case !rounded-[5px] !text-lg hover:!bg-[#D3D3D3] !font-light !text-primary"
       variant="contained"
       onClick={handleClick}
       startIcon={

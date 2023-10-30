@@ -73,6 +73,12 @@ func GetGoogleSSOUser(accessToken schema.GoogleAccessToken) (*schema.GoogleRespo
 		return nil, errResponse
 	}
 
+	if googleRes.Email == "" {
+		errResponse.Code = 400
+		errResponse.Message = "Invalid access token!"
+		return nil, errResponse
+	}
+
 	scopes := strings.Split(googleRes.Scope, " ")
 	if len(scopes) < 3 || !slices.Contains(scopes, "https://www.googleapis.com/auth/userinfo.profile") || !slices.Contains(scopes, "https://www.googleapis.com/auth/userinfo.email") {
 		errResponse.Code = 400

@@ -2,69 +2,74 @@ import { useEffect, useState } from "react";
 import SocialProviderPending from "../components/SocialProviderPopUp/SocialProviderPending";
 import SocialProvider from "../components/SocialProvider/SocialProvider";
 import useGoogle from "../hooks/use-google";
-import { ProviderUser, UserCredentials } from "../api/api.types";
 import { authApi } from "../api/api";
 import { setSSONewUser, setUser } from "../store/userSlice";
-import router from "../router";
 import { useStateDispatch } from "../hooks/use-redux";
 import Auth from "../components/Auth/Auth";
-import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
-import PrinterImage from "../assets/peopleprinting.jpg";
-import SignInOr from "../assets/SignInOr.png";
-import StyledButton from "../components/Button/Button";
-import { Grid, Link, TextField, Typography } from "@mui/material";
+import { UserSliceState } from "../store/store.types";
+import { UserCredentials } from "../api/api.types";
+// import router from "../router";
 import { useForm } from "react-hook-form";
-import { validateEmail } from "../utilities/strings";
+import { validateEmail } from "../utils/strings";
+import { Grid, TextField, Typography, Link } from "@mui/material";
+import StyledButton from "../components/Button/Button";
+import SignInImage from "../assets/signIn/SignInImage.png";
+import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
 
 export function Login() {
+  // SSO Auth State:
+  const NEW_USER_ID = "000000000000000000000000";
   const [providerLoginPending, setProviderLoginPending] = useState(false);
-  const [providerUser, setProviderUser] = useState<ProviderUser>();
+  const [providerUser, setProviderUser] = useState<UserSliceState>();
   const [provider, setProvider] = useState("");
+
+  // Error State:
   const [emailError, setEmailError] = useState(false);
   const [loginError, setLoginError] = useState("");
 
+  // Auth API:
   const [login] = authApi.useLoginMutation();
   const [googleSSO, { isLoading: isGoogleLoading }] =
     authApi.useGoogleSSOMutation();
-  const dispatch = useStateDispatch();
 
+  // Hooks:
+  const dispatch = useStateDispatch();
   const googleLogin = useGoogle({
     setProviderLoginPending,
     setProviderUser,
     googleSSO,
   });
 
+  // Handle Provider Login:
+  useEffect(() => {
+    if (providerUser) {
+      if (providerUser.user.id === NEW_USER_ID) {
+        dispatch(
+          setSSONewUser({
+            email: providerUser.user.email,
+            socialProvider: providerUser.user.socialProvider,
+          }),
+        );
+      } else {
+        dispatch(setUser(providerUser));
+      }
+    }
+  }, [dispatch, providerUser]);
+
+  // Handle User / Pass Login:
   const handleLogin = (userCredentials: UserCredentials) => {
     login(userCredentials)
       .unwrap()
       .then((res) => {
         dispatch(setUser(res));
-        router.navigate({ to: "/protected" });
+        // router.navigate({ to: "/protected" });
       })
       .catch(({ data: { error } }) => {
         setLoginError(error.message);
       });
   };
 
-  useEffect(() => {
-    if (providerUser?.userType === "new") {
-      dispatch(
-        setSSONewUser({
-          email: providerUser.user,
-          socialProvider: providerUser.provider,
-        }),
-      );
-      router.navigate({ to: "/register" });
-    }
-    if (providerUser?.userType === "existing") {
-      handleLogin({
-        email: providerUser.user,
-        password: "thisisabspassword",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [providerUser]);
-
+  // Login Form:
   const {
     register,
     handleSubmit,
@@ -97,9 +102,9 @@ export function Login() {
           onClick={googleLogin}
         />
       )}
-      <SignInWrapper img_src={PrinterImage}>
-        <div className="flex flex-col h-full justify-center pb-10 w-[75%] xl:w-[60%]">
-          <h1 className="text-4xl font-light mb-12">Sign In</h1>
+      <SignInWrapper img_src={SignInImage}>
+        <div className="flex flex-col justify-center pb-10 w-[75%] xl:w-[60%]">
+          <h1 className="text-4xl font-semibold mb-12">Sign In</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register("email", { required: "Please provide an email" })}
@@ -129,7 +134,7 @@ export function Login() {
             />
             <Grid
               container
-              className="!mb-5 !mt-0 justify-between"
+              className="!mb-20 !mt-0 justify-between"
               sx={{ typography: "body2" }}
             >
               <Grid item>
@@ -182,7 +187,12 @@ export function Login() {
               Sign In
             </StyledButton>
           </form>
-          <img className="mt-10" src={SignInOr} />
+          <div className="relative w-full flex justify-center mt-7 mb-7">
+            <span className="before:content-normal before:block before:w-[45%] before:h-[2px] before:bg-inactivity before:absolute before:left-0 before:top-[50%] after:content-normal after:block after:w-[45%] after:h-[2px] after:bg-inactivity after:absolute after:right-0 after:top-[50%]">
+              {" "}
+              or{" "}
+            </span>
+          </div>
           <SocialProvider
             provider={"Google"}
             setState={setProviderLoginPending}

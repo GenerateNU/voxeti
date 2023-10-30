@@ -4,7 +4,6 @@ import Layout from "./components/Layout/Layout.tsx";
 import Index from "./pages/Index.tsx";
 import QuestionForm from "./pages/Registration.tsx";
 import { Login } from "./pages/Login.tsx";
-import Protected from "./pages/Protected.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -30,30 +29,24 @@ const indexRoute = new Route({
   component: Index,
 });
 
-const registrationRoute = new Route({
-  getParentRoute: () => rootRoute,
-  path: "/register",
-  component: QuestionForm,
-});
 const loginRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "/login",
   component: Login,
 });
 
-const protectedRoute = new Route({
+const registrationRoute = new Route({
   getParentRoute: () => rootRoute,
-  path: "/protected",
-  component: Protected,
+  path: "/register",
+  component: QuestionForm,
 });
 
 // Add routes to the route tree here
 const routeTree = rootRoute.addChildren([
   error404Route,
   indexRoute,
-  registrationRoute,
   loginRoute,
-  protectedRoute,
+  registrationRoute,
 ]);
 
 const router = new Router({ routeTree });

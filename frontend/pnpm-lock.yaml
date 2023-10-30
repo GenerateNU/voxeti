@@ -15,7 +15,7 @@ dependencies:
     specifier: ^5.14.14
     version: 5.14.15(@mui/material@5.14.15)(@types/react@18.2.31)(react@18.2.0)
   "@mui/material":
-    specifier: ^5.14.14
+    specifier: ^5.14.13
     version: 5.14.15(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)
   "@radix-ui/react-slot":
     specifier: ^1.0.2

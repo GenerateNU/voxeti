@@ -10,9 +10,11 @@ export default function Auth({ children, authRoute }: AuthProps) {
   useEffect(() => {
     if (authRoute) {
       !userId && router.navigate({ to: "/login" });
-    } else {
-      userId && router.navigate({ to: "/protected" });
     }
+    // ADD BACK ONCE WE KNOW BASE PROTECTED ROUTE:
+    // else {
+    //   userId && router.navigate({ to: '/protected' })
+    // }
   }, [authRoute, userId]);
 
   return <>{children}</>;

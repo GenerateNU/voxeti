@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
 
@@ -124,6 +125,43 @@ func TestLogin(t *testing.T) {
 			expectedError: schema.ErrorResponse{
 				Code:    400,
 				Message: "User does not exist!",
+			},
+			wantError: true,
+		},
+		{
+			name: "Fail to Login Because Google User Already Exists",
+			credentials: schema.Credentials{
+				Email:    "user1@example.com",
+				Password: "password1",
+			},
+			prepMongoMock: func(mt *mtest.T) {
+				user := schema.User{
+					Email:          "user1@example.com",
+					Password:       "",
+					SocialProvider: "GOOGLE",
+				}
+
+				userBSON, _ := bson.Marshal(user)
+				var bsonD bson.D
+				err := bson.Unmarshal(userBSON, &bsonD)
+				if err != nil {
+					assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
+				}
+
+				res := mtest.CreateCursorResponse(
+					1,
+					"data.users",
+					mtest.FirstBatch,
+					bsonD)
+				end := mtest.CreateCursorResponse(
+					0,
+					"data.users",
+					mtest.NextBatch)
+				mt.AddMockResponses(res, end)
+			},
+			expectedError: schema.ErrorResponse{
+				Code:    400,
+				Message: "This email is already linked to GOOGLE",
 			},
 			wantError: true,
 		},
@@ -323,4 +361,195 @@ func TestGenerateCSRFToken(t *testing.T) {
 
 	assert.True(err == nil)
 	assert.True(csrfToken != "")
+}
+
+func TestValidateGoogleUser(t *testing.T) {
+	assert := assert.New(t)
+
+	// mocking the echo context
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/", nil)
+	res := httptest.NewRecorder()
+	context := e.NewContext(req, res)
+	// initializing cookie store
+	var store = sessions.NewCookieStore([]byte("test"))
+	testId, _ := primitive.ObjectIDFromHex("1")
+
+	// Create DB Test Cases:
+	testCases := []struct {
+		name             string
+		googleResponse   schema.GoogleResponse
+		prepMongoMock    func(mt *mtest.T)
+		expectedResponse schema.LoginResponse
+		expectedError    schema.ErrorResponse
+		wantNewUser      bool
+		wantError        bool
+	}{
+		{
+			name: "Success",
+			googleResponse: schema.GoogleResponse{
+				Email: "test@gmail.com",
+				Scope: "",
+			},
+			prepMongoMock: func(mt *mtest.T) {
+				user := schema.User{
+					Id:             testId,
+					Email:          "test@gmail.com",
+					Password:       "",
+					FirstName:      "Alder",
+					LastName:       "Whiteford",
+					SocialProvider: "GOOGLE",
+				}
+
+				userBSON, _ := bson.Marshal(user)
+				var bsonD bson.D
+				err := bson.Unmarshal(userBSON, &bsonD)
+				if err != nil {
+					assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
+				}
+
+				res := mtest.CreateCursorResponse(
+					1,
+					"data.users",
+					mtest.FirstBatch,
+					bsonD)
+				end := mtest.CreateCursorResponse(
+					0,
+					"data.users",
+					mtest.NextBatch)
+				mt.AddMockResponses(res, end)
+			},
+			expectedResponse: schema.LoginResponse{
+				User: schema.User{
+					Id:             testId,
+					Email:          "test@gmail.com",
+					Password:       "",
+					FirstName:      "Alder",
+					LastName:       "Whiteford",
+					SocialProvider: "GOOGLE",
+				},
+			},
+			wantNewUser: false,
+			wantError:   false,
+		},
+		{
+			name: "No existing Google User",
+			googleResponse: schema.GoogleResponse{
+				Email: "test@gmail.com",
+				Scope: "",
+			},
+			prepMongoMock: func(mt *mtest.T) {
+				mt.AddMockResponses(bson.D{{Key: "ok", Value: 0}})
+			},
+			expectedResponse: schema.LoginResponse{
+				User: schema.User{
+					Email:          "test@gmail.com",
+					Password:       "",
+					FirstName:      "",
+					LastName:       "",
+					SocialProvider: "GOOGLE",
+				},
+			},
+			wantNewUser: true,
+			wantError:   false,
+		},
+		{
+			name: "User is not a Google User",
+			googleResponse: schema.GoogleResponse{
+				Email: "test@gmail.com",
+				Scope: "",
+			},
+			prepMongoMock: func(mt *mtest.T) {
+				user := schema.User{
+					Id:             testId,
+					Email:          "test@gmail.com",
+					Password:       "",
+					FirstName:      "Alder",
+					LastName:       "Whiteford",
+					SocialProvider: "NONE",
+				}
+
+				userBSON, _ := bson.Marshal(user)
+				var bsonD bson.D
+				err := bson.Unmarshal(userBSON, &bsonD)
+				if err != nil {
+					assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
+				}
+
+				res := mtest.CreateCursorResponse(
+					1,
+					"data.users",
+					mtest.FirstBatch,
+					bsonD)
+				end := mtest.CreateCursorResponse(
+					0,
+					"data.users",
+					mtest.NextBatch)
+				mt.AddMockResponses(res, end)
+			},
+			expectedError: schema.ErrorResponse{
+				Code:    400,
+				Message: "An account already exists with this email! Please re-attempt login with an email / password",
+			},
+			wantNewUser: false,
+			wantError:   true,
+		},
+	}
+
+	// Create mock DB:
+	opts := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, opts)
+	defer mt.Close()
+
+	// For each test case:
+	for _, testCase := range testCases {
+		mt.Run(testCase.name, func(mt *mtest.T) {
+
+			// Prep the mongo mocK:
+			testCase.prepMongoMock(mt)
+
+			loginResponse, err := ValidateGoogleUser(context, store, &testCase.googleResponse, mt.Client)
+
+			if testCase.wantError {
+				if err == nil {
+					assert.Fail("This test was supposed to throw an error!")
+				} else {
+					assert.Equal(testCase.expectedError.Code, err.Code)
+					assert.Equal(testCase.expectedError.Message, err.Message)
+				}
+			} else {
+				// Email is the same as expected
+				assert.Equal(testCase.expectedResponse.User.Email, loginResponse.User.Email)
+				// Password is returned as empty
+				assert.Equal(loginResponse.User.Password, "")
+				// Names are the same as expected
+				assert.Equal(testCase.expectedResponse.User.FirstName, loginResponse.User.FirstName)
+				assert.Equal(testCase.expectedResponse.User.LastName, loginResponse.User.LastName)
+
+				if testCase.wantNewUser {
+					// No CSRFToken if this is a new user:
+					assert.Equal(loginResponse.CSRFToken, "")
+				} else {
+					// A CSRFToken should exist if it is an existing user:
+					assert.NotEqual(loginResponse.CSRFToken, "")
+
+					// Confirm a cookie has been created:
+					session, _ := store.Get(context.Request(), "voxeti-session")
+
+					assert.NotEqual(nil, session.Values["userId"])
+					assert.NotEqual(nil, session.Values["csrfToken"])
+				}
+			}
+		})
+	}
+}
+
+func TestGetGoogleSSOUser(t *testing.T) {
+	assert := assert.New(t)
+
+	// Ensure the transaction will fail if provided an invalid access token:
+	_, err := GetGoogleSSOUser(schema.GoogleAccessToken{AccessToken: "123"})
+
+	assert.Equal(err.Code, 400)
+	assert.Equal(err.Message, "Invalid access token!")
 }

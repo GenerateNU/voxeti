@@ -7,7 +7,7 @@ import {
   FetchBaseQueryMeta,
   MutationDefinition,
 } from "@reduxjs/toolkit/query";
-import { ProviderUser } from "../api/api.types";
+import { UserSliceState } from "../store/store.types";
 
 export interface UseGoogleProps {
   googleSSO: MutationTrigger<
@@ -21,13 +21,13 @@ export interface UseGoogleProps {
         FetchBaseQueryMeta
       >,
       never,
-      ProviderUser,
+      UserSliceState,
       "authApi"
     >
   >;
   setProviderLoginPending: React.Dispatch<React.SetStateAction<boolean>>;
   setProviderUser: React.Dispatch<
-    React.SetStateAction<ProviderUser | undefined>
+    React.SetStateAction<UserSliceState | undefined>
   >;
 }
 

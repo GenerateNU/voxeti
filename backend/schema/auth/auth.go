@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"voxeti/backend/schema"
 
 	"github.com/gorilla/sessions"
@@ -22,13 +23,18 @@ func Login(c echo.Context, store *sessions.CookieStore, dbClient *mongo.Client, 
 		return nil, err
 	}
 
+	// Do not allow login to proceed if the email is linked to Google:
+	if user.SocialProvider != "NONE" {
+		errResponse.Code = 400
+		errResponse.Message = fmt.Sprintf("This email is already linked to %s", user.SocialProvider)
+		return nil, errResponse
+	}
+
 	// Check if the incoming password is the same as the user password (if no social provider):
-	if user.SocialProvider == "NONE" {
-		if ok := CheckPasswordHash(credentials.Password, user.Password); !ok {
-			errResponse.Code = 400
-			errResponse.Message = "Invalid Password"
-			return nil, errResponse
-		}
+	if ok := CheckPasswordHash(credentials.Password, user.Password); !ok {
+		errResponse.Code = 400
+		errResponse.Message = "Invalid Password"
+		return nil, errResponse
 	}
 
 	// Create a new user session:
@@ -124,29 +130,54 @@ func AuthenticateSession(c echo.Context, store *sessions.CookieStore) *schema.Er
 	return nil
 }
 
-func GoogleSSOAuthentication(accessToken schema.GoogleAccessToken, dbClient *mongo.Client) (*schema.ProviderUser, *schema.ErrorResponse) {
-	googleSSOUser := &schema.ProviderUser{}
-
+func GoogleSSOAuthentication(c echo.Context, store *sessions.CookieStore, accessToken schema.GoogleAccessToken, dbClient *mongo.Client) (*schema.LoginResponse, *schema.ErrorResponse) {
 	// Retrieve the email of the Google User:
 	googleUser, errResponse := GetGoogleSSOUser(accessToken)
 	if errResponse != nil {
 		return nil, errResponse
 	}
 
-	// Set initial fields:
-	googleSSOUser.Email = googleUser.Email
-	googleSSOUser.Provider = "GOOGLE"
-
-	// Check whether the user is a new or existing user:
-	_, errResponse = GetUserByEmail(googleUser.Email, dbClient)
+	response, errResponse := ValidateGoogleUser(c, store, googleUser, dbClient)
 	if errResponse != nil {
-		googleSSOUser.UserType = "new"
-	} else {
-		googleSSOUser.UserType = "existing"
+		return nil, errResponse
 	}
 
+	return response, nil
+}
+
+func ValidateGoogleUser(c echo.Context, store *sessions.CookieStore, googleUser *schema.GoogleResponse, dbClient *mongo.Client) (*schema.LoginResponse, *schema.ErrorResponse) {
+	response := &schema.LoginResponse{}
+	errResponse := &schema.ErrorResponse{}
+
+	// Check whether the user is a new or existing user:
+	user, err := GetUserByEmail(googleUser.Email, dbClient)
+	if err != nil {
+		// If the user is new, return a response only including email and social provider:
+		newUser := schema.User{
+			Email:          googleUser.Email,
+			SocialProvider: "GOOGLE",
+		}
+		response.User = newUser
+		return response, nil
+	}
+
+	if user.SocialProvider == "NONE" {
+		errResponse.Code = 400
+		errResponse.Message = "An account already exists with this email! Please re-attempt login with an email / password"
+		return nil, errResponse
+	}
+
+	// Generate a new session:
+	csrfToken, err := CreateUserSession(c, store, user.Id.Hex())
+	if err != nil {
+		return nil, err
+	}
+
+	response.CSRFToken = *csrfToken
+	response.User = *user
+
 	// Return the user:
-	return googleSSOUser, nil
+	return response, nil
 }
 
 func CheckPasswordHash(password, hash string) bool {
