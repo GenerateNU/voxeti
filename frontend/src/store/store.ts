@@ -35,12 +35,15 @@ const persistedReducer = persistReducer<RootReducer>(
 );
 
 export const store = configureStore({
-  middleware: (getDefaultMiddleware) => (
-    getDefaultMiddleware({ serializableCheck: { ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER] }})
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    })
       .concat(authApi.middleware)
-      .concat(userApi.middleware)
-  ),
-  reducer: persistedReducer
+      .concat(userApi.middleware),
+  reducer: persistedReducer,
 });
 
 export const persistor = persistStore(store);

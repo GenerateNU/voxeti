@@ -42,15 +42,11 @@ export const userSlice = createSlice({
     setSSONewUser: (state, action: PayloadAction<NewSSOUser>) => {
       state.user.email = action.payload.email;
       state.user.socialProvider = action.payload.socialProvider;
-    }
-  }
-})
+    },
+  },
+});
 
 // Export reducers for use:
-export const {
-  setUser,
-  resetUser,
-  setSSONewUser,
-} = userSlice.actions;
+export const { setUser, resetUser, setSSONewUser } = userSlice.actions;
 
 export default userSlice.reducer;

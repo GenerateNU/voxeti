@@ -70,8 +70,9 @@ export type Filament = {
 
 // A 3D printer
 export type Printer = {
+  name?: string;
   supportedFilament: FilamentType[];
-  dimensions: Dimensions[];
+  dimensions: Dimensions;
 };
 
 // A phone number
@@ -94,6 +95,8 @@ export type JobStatus =
 export type FilamentType = "PLA" | "ABS" | "TPE";
 
 // The experience level of a user:
-export type ExperienceLevel = 0 | 1 | 2
+export type ExperienceLevel = 1 | 2 | 3;
 
-export type SocialProvider = 'NONE' | 'GOOGLE'
+export type SocialProvider = "NONE" | "GOOGLE";
+
+// 4. Extra Types:

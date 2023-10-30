@@ -21,7 +21,7 @@ function NavItem({ title, link }: NavItemDetails) {
 
 export default function Navbar() {
   return (
-    <nav className="flex items-center bg-primary fixed w-full h-18">
+    <nav className="flex items-center bg-primary sticky top-0 w-full h-18">
       <div className="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         {/* Drop down menu for mobile */}
         <button
@@ -65,7 +65,7 @@ export default function Navbar() {
           <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
             <NavItem title={"Help"} link={"#"} />
             <NavItem title={"Log in"} link={"#"} />
-            <NavItem title={"Sign up"} link={"#"} />
+            <NavItem title={"Sign up"} link={"/register"} />
           </ul>
         </div>
       </div>
