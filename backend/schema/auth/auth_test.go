@@ -69,9 +69,8 @@ func TestLogin(t *testing.T) {
 			},
 			expectedResponse: schema.LoginResponse{
 				User: schema.User{
-					Email:          "user1@example.com",
-					Password:       "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
-					SocialProvider: "NONE",
+					Email:    "user1@example.com",
+					Password: "$2a$10$yQMzszWR14B7a8WmQh4GT.gf4bf/x1ntXpX0kobFKIW8kOHQ2DOji",
 				},
 			},
 			wantError: false,
