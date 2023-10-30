@@ -552,7 +552,7 @@ const QuestionForm = () => {
           .unwrap()
           .then((res) => {
             dispatch(setUser(res));
-            router.navigate({ to: "/protected" });
+            router.navigate({ to: "/" });
           })
           .catch((err) => {
             console.log(err);
