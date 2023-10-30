@@ -239,9 +239,174 @@ func TestPatchJob(t *testing.T) {
 }
 
 func TestUpdateJob(t *testing.T) {
+	assert := assert.New(t)
 
+	// Mock MongoDB setup
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
+
+	// Successfully update an existing job
+	mt.Run("Successful Job Update", func(mt *mtest.T) {
+		// Mock job data
+		jobID := primitive.NewObjectID()
+		existingJob := schema.Job{
+			Id:     jobID,
+			Status: schema.Pending,
+			Price:  200,
+		}
+		updatedJob := existingJob
+		updatedJob.Price = 250 // Change in the job's data
+
+		// Mock database responses
+		mt.AddMockResponses(mtest.CreateSuccessResponse())
+
+		// Assertions
+		result, err := UpdateJob(jobID.Hex(), updatedJob, mt.Client)
+		assert.Nil(err)
+		assert.Equal(result.Price, updatedJob.Price)
+	})
+
+	// Attempt to update a job that doesn't exist
+	mt.Run("Update Non-existing Job", func(mt *mtest.T) {
+		nonExistingJobId := primitive.NewObjectID().Hex()
+		update := schema.Job{}
+
+		// Assertions
+		_, err := UpdateJob(nonExistingJobId, update, mt.Client)
+		if assert.NotNil(err) {
+			assert.Contains(err.Message, "Job update failed")
+		}
+	})
+
+	// Invalid Job ID format
+	mt.Run("Invalid Job ID Format", func(mt *mtest.T) {
+		invalidJobID := "invalidFormat"
+		update := schema.Job{}
+
+		// Assertions
+		_, err := UpdateJob(invalidJobID, update, mt.Client)
+		if assert.NotNil(err) {
+			assert.Contains(err.Message, "Job does not exist!")
+		}
+	})
 }
 
-func TestGetJobsByDesignerOrProducerIdDb(t *testing.T) {
+func TestGetJobsByDesignerOrProducerId(t *testing.T) {
+	assert := assert.New(t)
 
+	// insert the mock job document into the mock MongoDB database
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
+
+	mt.Run("Get Designer Jobs by ID", func(mt *mtest.T) {
+		// Create expected job to be returned
+		jobId := primitive.NewObjectID()
+		designerId := primitive.NewObjectID()
+		// string version of ObjectID used for comparisons
+		jobIdHex := designerId.Hex()
+		expectedJob := schema.Job{
+			Id:         jobId,
+			DesignerId: designerId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			Scale:      89,
+		}
+		jobBSON, _ := bson.Marshal(expectedJob)
+		var jobBsonData bson.D
+		if err := bson.Unmarshal(jobBSON, &jobBsonData); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+
+		// Mock MongoDB Database Response
+		res := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			jobBsonData)
+		// no more jobs to return, indicates the first batch is the only batch with job data
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
+		mt.AddMockResponses(res, end)
+
+		// Assertions
+		foundJob, err := GetJobsByDesignerOrProducerId(jobIdHex, "", 10, 0, mt.Client)
+
+		assert.Nil(err)
+		assert.Equal(foundJob, []schema.Job{expectedJob})
+	})
+
+	mt.Run("Get Producer Jobs by ID", func(mt *mtest.T) {
+		// Create expected job to be returned
+		jobId := primitive.NewObjectID()
+		producerId := primitive.NewObjectID()
+		// string version of ObjectID used for comparisons
+		jobIdHex := producerId.Hex()
+		expectedJob := schema.Job{
+			Id:         jobId,
+			ProducerId: producerId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			Scale:      89,
+		}
+		jobBSON, _ := bson.Marshal(expectedJob)
+		var jobBsonData bson.D
+		if err := bson.Unmarshal(jobBSON, &jobBsonData); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+
+		// Mock MongoDB Database Response
+		res := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			jobBsonData)
+		// no more jobs to return, indicates the first batch is the only batch with job data
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
+		mt.AddMockResponses(res, end)
+
+		// Assertions
+		foundJob, err := GetJobsByDesignerOrProducerId("", jobIdHex, 10, 0, mt.Client)
+
+		assert.Nil(err)
+		assert.Equal(foundJob, []schema.Job{expectedJob})
+	})
+
+	mt.Run("Retrieving Non-existing ID throws error", func(mt *mtest.T) {
+		// Mock MongoDB Database Response, no jobs were found
+		res := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.FirstBatch)
+		mt.AddMockResponses(res)
+
+		// Assertions
+		nonExistingJobId := primitive.NewObjectID().Hex()
+		_, err := getJobsByDesignerOrProducerIdDb(nonExistingJobId, "", 10, 0, mt.Client)
+		if err == nil {
+			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
+		}
+		assert.Equal(err.Code, 400)
+		assert.Equal(err.Message, "Page does not exist")
+	})
+
+	mt.Run("Throws Error When Given Invalid ID", func(mt *mtest.T) {
+		// Assertions
+		_, err := getJobsByDesignerOrProducerIdDb("INCORRECT FORMAT", "", 10, 0, mt.Client)
+		if err == nil {
+			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
+		}
+		assert.Equal(err.Code, 404)
+		assert.Equal(err.Message, "Job does not exist!")
+	})
 }
