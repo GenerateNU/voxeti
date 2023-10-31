@@ -51,6 +51,28 @@ func TestCreateUser(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			prepMongoMock: func(mt *mtest.T) {
 				errResp := bson.D{{Key: "ok", Value: 0}}
@@ -82,6 +104,28 @@ func TestCreateUser(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			wantError: false,
 		},
@@ -109,6 +153,28 @@ func TestCreateUser(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			prepMongoMock: func(mt *mtest.T) {
 				user := schema.User{
@@ -138,6 +204,28 @@ func TestCreateUser(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				userBSON, _ := bson.Marshal(user)
@@ -266,6 +354,28 @@ func TestGetUserById(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				userBSON, _ := bson.Marshal(user)
@@ -315,6 +425,28 @@ func TestGetUserById(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			wantError: false,
 		},
@@ -413,6 +545,28 @@ func TestGetAllUsers(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				user2 := schema.User{
@@ -442,6 +596,28 @@ func TestGetAllUsers(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				user1BSON, _ := bson.Marshal(user1)
@@ -496,6 +672,28 @@ func TestGetAllUsers(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				},
 				{
 					Id:             id2,
@@ -524,6 +722,28 @@ func TestGetAllUsers(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				},
 			},
 			wantError: false,
@@ -560,6 +780,28 @@ func TestGetAllUsers(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				user2 := schema.User{
@@ -589,6 +831,28 @@ func TestGetAllUsers(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				user1BSON, _ := bson.Marshal(user1)
@@ -643,6 +907,28 @@ func TestGetAllUsers(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				},
 			},
 			wantError: false,
@@ -727,6 +1013,28 @@ func TestUpdateUserById(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			prepMongoMock: func(mt *mtest.T) {
 				user := schema.User{
@@ -756,6 +1064,28 @@ func TestUpdateUserById(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				userBSON, _ := bson.Marshal(user)
@@ -810,6 +1140,28 @@ func TestUpdateUserById(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			wantError: false,
 		},
@@ -843,6 +1195,28 @@ func TestUpdateUserById(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			prepMongoMock: func(mt *mtest.T) {
 				errResp := bson.D{{Key: "ok", Value: 0}}
@@ -880,6 +1254,28 @@ func TestUpdateUserById(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			prepMongoMock: func(mt *mtest.T) {
 				user1 := schema.User{
@@ -909,6 +1305,28 @@ func TestUpdateUserById(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				user2 := schema.User{
@@ -938,6 +1356,28 @@ func TestUpdateUserById(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				user1BSON, _ := bson.Marshal(user1)
@@ -1007,6 +1447,28 @@ func TestUpdateUserById(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				userBSON, _ := bson.Marshal(user)
@@ -1116,6 +1578,28 @@ func TestDeleteUserById(t *testing.T) {
 						Number:      "1234567890",
 					},
 					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
 				}
 
 				userBSON, _ := bson.Marshal(user)
@@ -1165,6 +1649,28 @@ func TestDeleteUserById(t *testing.T) {
 					Number:      "1234567890",
 				},
 				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
 			wantError: false,
 		},
