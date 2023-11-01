@@ -133,7 +133,7 @@ func validatePatchUser(id *primitive.ObjectID, user *schema.User, dbClient *mong
 	if !checkUserExistsId(id, dbClient) {
 		return &schema.ErrorResponse{
 			Code:    404,
-			Message: "User not found",
+			Message: "User not found!",
 		}
 	}
 

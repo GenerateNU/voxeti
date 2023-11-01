@@ -111,7 +111,7 @@ func patchUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.
 	filter := primitive.M{"_id": id}
 	update := primitive.M{"$set": user}
 
-	_, err := coll.UpdateOne(context.TODO(), filter, update)
+	result, err := coll.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, &schema.ErrorResponse{
 			Code:    500,
@@ -122,13 +122,20 @@ func patchUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.
 	if err != nil {
 		return nil, &schema.ErrorResponse{
 			Code:    404,
-			Message: "User not found",
+			Message: "User not found, error",
+		}
+	}
+	if result.MatchedCount == 0 {
+		return nil, &schema.ErrorResponse{
+
+			Code:    404,
+			Message: "User not found, 0 matches",
 		}
 	}
 
 	// get patched user from db
 	var patchedUser schema.User
-	err = coll.FindOne(context.Background(), filter).Decode(&patchedUser)
+	err = coll.FindOne(context.TODO(), filter).Decode(&patchedUser)
 	if err != nil {
 		return nil, &schema.ErrorResponse{
 			Code:    500,
