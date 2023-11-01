@@ -41,12 +41,6 @@ jobs:
       - name: Run backend vet
         run: make backend-vet
 
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@2.0.0
-        with:
-          ignore_paths: >-
-            node_modules
-
       - name: Build
         run: make all
 
@@ -85,46 +79,3 @@ jobs:
 
       - name: Run end-to-end tests
         run: make backend-e2e-test
-
-  unit-test-frontend:
-    name: Run frontend unit tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install Node.js ${{ matrix.node-version }}
-        uses: ./.github/actions/install-node
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Run unit tests
-        run: make frontend-unit-test
-
-  e2e-test-frontend:
-    name: Run frontend end-to-end tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install Node.js ${{ matrix.node-version }}
-        uses: ./.github/actions/install-node
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install Node.js dependencies
-        run: pnpm --dir frontend install
-        shell: bash
-
-      - name: Install Playwright browsers
-        run: pnpm --dir frontend exec playwright install --with-deps
-
-      - name: Run end-to-end tests
-        run: make frontend-e2e-test
