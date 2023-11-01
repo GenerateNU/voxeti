@@ -1740,7 +1740,6 @@ func TestPatchUserById(t *testing.T) {
 			name: "Success",
 			id:   id,
 			user: schema.User{
-				Id:       id,
 				LastName: "Brown",
 			},
 			prepMongoMock: func(mt *mtest.T) {
@@ -1795,29 +1794,89 @@ func TestPatchUserById(t *testing.T) {
 					},
 				}
 
+				updatedUser := schema.User{
+					Id:             id,
+					FirstName:      "Dana",
+					LastName:       "Brown",
+					Email:          "dana@gmail.com",
+					Password:       "danawhite",
+					SocialProvider: "NONE",
+					Addresses: []schema.Address{
+						{
+							Name:    "Home",
+							Line1:   "1738 Fetty St",
+							Line2:   "Apt 1",
+							ZipCode: "67890",
+							City:    "Los Angeles",
+							State:   "CA",
+							Country: "USA",
+							Location: geojson.Geometry{
+								Type:        "Point",
+								Coordinates: orb.Point{1, 1},
+							},
+						},
+					},
+					PhoneNumber: &schema.PhoneNumber{
+						CountryCode: "1",
+						Number:      "1234567890",
+					},
+					Experience: 1,
+					Printers: []schema.Printer{
+						{
+							SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+							Dimensions: schema.Dimensions{
+								Height: 10,
+								Width:  10,
+								Depth:  10,
+							},
+						},
+					},
+					AvailableFilament: []schema.Filament{
+						{
+							Type:         "PLA",
+							Color:        "Red",
+							PricePerUnit: 10,
+						},
+						{
+							Type:         "ABS",
+							Color:        "Blue",
+							PricePerUnit: 10,
+						},
+					},
+				}
+
 				userBSON, _ := bson.Marshal(user)
+				updatedUserBSON, _ := bson.Marshal(updatedUser)
 				var bsonD bson.D
+				var bsonD2 bson.D
 				err := bson.Unmarshal(userBSON, &bsonD)
-				if err != nil {
+				err2 := bson.Unmarshal(updatedUserBSON, &bsonD2)
+				if err != nil || err2 != nil {
 					assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
 				}
 
-				bsonE := bson.E{Key: "n", Value: 1}
+				resp1 := mtest.CreateCursorResponse(
+					1,
+					"data.users",
+					mtest.FirstBatch,
+					bsonD)
 
-				updateRes := mtest.CreateSuccessResponse(bsonE)
+				resp2 := mtest.CreateCursorResponse(
+					1,
+					"data.users",
+					mtest.FirstBatch,
+					bsonD2)
 
-				findRes := mtest.CreateCursorResponse(1, "data.users", mtest.FirstBatch, bsonD)
 				end := mtest.CreateCursorResponse(
 					0,
 					"data.users",
 					mtest.NextBatch)
 
-				errResp := bson.D{{Key: "ok", Value: 0}}
-
-				mt.AddMockResponses(errResp, updateRes, findRes, end, bson.D{
+				mt.AddMockResponses(resp1, end, bson.D{
 					{Key: "ok", Value: 1},
 					{Key: "value", Value: bsonD},
-				})
+				}, resp2, end)
+
 			},
 			expectedResponse: schema.User{
 				Id:             id,
@@ -2190,20 +2249,67 @@ func TestPatchUserById(t *testing.T) {
 					mtest.FirstBatch,
 					bsonD)
 
-				errResp := bson.D{{Key: "ok", Value: 0}}
-
 				end := mtest.CreateCursorResponse(
 					0,
 					"data.users",
 					mtest.NextBatch)
 
-				mt.AddMockResponses(resp1, end, errResp)
+				mt.AddMockResponses(resp1, end, bson.D{
+					{Key: "ok", Value: 1},
+					{Key: "value", Value: bsonD},
+				}, resp1, end)
 			},
-			expectedError: schema.ErrorResponse{
-				Code:    400,
-				Message: "Bad request: firstName is missing, lastName is missing, email is missing, addresses is missing, phoneNumber is missing, experience must be 1, 2, or 3, ",
+			expectedResponse: schema.User{
+				Id:             id,
+				FirstName:      "Dana",
+				LastName:       "White",
+				Email:          "dana22@gmail.com",
+				Password:       "danawhite",
+				SocialProvider: "NONE",
+				Addresses: []schema.Address{
+					{
+						Name:    "Home",
+						Line1:   "1738 Fetty St",
+						Line2:   "Apt 1",
+						ZipCode: "67890",
+						City:    "Los Angeles",
+						State:   "CA",
+						Country: "USA",
+						Location: geojson.Geometry{
+							Type:        "Point",
+							Coordinates: orb.Point{1, 1},
+						},
+					},
+				},
+				PhoneNumber: &schema.PhoneNumber{
+					CountryCode: "1",
+					Number:      "1234567890",
+				},
+				Experience: 1,
+				Printers: []schema.Printer{
+					{
+						SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+						Dimensions: schema.Dimensions{
+							Height: 10,
+							Width:  10,
+							Depth:  10,
+						},
+					},
+				},
+				AvailableFilament: []schema.Filament{
+					{
+						Type:         "PLA",
+						Color:        "Red",
+						PricePerUnit: 10,
+					},
+					{
+						Type:         "ABS",
+						Color:        "Blue",
+						PricePerUnit: 10,
+					},
+				},
 			},
-			wantError: true,
+			wantError: false,
 		},
 	}
 
@@ -2219,7 +2325,7 @@ func TestPatchUserById(t *testing.T) {
 			// Prep the mongo mocK:
 			testCase.prepMongoMock(mt)
 
-			user, err := PatchUserById(&testCase.id, &testCase.user, mt.Client)
+			patchedUser, err := PatchUserById(&testCase.id, &testCase.user, mt.Client)
 
 			if testCase.wantError {
 				if err == nil {
@@ -2233,7 +2339,7 @@ func TestPatchUserById(t *testing.T) {
 				assert.Nil(err)
 
 				// assert user is same as expected response
-				assert.Equal(testCase.expectedResponse, *user)
+				assert.Equal(testCase.expectedResponse, *patchedUser)
 			}
 		})
 	}

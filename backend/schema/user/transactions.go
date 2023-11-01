@@ -111,25 +111,11 @@ func patchUserByIdDB(id *primitive.ObjectID, user *schema.User, dbClient *mongo.
 	filter := primitive.M{"_id": id}
 	update := primitive.M{"$set": user}
 
-	result, err := coll.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return nil, &schema.ErrorResponse{
-			Code:    500,
-			Message: err.Error(),
-		}
-	}
-
+	_, err := coll.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, &schema.ErrorResponse{
 			Code:    404,
-			Message: "User not found, error",
-		}
-	}
-	if result.MatchedCount == 0 {
-		return nil, &schema.ErrorResponse{
-
-			Code:    404,
-			Message: "User not found, 0 matches",
+			Message: "User not found",
 		}
 	}
 
@@ -182,9 +168,7 @@ func checkUserExistsEmail(email string, dbClient *mongo.Client) bool {
 	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	filter := bson.D{{Key: "email", Value: email}}
 	var result schema.User
-	singleResult := coll.FindOne(context.Background(), filter)
-	err := singleResult.Decode(&result)
-	// err := coll.FindOne(context.Background(), filter).Decode(&result)
+	err := coll.FindOne(context.Background(), filter).Decode(&result)
 
 	return err == nil
 }
@@ -195,9 +179,7 @@ func checkUserExistsId(id *primitive.ObjectID, dbClient *mongo.Client) bool {
 	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	filter := bson.D{{Key: "_id", Value: *id}}
 	var result schema.User
-	singleResult := coll.FindOne(context.Background(), filter)
-	err := singleResult.Decode(&result)
-	// err := coll.FindOne(context.Background(), filter).Decode(&result)
+	err := coll.FindOne(context.Background(), filter).Decode(&result)
 
 	return err == nil
 }
@@ -208,9 +190,7 @@ func isEmailUpdated(id *primitive.ObjectID, email string, dbClient *mongo.Client
 	coll := dbClient.Database(schema.DatabaseName).Collection("users")
 	filter := bson.D{{Key: "_id", Value: *id}}
 	var result schema.User
-	singleResult := coll.FindOne(context.Background(), filter)
-	err := singleResult.Decode(&result)
-	// err := coll.FindOne(context.Background(), filter).Decode(&result)
+	err := coll.FindOne(context.Background(), filter).Decode(&result)
 
 	return err == nil && result.Email != email
 }
