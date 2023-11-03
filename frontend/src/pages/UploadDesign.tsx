@@ -1,26 +1,40 @@
-import React from "react";
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useState } from 'react';
+import TopBar from "../components/Upload/TopBar";
+import VoxetiStepper from '../components/Upload/VoxetiStepper';
+import UploadFlow from '../components/Upload/UploadFlow';
 
 export function UploadDesign() {
+    const [currentStep, setCurrentStep] = useState<number>(1); // number, React.Dispatch<React.SetStateAction<number>>
+    const [uploadedFile, setUploadedFile] = useState<string | undefined>();
+    const [color, setColor] = useState<string>("White");
+    const [quantity, setQuantity] = useState<number>(1);
+    const [delivery, setDelivery] = useState<string>("Shipping");
+    const [expirationDate, setExpirationDate] = useState<string>("3 days");
+
+    // ----------- helpful objects to track state for the forms
+    const states = {
+        currentStep: currentStep,
+        uploadedFile: uploadedFile,
+        color: color,
+        quantity: quantity,
+        delivery: delivery,
+        expirationDate: expirationDate
+    }
+
+    const setters = {
+        currentStep: setCurrentStep,
+        uploadedFile: setUploadedFile,
+        color: setColor,
+        quantity: setQuantity,
+        delivery: setDelivery,
+        expirationDate: setExpirationDate
+    }
+    // -----------
     return (
-        <div className="container mx-auto mt-2.5">
-            <div className="flex flex-row justify-between justify-items-center">
-                <div className="text-4xl">
-                    Voxeti
-                </div>
-                <div className="flex flex-row items-center gap-8">
-                    <div className="text-xl leading-5 font-extralight">
-                        Create a Job
-                    </div>
-                    <NotificationsNoneIcon/>
-                    <div className="flex flex-row justify-items-center gap-2 bg-gray-200 rounded-full p-2">
-                        <MenuIcon/>
-                        <AccountCircleIcon/>
-                    </div>
-                </div>
-            </div>
+        <div className="container mx-auto mt-3.5">
+            <TopBar/>
+            <VoxetiStepper currentStep={currentStep}/>
+            <UploadFlow states={states} setters={setters}/>
         </div>
     )
 }
