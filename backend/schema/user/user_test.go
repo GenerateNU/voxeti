@@ -18,9 +18,7 @@ import (
 
 func TestMain(m *testing.M) {
 	if err := godotenv.Load("../../../.env"); err != nil {
-		fmt.Println("Failed to load environment variables, shutting down...")
-		fmt.Println(err)
-		os.Exit(1)
+		fmt.Println("Failed to load environment variables from .env file")
 	}
 
 	fmt.Println("Running user tests...")
