@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"os"
 	"testing"
 	"voxeti/backend/schema"
 
@@ -15,11 +16,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
 
-func init() {
-	// Load environment variables from .env file
+func TestMain(m *testing.M) {
 	if err := godotenv.Load("../../../.env"); err != nil {
 		fmt.Println("Failed to load environment variables, shutting down...")
+		fmt.Println(err)
+		os.Exit(1)
 	}
+
+	fmt.Println("Running user tests...")
+	os.Exit(m.Run())
 }
 
 func TestCreateUser(t *testing.T) {
