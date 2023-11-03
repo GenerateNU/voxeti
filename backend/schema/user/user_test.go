@@ -1,9 +1,11 @@
 package user
 
 import (
+	"fmt"
 	"testing"
 	"voxeti/backend/schema"
 
+	"github.com/joho/godotenv"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/stretchr/testify/assert"
@@ -12,6 +14,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
+
+func init() {
+	// Load environment variables from .env file
+	if err := godotenv.Load("../../../.env"); err != nil {
+		fmt.Println("Failed to load environment variables, shutting down...")
+	}
+}
 
 func TestCreateUser(t *testing.T) {
 	assert := assert.New(t)
