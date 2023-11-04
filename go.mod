@@ -22,6 +22,8 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect
+	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
