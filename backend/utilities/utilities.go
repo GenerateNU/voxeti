@@ -1,7 +1,7 @@
 package utilities
 
 import (
-	"fmt"
+	"os"
 	"voxeti/backend/schema"
 
 	"github.com/mailjet/mailjet-apiv3-go/v4"
@@ -19,10 +19,8 @@ func CreateErrorResponse(code int, message string) (int, map[string]schema.Error
 
 func SendEmail(designer *schema.User, job *schema.Job) *schema.ErrorResponse {
 
-	apiKey := "c81d2007a522fd673eca4a885dca361c"
-	apiSecret := "08b204a12307121faf269103d60d8a26"
-	fmt.Println("#############################################")
-	fmt.Println("Job ID: " + job.Id.Hex())
+	apiKey := os.Getenv("MAILJET_API_KEY")
+	apiSecret := os.Getenv("MAILJET_API_SECRET")
 
 	mailjetClient := mailjet.NewMailjetClient(apiKey, apiSecret)
 

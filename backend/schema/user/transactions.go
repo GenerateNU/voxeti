@@ -180,3 +180,21 @@ func isEmailUpdated(id *primitive.ObjectID, email string, dbClient *mongo.Client
 
 	return err == nil && result.Email != email
 }
+
+func AddJobNotification(id *primitive.ObjectID, jobNotification *schema.JobNotification, dbClient *mongo.Client) *schema.ErrorResponse {
+
+	coll := dbClient.Database(schema.DatabaseName).Collection("users")
+
+	filter := primitive.M{"_id": id}
+	update := primitive.M{"$push": primitive.M{"jobNotifications": jobNotification}}
+
+	_, err := coll.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return &schema.ErrorResponse{
+			Code:    500,
+			Message: err.Error(),
+		}
+	}
+
+	return nil
+}
