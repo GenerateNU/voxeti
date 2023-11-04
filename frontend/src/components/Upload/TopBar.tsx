@@ -13,7 +13,7 @@ export default function TopBar() {
                     Create a Job
                 </div>
                 <NotificationsNoneIcon/>
-                <div className="flex flex-row justify-items-center gap-2 bg-gray-200 rounded-full p-2">
+                <div className="flex flex-row justify-items-center gap-2 bg-[#F0F0F0] rounded-full p-2">
                     <MenuIcon/>
                     <AccountCircleIcon/>
                 </div>
