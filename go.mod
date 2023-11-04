@@ -7,6 +7,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-contrib v0.15.0
 	github.com/labstack/echo/v4 v4.11.1
+	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1
 	github.com/pterm/pterm v0.12.66
 	github.com/stretchr/testify v1.8.4
 	go.mongodb.org/mongo-driver v1.12.1
@@ -23,7 +24,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect
-	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
