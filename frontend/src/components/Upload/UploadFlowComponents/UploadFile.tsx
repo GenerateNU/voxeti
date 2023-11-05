@@ -1,5 +1,6 @@
-import { Box, Container } from '@mui/material';
-import { useCallback } from 'react';
+import { Box, Container, Snackbar } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { useCallback, forwardRef, useState } from 'react';
 import {useDropzone, FileRejection} from 'react-dropzone';
 import VoxetiFileList from './VoxetiFileList';
 import BottomNavOptions from '../BottomNavOptions';
@@ -13,29 +14,54 @@ export interface UploadFileProps {
 
 export type onDropTypeGen<T extends File> = (acceptedFiles: T[], fileRejections: FileRejection[]) => void;
 export type onDropType = onDropTypeGen<File>;
+
 export default function UploadFile({
     files,
     setFiles,
     setNextStep,
     cancelStep
 }: UploadFileProps) {
-    
-    const onDrop: onDropType = useCallback((acceptedFiles: File[]) => {
+    const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
+        props,
+        ref,
+    ) {
+        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
+
+    const [open, setOpen] = useState(false);
+    const [errors, setErrors] = useState("");
+
+    const onDrop: onDropType = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
         // Do something with the files
         console.log(acceptedFiles);
+        console.log(fileRejections);
+        if(fileRejections.length > 0) {
+            setOpen(true);
+            setErrors(fileRejections[0].errors[0].message)
+        }
+        
         if(files.length != 0) {
             setFiles(files.concat(acceptedFiles))
         } else {
             setFiles(acceptedFiles)
         }
     }, [files, setFiles]);
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, maxSize: 52428800});
 
     function UploadFileList() {
         return (
             <VoxetiFileList fileList={files} setFilesList={setFiles}/>
         )
     }
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+        event?.isTrusted;
+        return;
+        }
+
+        setOpen(false);
+    };
 
 
     return (
@@ -85,6 +111,18 @@ export default function UploadFile({
             }
 
             <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={files.length >= 1}/>
+            <Snackbar 
+                open={open} 
+                autoHideDuration={3000}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center'}} 
+                onClose={handleClose}>
+                <Alert 
+                    onClose={handleClose} 
+                    severity="error" 
+                    sx={{ width: '100%' }}>
+                    Error uploading files: {errors}
+                </Alert>
+            </Snackbar>
                 
         </Container>
     )

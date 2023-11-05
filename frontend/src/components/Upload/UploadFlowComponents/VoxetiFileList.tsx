@@ -11,7 +11,7 @@ export default function VoxetiFileList({
 }: UploadFileListProps) {
 
     const FileLineItem = (file: File) =>  {
-        const size = (file.size / 1000000) < 1 ? Number((file.size / 1000)) + " KB" : Number((file.size / 1000000)) + "  MB"
+        const size = (file.size / 1000000) < 1 ? Number((file.size / 1000).toPrecision(2)) + " KB" : Number((file.size / 1000000).toPrecision(2)) + "  MB"
         const handleClick = () => {
             console.log("file is, " + file);
             const newList = fileList.filter((fileItem) => fileItem.name !== file.name);
@@ -37,7 +37,7 @@ export default function VoxetiFileList({
         )
     }
     return (
-        <Box className="flex flex-col w-[100%] gap-y-4">
+        <Box className="flex flex-col w-[100%] gap-y-4 overflow-y-scroll max-h-[50vh]">
             {
                 fileList.map( (file: File) => FileLineItem(file) )
             }

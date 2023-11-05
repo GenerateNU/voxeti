@@ -1,4 +1,5 @@
 import FiltersStep from "./UploadFlowComponents/FiltersStep";
+import PriceEstimation from "./UploadFlowComponents/PriceEstimation";
 import UploadFile from "./UploadFlowComponents/UploadFile";
 
 export interface UploadFlowProps {
@@ -28,6 +29,7 @@ export default function UploadFlow({
     }
     const cancelStep = () => {
         setters.currentStep(1);
+        setters.uploadedFiles([])
     }
     return (
         <div>
@@ -45,7 +47,13 @@ export default function UploadFlow({
                             setNextStep={nextStep}
                             cancelStep={cancelStep}
                             />,
-                    3: null,
+                    3: <PriceEstimation 
+                            states={states}
+                            setNextStep={nextStep}
+                            cancelStep={cancelStep}
+                            editFile={() => setters.currentStep(1)}
+                            editFilter={() => setters.currentStep(2)}
+                            />,
                     4: null
                 }[states.currentStep]
             }

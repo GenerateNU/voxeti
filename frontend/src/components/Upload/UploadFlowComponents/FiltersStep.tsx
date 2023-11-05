@@ -107,7 +107,7 @@ export default function FiltersStep({
                                     }
                                 }}
                             />
-                            {states.quantity}
+                            {states.quantity} {states.quantity > 1 ? "pieces" : "piece"}
                             <AddCircle onClick={() => setters.quantity(states.quantity + 1)}/>
                         </div>
                     </Box>
