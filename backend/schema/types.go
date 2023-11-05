@@ -29,3 +29,10 @@ type GoogleResponse struct {
 	Email string `json:"email"`
 	Scope string `json:"scope"`
 }
+
+type Email struct {
+	Recipient string `json:"recipient"`
+	Name      string `json:"name"`
+	Subject   string `json:"subject"`
+	Body      string `json:"body"`
+}
