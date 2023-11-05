@@ -7,7 +7,6 @@ import (
 	"voxeti/backend/utilities"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -68,7 +67,7 @@ func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client) (schema.Job
 }
 
 // Updates a specific field in a job
-func PatchJob(jobId primitive.ObjectID, patchData bson.M, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
+func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
 	return patchJobDb(jobId, patchData, dbClient)
 }
 
