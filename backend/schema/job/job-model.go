@@ -32,7 +32,7 @@ func CreateJob(newJob schema.Job, dbClient *mongo.Client) (schema.Job, *schema.E
 		return job, err
 	}
 
-	email, emailErr := createJobEmail(&job, dbClient)
+	email, emailErr := constructJobCreationEmail(&job, dbClient)
 	if emailErr != nil {
 		return job, emailErr
 	}
@@ -51,24 +51,46 @@ func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client) (schema.Job
 	previousJob, _ := getJobByIdDb(jobId, dbClient)
 	updatedJob, updateErr := updateJobDb(jobId, job, dbClient)
 
-	if updateErr == nil && previousJob.Status != updatedJob.Status {
-		email, emailErr := updateJobStatusEmail(&updatedJob, dbClient)
-		if emailErr != nil {
-			return updatedJob, emailErr
-		}
-
-		statusChangeErr := handleJobStatusChange(&updatedJob, email, dbClient)
-		if statusChangeErr != nil {
-			// * something to consider, if the email fails to send but the update is correct, should we still send the updatedJob
-			return updatedJob, statusChangeErr
-		}
+	if updateErr == nil {
+		handleJobUpdateErr := handleJobUpdated(&previousJob, &updatedJob, dbClient)
+		return updatedJob, handleJobUpdateErr
 	}
 	return updatedJob, updateErr
 }
 
 // Updates a specific field in a job
 func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
-	return patchJobDb(jobId, patchData, dbClient)
+	previousJob, _ := getJobByIdDb(jobId, dbClient)
+	patchedJob, patchErr := patchJobDb(jobId, patchData, dbClient)
+
+	if patchErr == nil {
+		handleJobUpdateErr := handleJobUpdated(&previousJob, &patchedJob, dbClient)
+		return patchedJob, handleJobUpdateErr
+	}
+	return patchedJob, patchErr
+}
+
+// Given two jobs objects with the same ID, determine if the statuses are different
+// If they are, send an email to the designer and update the designer's notifications
+func handleJobUpdated(previousJob *schema.Job, changedJob *schema.Job, dbClient *mongo.Client) *schema.ErrorResponse {
+	if previousJob.Id != changedJob.Id {
+		return &schema.ErrorResponse{Code: 500, Message: "Job Ids do not match"}
+	}
+	if previousJob.Status == changedJob.Status {
+		return &schema.ErrorResponse{Code: 500, Message: "Job Status was not changed"}
+	} else {
+		email, emailErr := constructUpdateJobStatusEmail(changedJob, dbClient)
+		if emailErr != nil {
+			return emailErr
+		}
+
+		statusChangeErr := handleJobStatusChange(changedJob, email, dbClient)
+		if statusChangeErr != nil {
+			// * something to consider, if the email fails to send but the update is correct, should we still send the updatedJob
+			return statusChangeErr
+		}
+	}
+	return nil
 }
 
 // sends an email to the designer and adds a notification to the designer
@@ -98,7 +120,8 @@ func handleJobStatusChange(job *schema.Job, email *schema.Email, dbClient *mongo
 	return nil
 }
 
-func updateJobStatusEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Email, *schema.ErrorResponse) {
+// given a job, constructs an email for the job's designer that indicates the job's status has been updated
+func constructUpdateJobStatusEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Email, *schema.ErrorResponse) {
 	designer, designerErr := user.GetUserById(&job.DesignerId, dbClient)
 	if designerErr != nil {
 		return nil, designerErr
@@ -112,7 +135,8 @@ func updateJobStatusEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Emai
 	}, nil
 }
 
-func createJobEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Email, *schema.ErrorResponse) {
+// Given a created job, constructs an email to send to the designer that indicates the job has been created
+func constructJobCreationEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Email, *schema.ErrorResponse) {
 	designer, designerErr := user.GetUserById(&job.DesignerId, dbClient)
 	if designerErr != nil {
 		return nil, designerErr
