@@ -11,7 +11,7 @@ export default function VoxetiStepper({currentStep}: StepperProps) {
         return (null);
     }
 
-    const steps: string[] = ["start", "upload", "options", "preview", "submit"];
+    const steps: string[] = ["start", "upload", "preview", "options", "preview", "submit", "confirmation"];
 
     const VoxetiConnector = styled(StepConnector)(({ theme }) => ({
         [`&.${stepConnectorClasses.alternativeLabel}`]: {

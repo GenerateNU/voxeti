@@ -2,6 +2,8 @@ import FiltersStep from "./UploadFlowComponents/FiltersStep";
 import PriceEstimation from "./UploadFlowComponents/PriceEstimation";
 import UploadFile from "./UploadFlowComponents/UploadFile";
 import Notes from "./UploadFlowComponents/Notes";
+import PreviewPrint from "./UploadFlowComponents/PreviewPrint";
+import ConfirmationPage from "./UploadFlowComponents/ConfirmationPage";
 
 export interface UploadFlowProps {
     states: {
@@ -10,7 +12,8 @@ export interface UploadFlowProps {
         color: string,
         quantity: number,
         delivery: string,
-        expirationDate: string
+        expirationDate: string,
+        price: number
     },
     setters: {
         currentStep: React.Dispatch<React.SetStateAction<number>>;
@@ -19,6 +22,7 @@ export interface UploadFlowProps {
         quantity: React.Dispatch<React.SetStateAction<number>>;
         delivery: React.Dispatch<React.SetStateAction<string>>;
         expirationDate: React.Dispatch<React.SetStateAction<string>>;
+        price: React.Dispatch<React.SetStateAction<number>>;
     }
 }
 export default function UploadFlow({
@@ -32,6 +36,9 @@ export default function UploadFlow({
         setters.currentStep(1);
         setters.uploadedFiles([])
     }
+    const finalStep = () => {
+        console.log(states);
+    }
     return (
         <div>
             {
@@ -42,20 +49,33 @@ export default function UploadFlow({
                             setNextStep={nextStep}
                             cancelStep={cancelStep}
                             />,
-                    2: <FiltersStep 
+                    2: <PreviewPrint
+                            states={states}
+                            setNextStep={nextStep}
+                            cancelStep={cancelStep}
+                            />,
+                    3: <FiltersStep 
                             states={states}
                             setters={setters}
                             setNextStep={nextStep}
                             cancelStep={cancelStep}
                             />,
-                    3: <PriceEstimation 
+                    4: <PriceEstimation 
                             states={states}
+                            setters={setters}
                             setNextStep={nextStep}
                             cancelStep={cancelStep}
                             editFile={() => setters.currentStep(1)}
                             editFilter={() => setters.currentStep(2)}
                             />,
-                    4: <Notes states={states} cancelStep={cancelStep}/>
+                    5: <Notes 
+                            states={states} 
+                            cancelStep={cancelStep}
+                            nextStep={nextStep}/>,
+                    6: <ConfirmationPage 
+                            states={states} 
+                            cancelStep={cancelStep}
+                            finalAction={finalStep}/>
                 }[states.currentStep]
             }
         </div>

@@ -21,7 +21,7 @@ function NavItem({ title, link }: NavItemDetails) {
 
 export default function Navbar() {
   return (
-    <nav className="flex items-center bg-primary sticky top-0 w-full h-18">
+    <nav className="flex items-center bg-primary sticky top-0 w-full h-18 z-10">
       <div className="w-full flex flex-wrap items-center justify-between mx-auto p-4">
         {/* Drop down menu for mobile */}
         <button

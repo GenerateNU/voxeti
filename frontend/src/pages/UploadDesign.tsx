@@ -10,6 +10,7 @@ export function UploadDesign() {
     const [quantity, setQuantity] = useState<number>(1);
     const [delivery, setDelivery] = useState<string>("Shipping");
     const [expirationDate, setExpirationDate] = useState<string>("2 days");
+    const [price, setPrice] = useState<number>(0);
 
     // ----------- helpful objects to track state for the forms
     const states = {
@@ -18,7 +19,8 @@ export function UploadDesign() {
         color: color,
         quantity: quantity,
         delivery: delivery,
-        expirationDate: expirationDate
+        expirationDate: expirationDate,
+        price: price,
     }
 
     const setters = {
@@ -27,14 +29,19 @@ export function UploadDesign() {
         color: setColor,
         quantity: setQuantity,
         delivery: setDelivery,
-        expirationDate: setExpirationDate
+        expirationDate: setExpirationDate,
+        price: setPrice
     }
     // -----------
     return (
         <div className="container mx-auto mt-3.5">
-            <TopBar/>
-            <VoxetiStepper currentStep={currentStep}/>
-            <UploadFlow states={states} setters={setters}/>
+            <div className="z-0">
+                <TopBar/>
+            </div>
+            <div className="z-0">
+                <VoxetiStepper currentStep={currentStep}/>
+                <UploadFlow states={states} setters={setters}/>
+            </div>
         </div>
     )
 }

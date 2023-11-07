@@ -46,7 +46,13 @@ export default function UploadFile({
             setFiles(acceptedFiles)
         }
     }, [files, setFiles]);
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, maxSize: 52428800});
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({
+        onDrop, 
+        maxSize: 52428800,
+        accept: {
+            'stl': ['.stl'],
+        },
+    });
 
     function UploadFileList() {
         return (

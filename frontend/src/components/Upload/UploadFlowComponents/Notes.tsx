@@ -1,7 +1,6 @@
 import { Box, Container, TextareaAutosize } from "@mui/material"
 import { useState } from "react";
 import BottomNavOptions from "../BottomNavOptions";
-import { useNavigate } from "@tanstack/react-router";
 
 export interface NotesProps {
     states: {
@@ -10,19 +9,20 @@ export interface NotesProps {
         color: string,
         quantity: number,
         delivery: string,
-        expirationDate: string
+        expirationDate: string,
+        price: number
     },
-    cancelStep: () => void
+    cancelStep: () => void,
+    nextStep: () => void
 }
 
-export default function Notes({states, cancelStep}: NotesProps){
+export default function Notes({states, cancelStep, nextStep}: NotesProps){
     
     const [notes, setNotes] = useState("");
-    const navigate = useNavigate()
     const data = {...states, notes: notes}
     const handleContinue = () => {
         console.log(data);
-        navigate({ to: "/confirmation", state: data });
+        nextStep();
     }
     return (
         <Container>

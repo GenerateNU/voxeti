@@ -18,6 +18,7 @@ export interface FiltersStepProps {
         quantity: number,
         delivery: string,
         expirationDate: string
+        price: number,
     },
     setters: {
         currentStep: React.Dispatch<React.SetStateAction<number>>;
@@ -26,6 +27,7 @@ export interface FiltersStepProps {
         quantity: React.Dispatch<React.SetStateAction<number>>;
         delivery: React.Dispatch<React.SetStateAction<string>>;
         expirationDate: React.Dispatch<React.SetStateAction<string>>;
+        price: React.Dispatch<React.SetStateAction<number>>;
     }
     setNextStep: () => void,
     cancelStep: () => void

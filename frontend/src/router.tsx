@@ -3,7 +3,6 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout/Layout.tsx";
 import Index from "./pages/Index.tsx";
 import QuestionForm from "./pages/Registration.tsx";
-import ConfirmationPage from "./pages/ConfirmationPage.tsx";
 import { UploadDesign } from "./pages/UploadDesign.tsx";
 import { Login } from "./pages/Login.tsx";
 
@@ -49,12 +48,6 @@ const uploadDesignRoute = new Route({
   component: UploadDesign,
 })
 
-const confirmationRoute = new Route({
-  getParentRoute: () => rootRoute,
-  path: "/confirmation",
-  component: ConfirmationPage
-})
-
 // Add routes to the route tree here
 const routeTree = rootRoute.addChildren([
   error404Route,
@@ -62,7 +55,6 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   registrationRoute,
   uploadDesignRoute,
-  confirmationRoute,
 ]);
 
 const router = new Router({ routeTree });

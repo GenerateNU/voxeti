@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import PriceEstimateBox, { PriceEstimateBoxProps } from "../PriceEstimateBox"
 import { createPrintAPI } from "../../../api/printAPI"
 
-export interface PriceEstimationProps {
+export interface ConfirmationPageProps {
     states: {
         currentStep: number,
         uploadedFiles: File[],
@@ -14,28 +14,15 @@ export interface PriceEstimationProps {
         expirationDate: string,
         price: number,
     },
-    setters: {
-        currentStep: React.Dispatch<React.SetStateAction<number>>;
-        uploadedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-        color: React.Dispatch<React.SetStateAction<string>>;
-        quantity: React.Dispatch<React.SetStateAction<number>>;
-        delivery: React.Dispatch<React.SetStateAction<string>>;
-        expirationDate: React.Dispatch<React.SetStateAction<string>>;
-        price: React.Dispatch<React.SetStateAction<number>>;
-    }
-    setNextStep: () => void,
+    finalAction: () => void,
     cancelStep: () => void,
-    editFile: () => void,
-    editFilter: () => void
 }
 
-export default function PriceEstimation({
+export default function ConfirmationPage({
     states, 
-    setNextStep,
-    cancelStep,
-    editFile,
-    editFilter
-}: PriceEstimationProps) {
+    finalAction, 
+    cancelStep
+}: ConfirmationPageProps) {
     type filterItem = {label: string, value: string | number}
     const listFilters: filterItem[] = [
         {label: "Color", value: states.color},
@@ -53,14 +40,12 @@ export default function PriceEstimation({
     useEffect(() => {
         handleUpload()
     }, [states.uploadedFiles, states.delivery, states.quantity, states.color])
-
-    
     return (
         <Container>
             <Box>
-                <div className="text-xl font-semibold">Price Estimation</div>
+                <div className="text-xl font-semibold">Confirmation</div>
                 <div className="text-sm text-[#777777] mb-6">
-                    This is the price estimated from your filter choices.
+                    Please review your order!
                 </div>
             </Box>
 
@@ -81,11 +66,6 @@ export default function PriceEstimation({
                             }
                             </div>
                         </Box>
-                        <div 
-                            className="p-2 px-6 bg-[#F1F1F1] text-md rounded-xl hover:bg-[#777777] h-[fit-content]"
-                            onClick={editFile}>
-                                edit
-                        </div>
                     
                     </Box>
                     <Box className="p-6 px-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
@@ -101,11 +81,6 @@ export default function PriceEstimation({
                                 })
                             }
                         </Box>
-                        <div 
-                            className="p-2 px-6 bg-[#F1F1F1] text-md rounded-xl hover:bg-[#777777] h-[fit-content]"
-                            onClick={editFilter}>
-                                edit
-                        </div>
                     </Box>
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
@@ -124,8 +99,7 @@ export default function PriceEstimation({
                     </Box>
                 </Box>
             </Box>
-            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={true}/>
+            <BottomNavOptions cancel={cancelStep} nextPage={finalAction} enabled={true}/>
         </Container>
     )
-
 }
