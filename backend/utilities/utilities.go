@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"fmt"
 	"os"
 	"voxeti/backend/schema"
 
@@ -17,12 +18,14 @@ func CreateErrorResponse(code int, message string) (int, map[string]schema.Error
 	return code, errorResponse
 }
 
-func SendEmail(email *schema.Email) *schema.ErrorResponse {
+func sendEmail(email *schema.Email) *schema.ErrorResponse {
 
 	apiKey := os.Getenv("MAILJET_API_KEY")
 	apiSecret := os.Getenv("MAILJET_API_SECRET")
 
 	mailjetClient := mailjet.NewMailjetClient(apiKey, apiSecret)
+
+	fmt.Println("In sendEmail", mailjetClient)
 
 	messagesInfo := []mailjet.InfoMessagesV31{
 		{
@@ -43,6 +46,7 @@ func SendEmail(email *schema.Email) *schema.ErrorResponse {
 
 	messages := mailjet.MessagesV31{Info: messagesInfo}
 	_, emailErr := mailjetClient.SendMailV31(&messages)
+	fmt.Println("Send error", emailErr)
 	if emailErr != nil {
 		return &schema.ErrorResponse{
 			Code:    500,
@@ -52,4 +56,14 @@ func SendEmail(email *schema.Email) *schema.ErrorResponse {
 
 	return nil
 
+}
+
+/**
+* Service that handles sending mails through mailchimp
+ */
+type EmailService struct{}
+
+func (emailService EmailService) SendEmail(email *schema.Email) *schema.ErrorResponse {
+	fmt.Println("In Utilities", email)
+	return sendEmail(email)
 }
