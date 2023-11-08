@@ -27,7 +27,7 @@ func DeleteJob(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
 }
 
 // Creates a job
-func CreateJob(newJob schema.Job, dbClient *mongo.Client, emailService *utilities.EmailService) (schema.Job, *schema.ErrorResponse) {
+func CreateJob(newJob schema.Job, dbClient *mongo.Client, emailService utilities.NotificationService) (schema.Job, *schema.ErrorResponse) {
 	job, err := createJobDb(newJob, dbClient)
 	if err != nil {
 		return job, err
@@ -47,7 +47,7 @@ func CreateJob(newJob schema.Job, dbClient *mongo.Client, emailService *utilitie
 }
 
 // Updates a job
-func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client, emailService *utilities.EmailService) (schema.Job, *schema.ErrorResponse) {
+func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client, emailService utilities.NotificationService) (schema.Job, *schema.ErrorResponse) {
 	// *an advantage of change stream is it's not necessary to have this extra database call
 	previousJob, _ := getJobByIdDb(jobId, dbClient)
 	updatedJob, updateErr := updateJobDb(jobId, job, dbClient)
@@ -60,7 +60,7 @@ func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client, emailServic
 }
 
 // Updates a specific field in a job
-func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailService *utilities.EmailService) (schema.Job, *schema.ErrorResponse) {
+func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailService utilities.NotificationService) (schema.Job, *schema.ErrorResponse) {
 	previousJob, _ := getJobByIdDb(jobId, dbClient)
 	patchedJob, patchErr := patchJobDb(jobId, patchData, dbClient)
 
@@ -74,7 +74,7 @@ func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailServi
 // something that accepts the email, something that accepts
 // Given two jobs objects with the same ID, determine if the statuses are different
 // If they are, send an email to the designer and update the designer's notifications
-func handleJobUpdated(previousJob *schema.Job, changedJob *schema.Job, dbClient *mongo.Client, emailService *utilities.EmailService) *schema.ErrorResponse {
+func handleJobUpdated(previousJob *schema.Job, changedJob *schema.Job, dbClient *mongo.Client, emailService utilities.NotificationService) *schema.ErrorResponse {
 	if previousJob.Id != changedJob.Id {
 		return &schema.ErrorResponse{Code: 500, Message: "Job Ids do not match"}
 	}
@@ -94,13 +94,13 @@ func handleJobUpdated(previousJob *schema.Job, changedJob *schema.Job, dbClient 
 }
 
 // sends an email to the designer and adds a notification to the designer
-func handleJobStatusChange(job *schema.Job, email *schema.Email, dbClient *mongo.Client, emailService *utilities.EmailService) *schema.ErrorResponse {
+func handleJobStatusChange(job *schema.Job, email *schema.Email, dbClient *mongo.Client, emailService utilities.NotificationService) *schema.ErrorResponse {
 	designer, designerErr := user.GetUserById(&job.DesignerId, dbClient)
 	if designerErr != nil {
 		return designerErr
 	}
 
-	sendEmailErr := emailService.SendEmail(email)
+	sendEmailErr := emailService.SendNotification(email)
 	if sendEmailErr != nil {
 		return sendEmailErr
 	}

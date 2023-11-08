@@ -58,12 +58,16 @@ func sendEmail(email *schema.Email) *schema.ErrorResponse {
 
 }
 
+type NotificationService interface {
+	SendNotification(email *schema.Email) *schema.ErrorResponse
+}
+
 /**
 * Service that handles sending mails through mailchimp
  */
 type EmailService struct{}
 
-func (emailService EmailService) SendEmail(email *schema.Email) *schema.ErrorResponse {
+func (emailService EmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
 	fmt.Println("In Utilities", email)
 	return sendEmail(email)
 }
