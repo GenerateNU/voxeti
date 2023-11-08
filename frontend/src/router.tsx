@@ -4,6 +4,8 @@ import Layout from "./components/Layout/Layout.tsx";
 import Index from "./pages/Index.tsx";
 import QuestionForm from "./pages/Registration.tsx";
 import { Login } from "./pages/Login.tsx";
+import Notifications from "./pages/Notifications.tsx";
+import Jobs from "./pages/Jobs.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -34,6 +36,17 @@ const loginRoute = new Route({
   path: "/login",
   component: Login,
 });
+const jobsRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/jobs",
+  component: Jobs,
+});
+
+const notificationsRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: Notifications,
+})
 
 const registrationRoute = new Route({
   getParentRoute: () => rootRoute,
@@ -47,6 +60,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   registrationRoute,
+  jobsRoute
 ]);
 
 const router = new Router({ routeTree });
