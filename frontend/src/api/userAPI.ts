@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { User } from "../main.types";
-import { IdResponse } from "./api.types";
 
 // User API:
 export const createUserApi = (baseUrl: string) =>
@@ -11,14 +10,14 @@ export const createUserApi = (baseUrl: string) =>
       credentials: "include",
     }),
     endpoints: (builder) => ({
-      createUser: builder.mutation<IdResponse, User>({
+      createUser: builder.mutation<User, User>({
         query: (body) => ({
           body,
           method: "POST",
           url: "",
         }),
       }),
-      updateUser: builder.mutation<IdResponse, { id: string; body: User }>({
+      updateUser: builder.mutation<User, { id: string; body: User }>({
         query: ({ id, body }) => ({
           body,
           method: "POST",
@@ -32,7 +31,7 @@ export const createUserApi = (baseUrl: string) =>
         query: ({ page, limit }) => `/?page=${page}&limit=${limit}`,
       }),
       patchUser: builder.mutation<
-        IdResponse,
+        User,
         { id: string; body: Partial<User> }
       >({
         query: ({ id, body }) => ({
@@ -41,7 +40,7 @@ export const createUserApi = (baseUrl: string) =>
           url: `/${id}`,
         }),
       }),
-      deleteUser: builder.mutation<IdResponse, string>({
+      deleteUser: builder.mutation<User, string>({
         query: (id) => ({
           method: "DELETE",
           url: `/${id}`,

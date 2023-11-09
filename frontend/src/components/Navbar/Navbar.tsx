@@ -64,7 +64,8 @@ export default function Navbar() {
           {/* Navbar: Right-Section */}
           <ul className="font-medium flex items-center h-10 flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0">
             <NavItem title={"Help"} link={"#"} />
-            <NavItem title={"Log in"} link={"#"} />
+            <NavItem title={"Jobs"} link={"/jobs"} />
+            <NavItem title={"Log in"} link={"/login"} />
             <NavItem title={"Sign up"} link={"/register"} />
           </ul>
         </div>

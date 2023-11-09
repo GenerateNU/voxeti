@@ -1,25 +1,23 @@
 import { Divider } from "@mui/material";
 import OrderItem from "../components/JobCard/JobCard";
-import Status from "../components/Status/Status";
+import { jobApi } from "../api/api";
+import { useStateSelector } from "../hooks/use-redux";
+import { Job } from "../main.types";
+import { useState, useEffect } from "react";
+
 
 export default function Jobs() {
-    const newJob = {
-        id: 'some-id',
-        designerId: 'designer-id',
-        producerId: 'producer-id',
-        designId: 'design-id',
-        status: Status.Pending,
-        price: 100,
-        color: 'red',
-        filament: 'PLA',
-        dimensions: {
-          height: 10,
-          width: 20,
-          depth: 15
-        },
-        scale: 1,
-        name: "Name"
-      };
+  const [userJobs, setUserJobs] = useState<Job[]>([]);
+  const { user } = useStateSelector((state) => state.user);
+  // const [data, setData] = useState<Job[]>([]);
+  
+  const temp = jobApi.useGetDesignerJobsQuery({designerId: user.id, page: "0"}).data
+  useEffect(() => {
+    console.log(JSON.stringify(temp));
+    if (temp) {
+      setUserJobs(temp);
+    }
+  }, [user]);
 
   return (
 
@@ -31,10 +29,13 @@ export default function Jobs() {
         <Divider />
       </div>
       {/* <StatusBox status={Status.InProgress} /> */}
+      {userJobs.length > 0 ? userJobs.map((job) => (
+        <OrderItem job={job} />
+      )) : <p>No jobs {user.id}</p>}
+      {/* <OrderItem job={newJob} />
       <OrderItem job={newJob} />
       <OrderItem job={newJob} />
-      <OrderItem job={newJob} />
-      <OrderItem job={newJob} />
+      <OrderItem job={newJob} /> */}
     </div>
   );
 }

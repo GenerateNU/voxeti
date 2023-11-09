@@ -9,10 +9,10 @@ import {
   Box,
   Button,
 } from "@mui/material";
-import Job from "../Job";
+import { Job } from "../../main.types";
 import Status from "../Status/Status";
 
-const OrderItem: React.FC<Job> = ({ job }) => {
+export default function OrderItem(props: {job: Job}) {
 
     const handleAccept = () => {
         // Implement the logic to accept the job
@@ -31,9 +31,9 @@ const OrderItem: React.FC<Job> = ({ job }) => {
           />
           <div style={{ flexGrow: 1 }}>
             <Typography variant="h6">Order</Typography>
-            <Typography variant="body1">${job.price}</Typography>
+            <Typography variant="body1">${props.job.price}</Typography>
             <Typography variant="body2">Ship by: 10/10</Typography>
-            <Typography variant="body2">Filament: {job.filament}</Typography>
+            <Typography variant="body2">Filament: {props.job.filament}</Typography>
             <Link
               href="#"
               color="primary"
@@ -43,7 +43,7 @@ const OrderItem: React.FC<Job> = ({ job }) => {
               View Details
             </Link>
           </div>
-          {job.status === Status.Pending && (
+          {props.job.status === Status.Pending && (
             <Box
             sx={{
                 display: 'flex',
@@ -81,5 +81,3 @@ const OrderItem: React.FC<Job> = ({ job }) => {
     </Box>
   );
 };
-
-export default OrderItem;

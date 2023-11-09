@@ -31,7 +31,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 	})
 
 	api.GET("", func(c echo.Context) error {
-		limit := 2 // represents the number of results we want per page
+		limit := 10 // represents the number of results we want per page
 		designerId := c.QueryParam("designer")
 		producerId := c.QueryParam("producer")
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
