@@ -9,17 +9,15 @@ import {
   Button,
 } from "@mui/material";
 import { Job } from "../../main.types";
-import Status from "../Status/Status";
 
-export default function OrderItem(props: {job: Job}) {
+export default function OrderItem(props: { job: Job }) {
+  const handleAccept = () => {
+    // Implement the logic to accept the job
+  };
 
-    const handleAccept = () => {
-        // Implement the logic to accept the job
-      };
-
-      const handleDecline = () => {
-        // Implement the logic to decline the job
-      };
+  const handleDecline = () => {
+    // Implement the logic to decline the job
+  };
   return (
     <Box sx={{ width: "100%" }}>
       <Card elevation={0} style={{ margin: "20px 0", width: "100%" }}>
@@ -32,9 +30,11 @@ export default function OrderItem(props: {job: Job}) {
             <Typography variant="h6">Order</Typography>
             <Typography variant="body1">${props.job.price}</Typography>
             <Typography variant="body2">Ship by: 10/10</Typography>
-            <Typography variant="body2">Filament: {props.job.filament}</Typography>
+            <Typography variant="body2">
+              Filament: {props.job.filament}
+            </Typography>
             <Link
-              href={"/jobs/"+props.job.id}
+              href={"/jobs/" + props.job.id}
               color="primary"
               underline="hover"
               style={{ marginRight: 16 }}
@@ -42,30 +42,32 @@ export default function OrderItem(props: {job: Job}) {
               View Details
             </Link>
           </div>
-          {props.job.status === Status.Pending && (
+          {props.job.status === "PENDING" && (
             <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
                 gap: 2,
                 p: 1,
-              }}>
+              }}
+            >
               <Button
                 variant="contained"
                 style={{
-                    width: "100%",
-                    backgroundColor: "black",
-                }}                onClick={handleAccept}
+                  width: "100%",
+                  backgroundColor: "black",
+                }}
+                onClick={handleAccept}
               >
                 Accept
               </Button>
               <Button
                 style={{
-                    width: "100%",
-                    color: "black",
-                    borderColor: "black",
+                  width: "100%",
+                  color: "black",
+                  borderColor: "black",
                 }}
                 variant="outlined"
                 onClick={handleDecline}

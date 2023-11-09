@@ -27,13 +27,19 @@ export const createJobApi = (baseUrl: string) =>
       getJob: builder.query<Job, string>({
         query: (id) => `/${id}`,
       }),
-      getDesignerJobs: builder.query<Job[], { designerId: string; page: string }>({
+      getDesignerJobs: builder.query<
+        Job[],
+        { designerId: string; page: string }
+      >({
         query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
       }),
-      getProducerJobs: builder.query<Job[], { producerId: string; page: string }>({
+      getProducerJobs: builder.query<
+        Job[],
+        { producerId: string; page: string }
+      >({
         query: ({ producerId, page }) => `?producer=${producerId}&page=${page}`,
       }),
-      patchJob: builder.mutation<Job,{ id: string; body: Partial<Job> }>({
+      patchJob: builder.mutation<Job, { id: string; body: Partial<Job> }>({
         query: ({ id, body }) => ({
           body,
           method: "PATCH",

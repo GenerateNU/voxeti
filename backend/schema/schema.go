@@ -2,8 +2,6 @@
 package schema
 
 import (
-	"time"
-
 	"github.com/paulmach/orb/geojson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -26,7 +24,6 @@ type User struct {
 	Experience        ExperienceLevel    `bson:"experience,omitempty" json:"experience,omitempty"`
 	Printers          []Printer          `bson:"printers,omitempty" json:"printers,omitempty"`
 	AvailableFilament []Filament         `bson:"availableFilament,omitempty" json:"availableFilament,omitempty"`
-	JobNotifications  []JobNotification  `bson:"jobNotifications,omitempty" json:"jobNotifications,omitempty"`
 }
 
 // A Voxeti print Job
@@ -125,9 +122,3 @@ const (
 	None   = "NONE"
 	Google = "GOOGLE"
 )
-
-type JobNotification struct {
-	JobId     primitive.ObjectID `bson:"jobId,omitempty" json:"jobId,omitempty"`
-	Status    JobStatus          `bson:"status,omitempty" json:"status,omitempty"`
-	CreatedAt time.Time          `bson:"time,omitempty" json:"time,omitempty"`
-}

@@ -13,11 +13,10 @@ export default function JobDetails() {
 
   const { data: data } = jobApi.useGetJobQuery(id as string);
 
-  
   useEffect(() => {
     if (data && data.designerId === user.id) {
       setCurrentJob(data);
-    } 
+    }
   }, [data, user.id]);
 
   if (!currentJob.id) {
@@ -28,5 +27,5 @@ export default function JobDetails() {
       <OrderStatus job={currentJob} />
       <OrderInformationPage job={currentJob} />
     </div>
-  )
+  );
 }

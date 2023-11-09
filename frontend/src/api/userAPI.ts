@@ -30,10 +30,7 @@ export const createUserApi = (baseUrl: string) =>
       getAllUsers: builder.query<User, { page: string; limit: string }>({
         query: ({ page, limit }) => `/?page=${page}&limit=${limit}`,
       }),
-      patchUser: builder.mutation<
-        User,
-        { id: string; body: Partial<User> }
-      >({
+      patchUser: builder.mutation<User, { id: string; body: Partial<User> }>({
         query: ({ id, body }) => ({
           body,
           method: "PATCH",

@@ -37,10 +37,7 @@ export default function OrderInformationPage(props: { job: Job }) {
         </Typography>
         <ListItem>
           <ListItemAvatar>
-            <Avatar
-              src={""}
-              sx={{ width: 75, height: 75, mx: 2 }}
-            />
+            <Avatar src={""} sx={{ width: 75, height: 75, mx: 2 }} />
           </ListItemAvatar>
           <ListItemText
             primary={user.firstName + " " + user.lastName}
@@ -71,10 +68,7 @@ export default function OrderInformationPage(props: { job: Job }) {
           <ListItemText primary="Ship By" secondary="10/10" />
         </ListItem>
         <ListItem>
-          <ListItemText
-            primary="Estimated Delivery Date"
-            secondary="10/10"
-          />
+          <ListItemText primary="Estimated Delivery Date" secondary="10/10" />
         </ListItem>
         <ListItem>
           <ListItemText primary="Address" secondary="" />
