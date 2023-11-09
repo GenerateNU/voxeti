@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 	"voxeti/backend/schema"
+	"voxeti/backend/utilities"
 
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -127,208 +128,211 @@ func TestDeleteJob(t *testing.T) {
 	})
 }
 
-// func TestCreateJob(t *testing.T) {
-// 	assert := assert.New(t)
+func TestCreateJob(t *testing.T) {
+	assert := assert.New(t)
+	mockEmailService := utilities.MockEmailService{}
 
-// 	// insert the mock job document into the mock MongoDB database
-// 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
-// 	mt := mtest.New(t, mtest_options)
-// 	defer mt.Close()
+	// insert the mock job document into the mock MongoDB database
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
 
-// 	mt.Run("Given Valid Job Object, Should Successfully Create Job", func(mt *mtest.T) {
-// 		mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "acknowledged", Value: true}, {Key: "n", Value: 1}})
-// 		// Assertions
-// 		validJobId := primitive.NewObjectID().Hex()
-// 		err := DeleteJob(validJobId, mt.Client)
-// 		assert.Nil(err)
-// 	})
+	mt.Run("Given Valid Job Object, Should Successfully Create Job", func(mt *mtest.T) {
+		mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "acknowledged", Value: true}, {Key: "n", Value: 1}})
+		// Assertions
+		validJobId := primitive.NewObjectID().Hex()
+		err := DeleteJob(validJobId, mt.Client)
+		assert.Nil(err)
+	})
 
-// 	mt.Run("Should Throw Correct Error When Creation Fails", func(mt *mtest.T) {
-// 		_, err := CreateJob(schema.Job{}, mt.Client)
-// 		if err == nil {
-// 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
-// 			return
-// 		}
-// 		assert.Equal(err.Code, 500)
-// 		assert.Equal(err.Message, "Unable to create job")
-// 	})
-// }
+	mt.Run("Should Throw Correct Error When Creation Fails", func(mt *mtest.T) {
+		_, err := CreateJob(schema.Job{}, mt.Client, &mockEmailService)
+		if err == nil {
+			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
+		}
+		assert.Equal(err.Code, 500)
+		assert.Equal(err.Message, "Unable to create job")
+	})
+}
 
-// func TestPatchJob(t *testing.T) {
-// 	assert := assert.New(t)
-// 	id := primitive.NewObjectID()
-// 	designerId := primitive.NewObjectID()
-// 	producerId := primitive.NewObjectID()
-// 	designId := primitive.NewObjectID()
+func TestPatchJob(t *testing.T) {
+	assert := assert.New(t)
+	id := primitive.NewObjectID()
+	designerId := primitive.NewObjectID()
+	producerId := primitive.NewObjectID()
+	designId := primitive.NewObjectID()
+	mockEmailService := utilities.MockEmailService{}
 
-// 	// insert the mock job document into the mock MongoDB database
-// 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
-// 	mt := mtest.New(t, mtest_options)
-// 	defer mt.Close()
+	// insert the mock job document into the mock MongoDB database
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
 
-// 	mt.Run("Throws Error When Given Invalid JobID", func(mt *mtest.T) {
-// 		mockJob := &schema.Job{
-// 			Id:         primitive.NewObjectID(),
-// 			DesignerId: primitive.NewObjectID(),
-// 			ProducerId: primitive.NewObjectID(),
-// 			DesignId:   primitive.NewObjectID(),
-// 			Status:     schema.Pending,
-// 			Price:      123,
-// 			Color:      "purple",
-// 			Filament:   schema.PLA,
-// 			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-// 			Scale:      89,
-// 		}
-// 		// Convert mockJob to primitive.M
-// 		mockJobMap, errMarshal := bson.Marshal(mockJob)
-// 		if errMarshal != nil {
-// 			assert.Fail("Failed to marshal mock job")
-// 		}
-// 		var mockJobM primitive.M
-// 		if marshalErr := bson.Unmarshal(mockJobMap, &mockJobM); marshalErr != nil {
-// 			assert.Fail("Failed to unmarshal mock job")
-// 		}
-// 		// Assertions
-// 		_, err := PatchJob("INVALID JOB ID", mockJobM, mt.Client)
-// 		if err == nil {
-// 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
-// 			return
-// 		}
-// 		assert.Equal(err.Code, 404)
-// 		assert.Equal(err.Message, "Invalid JobID")
-// 	})
+	mt.Run("Throws Error When Given Invalid JobID", func(mt *mtest.T) {
+		mockJob := &schema.Job{
+			Id:         primitive.NewObjectID(),
+			DesignerId: primitive.NewObjectID(),
+			ProducerId: primitive.NewObjectID(),
+			DesignId:   primitive.NewObjectID(),
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			Filament:   schema.PLA,
+			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
+			Scale:      89,
+		}
+		// Convert mockJob to primitive.M
+		mockJobMap, errMarshal := bson.Marshal(mockJob)
+		if errMarshal != nil {
+			assert.Fail("Failed to marshal mock job")
+		}
+		var mockJobM primitive.M
+		if marshalErr := bson.Unmarshal(mockJobMap, &mockJobM); marshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
+		// Assertions
+		_, err := PatchJob("INVALID JOB ID", mockJobM, mt.Client, &mockEmailService)
+		if err == nil {
+			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
+			return
+		}
+		assert.Equal(err.Code, 404)
+		assert.Equal(err.Message, "Invalid JobID")
+	})
 
-// 	mt.Run("Successfully Updates and Returns Job", func(mt *mtest.T) {
-// 		mockJob := &schema.Job{
-// 			Id:         id,
-// 			DesignerId: designerId,
-// 			ProducerId: producerId,
-// 			DesignId:   designId,
-// 			Status:     schema.Pending,
-// 			Price:      123,
-// 			Color:      "purple",
-// 			Filament:   schema.PLA,
-// 			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-// 			Scale:      89,
-// 		}
-// 		// Convert mockJob to primitive.M
-// 		mockJobMap, marshalerr := bson.Marshal(mockJob)
-// 		if marshalerr != nil {
-// 			assert.Fail("Failed to marshal mock job")
-// 		}
-// 		var mockJobM primitive.M
-// 		if unmarshalErr := bson.Unmarshal(mockJobMap, &mockJobM); unmarshalErr != nil {
-// 			assert.Fail("Failed to unmarshal mock job")
-// 		}
-// 		// Convert to bson.D
-// 		jobBSON, _ := bson.Marshal(mockJob)
-// 		var jobBsonData bson.D
-// 		if unmarshalErr := bson.Unmarshal(jobBSON, &jobBsonData); unmarshalErr != nil {
-// 			assert.Fail("Failed to unmarshal mock job")
-// 		}
+	mt.Run("Successfully Updates and Returns Job", func(mt *mtest.T) {
+		mockJob := &schema.Job{
+			Id:         id,
+			DesignerId: designerId,
+			ProducerId: producerId,
+			DesignId:   designId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			Filament:   schema.PLA,
+			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
+			Scale:      89,
+		}
+		// Convert mockJob to primitive.M
+		mockJobMap, marshalerr := bson.Marshal(mockJob)
+		if marshalerr != nil {
+			assert.Fail("Failed to marshal mock job")
+		}
+		var mockJobM primitive.M
+		if unmarshalErr := bson.Unmarshal(mockJobMap, &mockJobM); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
+		// Convert to bson.D
+		jobBSON, _ := bson.Marshal(mockJob)
+		var jobBsonData bson.D
+		if unmarshalErr := bson.Unmarshal(jobBSON, &jobBsonData); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
 
-// 		// mock update response
-// 		updateRes := bson.D{
-// 			{Key: "ok", Value: 1},
-// 			{Key: "value", Value: jobBsonData},
-// 		}
+		// mock update response
+		updateRes := bson.D{
+			{Key: "ok", Value: 1},
+			{Key: "value", Value: jobBsonData},
+		}
 
-// 		// Mock FindOne Response
-// 		res := mtest.CreateCursorResponse(
-// 			1,
-// 			"data.job",
-// 			mtest.FirstBatch,
-// 			jobBsonData)
-// 		end := mtest.CreateCursorResponse(
-// 			0,
-// 			"data.job",
-// 			mtest.NextBatch)
-// 		mt.AddMockResponses(res, end, updateRes, res, end)
+		// Mock FindOne Response
+		res := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			jobBsonData)
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
+		mt.AddMockResponses(res, end, updateRes, res, end)
 
-// 		// Assertions
-// 		job, err := PatchJob(mockJob.Id.Hex(), mockJobM, mt.Client)
-// 		assert.Nil(err)
-// 		assert.Equal(mockJob.Id, job.Id)
-// 	})
-// }
+		// Assertions
+		job, err := PatchJob(mockJob.Id.Hex(), mockJobM, mt.Client, &mockEmailService)
+		assert.Nil(err)
+		assert.Equal(mockJob.Id, job.Id)
+	})
+}
 
-// func TestUpdateJob(t *testing.T) {
-// 	assert := assert.New(t)
+func TestUpdateJob(t *testing.T) {
+	assert := assert.New(t)
+	mockEmailService := utilities.MockEmailService{}
 
-// 	// Mock MongoDB setup
-// 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
-// 	mt := mtest.New(t, mtest_options)
-// 	defer mt.Close()
+	// Mock MongoDB setup
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
 
-// 	// Successfully update an existing job
-// 	mt.Run("Successful Job Update", func(mt *mtest.T) {
-// 		// Mock job data
-// 		jobID := primitive.NewObjectID()
-// 		existingJob := schema.Job{
-// 			Id:     jobID,
-// 			Status: schema.Pending,
-// 			Price:  200,
-// 		}
-// 		updatedJob := existingJob
-// 		updatedJob.Price = 250 // Change in the job's data
+	// Successfully update an existing job
+	mt.Run("Successful Job Update", func(mt *mtest.T) {
+		// Mock job data
+		jobID := primitive.NewObjectID()
+		existingJob := schema.Job{
+			Id:     jobID,
+			Status: schema.Pending,
+			Price:  200,
+		}
+		updatedJob := existingJob
+		updatedJob.Price = 250 // Change in the job's data
 
-// 		// Convert to bson.D
-// 		jobBSON, _ := bson.Marshal(existingJob)
-// 		var jobBsonData bson.D
-// 		if unmarshalErr := bson.Unmarshal(jobBSON, &jobBsonData); unmarshalErr != nil {
-// 			assert.Fail("Failed to unmarshal mock job")
-// 		}
+		// Convert to bson.D
+		jobBSON, _ := bson.Marshal(existingJob)
+		var jobBsonData bson.D
+		if unmarshalErr := bson.Unmarshal(jobBSON, &jobBsonData); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
 
-// 		// mock update response
-// 		updateRes := bson.D{
-// 			{Key: "ok", Value: 1},
-// 			{Key: "value", Value: jobBsonData},
-// 		}
+		// mock update response
+		updateRes := bson.D{
+			{Key: "ok", Value: 1},
+			{Key: "value", Value: jobBsonData},
+		}
 
-// 		// Mock FindOne Response
-// 		res := mtest.CreateCursorResponse(
-// 			1,
-// 			"data.job",
-// 			mtest.FirstBatch,
-// 			jobBsonData)
-// 		end := mtest.CreateCursorResponse(
-// 			0,
-// 			"data.job",
-// 			mtest.NextBatch)
+		// Mock FindOne Response
+		res := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			jobBsonData)
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
 
-// 		// Mock database responses
-// 		mt.AddMockResponses(res, end, updateRes)
+		// Mock database responses
+		mt.AddMockResponses(res, end, updateRes)
 
-// 		// Assertions
-// 		result, err := UpdateJob(jobID.Hex(), updatedJob, mt.Client)
-// 		assert.Nil(err)
-// 		assert.Equal(result.Price, updatedJob.Price)
-// 	})
+		// Assertions
+		result, err := UpdateJob(jobID.Hex(), updatedJob, mt.Client, &mockEmailService)
+		assert.Nil(err)
+		assert.Equal(result.Price, updatedJob.Price)
+	})
 
-// 	// Attempt to update a job that doesn't exist
-// 	mt.Run("Update Non-existing Job", func(mt *mtest.T) {
-// 		nonExistingJobId := primitive.NewObjectID().Hex()
-// 		update := schema.Job{}
+	// Attempt to update a job that doesn't exist
+	mt.Run("Update Non-existing Job", func(mt *mtest.T) {
+		nonExistingJobId := primitive.NewObjectID().Hex()
+		update := schema.Job{}
 
-// 		// Assertions
-// 		_, err := UpdateJob(nonExistingJobId, update, mt.Client)
-// 		if assert.NotNil(err) {
-// 			assert.Contains(err.Message, "Job update failed")
-// 		}
-// 	})
+		// Assertions
+		_, err := UpdateJob(nonExistingJobId, update, mt.Client, &mockEmailService)
+		if assert.NotNil(err) {
+			assert.Contains(err.Message, "Job update failed")
+		}
+	})
 
-// 	// Invalid Job ID format
-// 	mt.Run("Invalid Job ID Format", func(mt *mtest.T) {
-// 		invalidJobID := "invalidFormat"
-// 		update := schema.Job{}
+	// Invalid Job ID format
+	mt.Run("Invalid Job ID Format", func(mt *mtest.T) {
+		invalidJobID := "invalidFormat"
+		update := schema.Job{}
 
-// 		// Assertions
-// 		_, err := UpdateJob(invalidJobID, update, mt.Client)
-// 		if assert.NotNil(err) {
-// 			assert.Contains(err.Message, "Job does not exist!")
-// 		}
-// 	})
-// }
+		// Assertions
+		_, err := UpdateJob(invalidJobID, update, mt.Client, &mockEmailService)
+		if assert.NotNil(err) {
+			assert.Contains(err.Message, "Job does not exist!")
+		}
+	})
+}
 
 func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 	assert := assert.New(t)
