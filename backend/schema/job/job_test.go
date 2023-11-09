@@ -17,8 +17,8 @@ type MockEmailService struct {
 	numCallsSendNotification int
 }
 
-func (mockEmailService MockEmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
-	mockEmailService.numCallsSendNotification++
+func (mockEmailService *MockEmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
+	mockEmailService.numCallsSendNotification = mockEmailService.numCallsSendNotification + 1
 	return nil
 }
 

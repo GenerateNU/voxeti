@@ -41,6 +41,6 @@ type NotificationService interface {
  */
 type EmailService struct{}
 
-func (emailService EmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
+func (emailService *EmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
 	return sendEmail(email)
 }
