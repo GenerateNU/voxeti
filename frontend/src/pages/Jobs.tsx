@@ -10,7 +10,7 @@ export default function Jobs() {
   const [userJobs, setUserJobs] = useState<Job[]>([]);
   const { user } = useStateSelector((state) => state.user);
   // const [data, setData] = useState<Job[]>([]);
-  
+
   const temp = jobApi.useGetDesignerJobsQuery({designerId: user.id, page: "0"}).data
   useEffect(() => {
     console.log(JSON.stringify(temp));

@@ -17,7 +17,7 @@ export default function OrderItem(props: {job: Job}) {
     const handleAccept = () => {
         // Implement the logic to accept the job
       };
-    
+
       const handleDecline = () => {
         // Implement the logic to decline the job
       };
@@ -53,8 +53,8 @@ export default function OrderItem(props: {job: Job}) {
                 gap: 2,
                 p: 1,
               }}>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 style={{
                     width: "100%",
                     backgroundColor: "black",
@@ -62,13 +62,13 @@ export default function OrderItem(props: {job: Job}) {
               >
                 Accept
               </Button>
-              <Button 
+              <Button
                 style={{
                     width: "100%",
                     color: "black",
                     borderColor: "black",
                 }}
-                variant="outlined" 
+                variant="outlined"
                 onClick={handleDecline}
               >
                 Decline
