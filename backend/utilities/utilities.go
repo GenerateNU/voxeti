@@ -44,9 +44,3 @@ type EmailService struct{}
 func (emailService EmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
 	return sendEmail(email)
 }
-
-type MockEmailService struct{}
-
-func (mockEmailService MockEmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
-	return nil
-}

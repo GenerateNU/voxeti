@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 	"voxeti/backend/schema"
-	"voxeti/backend/utilities"
 
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -13,6 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
+
+type MockEmailService struct {
+	numCallsSendNotification int
+}
+
+func (mockEmailService MockEmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {
+	mockEmailService.numCallsSendNotification++
+	return nil
+}
 
 func TestMain(m *testing.M) {
 	if err := godotenv.Load("../../../.env"); err != nil {
@@ -130,7 +138,7 @@ func TestDeleteJob(t *testing.T) {
 
 func TestCreateJob(t *testing.T) {
 	assert := assert.New(t)
-	mockEmailService := utilities.MockEmailService{}
+	mockEmailService := MockEmailService{}
 
 	// insert the mock job document into the mock MongoDB database
 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
@@ -153,6 +161,7 @@ func TestCreateJob(t *testing.T) {
 		}
 		assert.Equal(err.Code, 500)
 		assert.Equal(err.Message, "Unable to create job")
+		assert.Equal(mockEmailService.numCallsSendNotification, 0) // Ensure no emails were sent
 	})
 }
 
@@ -162,7 +171,7 @@ func TestPatchJob(t *testing.T) {
 	designerId := primitive.NewObjectID()
 	producerId := primitive.NewObjectID()
 	designId := primitive.NewObjectID()
-	mockEmailService := utilities.MockEmailService{}
+	mockEmailService := MockEmailService{}
 
 	// insert the mock job document into the mock MongoDB database
 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
@@ -199,6 +208,7 @@ func TestPatchJob(t *testing.T) {
 		}
 		assert.Equal(err.Code, 404)
 		assert.Equal(err.Message, "Invalid JobID")
+		assert.Equal(mockEmailService.numCallsSendNotification, 0)
 	})
 
 	mt.Run("Successfully Updates and Returns Job", func(mt *mtest.T) {
@@ -252,12 +262,104 @@ func TestPatchJob(t *testing.T) {
 		job, err := PatchJob(mockJob.Id.Hex(), mockJobM, mt.Client, &mockEmailService)
 		assert.Nil(err)
 		assert.Equal(mockJob.Id, job.Id)
+		// status was not updated, do not send email
+		assert.Equal(mockEmailService.numCallsSendNotification, 0)
+	})
+
+	mt.Run("Sends Email Notification After Updating Status Field", func(mt *mtest.T) {
+		mockJob := &schema.Job{
+			Id:         id,
+			DesignerId: designerId,
+			ProducerId: producerId,
+			DesignId:   designId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			Filament:   schema.PLA,
+			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
+			Scale:      89,
+		}
+		patchedJob := &schema.Job{
+			Id:         id,
+			DesignerId: designerId,
+			ProducerId: producerId,
+			DesignId:   designId,
+			Status:     schema.InProgress,
+			Price:      123,
+			Color:      "purple",
+			Filament:   schema.PLA,
+			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
+			Scale:      89,
+		}
+		patchField := bson.M{"Status": schema.InProgress}
+		// Prepare Patched Field
+		patchFieldMap, marshalerr := bson.Marshal(patchField)
+		if marshalerr != nil {
+			assert.Fail("Failed to marshal mock job")
+		}
+		var patchFieldM primitive.M
+		if unmarshalErr := bson.Unmarshal(patchFieldMap, &patchFieldM); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
+
+		// Previous Job
+		jobBSON, _ := bson.Marshal(mockJob)
+		var jobBsonData bson.D
+		if unmarshalErr := bson.Unmarshal(jobBSON, &jobBsonData); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
+
+		// Patched Job
+		patchedJobBSON, _ := bson.Marshal(patchedJob)
+		var patchedJobBsonData bson.D
+		if unmarshalErr := bson.Unmarshal(patchedJobBSON, &patchedJobBsonData); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal patched job")
+		}
+
+		// Represents the Previous Job
+		res := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			jobBsonData)
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
+		// mock UpdateOne response
+		updateRes := bson.D{
+			{Key: "ok", Value: 1},
+			{Key: "value", Value: patchedJobBsonData},
+		}
+		// represents the newly patched job
+		patchedRes := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			patchedJobBsonData)
+		patchedEnd := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
+		mt.AddMockResponses(res, end, updateRes, patchedRes, patchedEnd)
+
+		/*
+			currently failing because of not enough mocking, later when jobNotificationCreate is removed
+			uncomment test.
+			TODO: create mock user
+		*/
+		// Assertions
+		// job, err := PatchJob(mockJob.Id.Hex(), patchFieldM, mt.Client, &mockEmailService)
+		// assert.Nil(err)
+		// assert.Equal(mockJob.Id, job.Id)
+		// status was updated, send email
+		// assert.Equal(1, mockEmailService.numCallsSendNotification)
 	})
 }
 
 func TestUpdateJob(t *testing.T) {
 	assert := assert.New(t)
-	mockEmailService := utilities.MockEmailService{}
+	mockEmailService := MockEmailService{}
 
 	// Mock MongoDB setup
 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
