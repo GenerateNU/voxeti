@@ -9,15 +9,14 @@ import { useState, useEffect } from "react";
 export default function Jobs() {
   const [userJobs, setUserJobs] = useState<Job[]>([]);
   const { user } = useStateSelector((state) => state.user);
-  // const [data, setData] = useState<Job[]>([]);
 
-  const temp = jobApi.useGetDesignerJobsQuery({designerId: user.id, page: "0"}).data
+  const { data: data } = jobApi.useGetDesignerJobsQuery({designerId: user.id, page: "0"});
+
   useEffect(() => {
-    console.log(JSON.stringify(temp));
-    if (temp) {
-      setUserJobs(temp);
+    if (data) {
+      setUserJobs(data);
     }
-  }, [user]);
+  }, [data]);
 
   return (
 
@@ -32,10 +31,6 @@ export default function Jobs() {
       {userJobs.length > 0 ? userJobs.map((job) => (
         <OrderItem job={job} />
       )) : <p>No jobs {user.id}</p>}
-      {/* <OrderItem job={newJob} />
-      <OrderItem job={newJob} />
-      <OrderItem job={newJob} />
-      <OrderItem job={newJob} /> */}
     </div>
   );
 }
