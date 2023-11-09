@@ -1,31 +1,32 @@
+import { useParams } from "@tanstack/react-router";
 import OrderInformationPage from "../components/OrderInfoPage/OrderInfoPage";
 import OrderStatus from "../components/OrderStatus/OrderStatus";
-import Status from "../components/Status/Status";
+import { useStateSelector } from "../hooks/use-redux";
+import { useEffect, useState } from "react";
+import { Job } from "../main.types";
+import { jobApi } from "../api/api";
 
 export default function JobDetails() {
+  const { id } = useParams();
+  const { user } = useStateSelector((state) => state.user);
+  const [currentJob, setCurrentJob] = useState<Job>({} as Job);
 
-    const newJob = {
-        id: 'some-id',
-        designerId: 'designer-id',
-        producerId: 'producer-id',
-        designId: 'design-id',
-        status: Status.Pending,
-        price: 100,
-        color: 'red',
-        filament: 'PLA',
-        dimensions: {
-          height: 10,
-          width: 20,
-          depth: 15
-        },
-        scale: 1,
-        name: "Name"
-      };
-      
-    return (
-        <div className="flex flex-col justify-center items-center w-[75%] xl:w-[60%] mx-auto">
-        <OrderStatus job={newJob} />
-        <OrderInformationPage job={newJob}/>
+  const { data: data } = jobApi.useGetJobQuery(id as string);
+
+  
+  useEffect(() => {
+    if (data && data.designerId === user.id) {
+      setCurrentJob(data);
+    } 
+  }, [data, user.id]);
+
+  if (!currentJob.id) {
+    return <p>Job unavailable</p>;
+  }
+  return (
+    <div className="flex flex-col justify-center items-center w-[75%] xl:w-[60%] mx-auto">
+      <OrderStatus job={currentJob} />
+      <OrderInformationPage job={currentJob} />
     </div>
-    )
+  )
 }

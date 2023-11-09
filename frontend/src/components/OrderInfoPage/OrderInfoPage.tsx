@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Typography,
   Paper,
@@ -11,9 +10,11 @@ import {
   List,
 } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import Job from "../Job";
+import { Job } from "../../main.types";
+import { useStateSelector } from "../../hooks/use-redux";
 
-const OrderInformationPage: React.FC<Job> = ({ job }) => {
+export default function OrderInformationPage(props: { job: Job }) {
+  const { user } = useStateSelector((state) => state.user);
   return (
     <Paper elevation={0} sx={{ width: "100%" }}>
       <Box
@@ -42,7 +43,7 @@ const OrderInformationPage: React.FC<Job> = ({ job }) => {
             />
           </ListItemAvatar>
           <ListItemText
-            primary={job.name}
+            primary={user.firstName + " " + user.lastName}
             // secondary={job.customerTitle}
           />
         </ListItem>
@@ -60,7 +61,7 @@ const OrderInformationPage: React.FC<Job> = ({ job }) => {
           />
         </ListItem>
         <ListItem>
-          <ListItemText primary="Color" secondary={job.color} />
+          <ListItemText primary="Color" secondary={props.job.color} />
         </ListItem>
         <Divider component="li" />
         <ListItem>
@@ -82,12 +83,10 @@ const OrderInformationPage: React.FC<Job> = ({ job }) => {
         <ListItem>
           <ListItemText
             primary="Payment"
-            secondary={`$${job.price!.toFixed(2)}`}
+            secondary={`$${props.job.price!.toFixed(2)}`}
           />
         </ListItem>
       </List>
     </Paper>
   );
-};
-
-export default OrderInformationPage;
+}

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardContent,
@@ -35,7 +34,7 @@ export default function OrderItem(props: {job: Job}) {
             <Typography variant="body2">Ship by: 10/10</Typography>
             <Typography variant="body2">Filament: {props.job.filament}</Typography>
             <Link
-              href="#"
+              href={"/jobs/"+props.job.id}
               color="primary"
               underline="hover"
               style={{ marginRight: 16 }}
@@ -80,4 +79,4 @@ export default function OrderItem(props: {job: Job}) {
       <Divider />
     </Box>
   );
-};
+}

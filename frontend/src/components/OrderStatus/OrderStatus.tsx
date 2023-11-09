@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Paper,
   Button,
@@ -8,14 +7,15 @@ import {
 } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
 import StatusBox from "../Status/StatusBox";
-import Job from "../Job";
+import { Job } from "../../main.types";
+import { useStateSelector } from "../../hooks/use-redux";
 
-
-const OrderStatus: React.FC<Job> = ({ job }) => {
+export default function OrderStatus(props: { job: Job }) {
+  const { user } = useStateSelector((state) => state.user);
   return (
     <Paper className="p-4" elevation={0} sx={{width: '100%'}}>
       <Typography variant="h4" component="h4" paddingY="10px">
-        Order #{job.id} for {job.name}
+        Order #{props.job.id} for {user.firstName + " " + user.lastName}
       </Typography>
       <Box display="flex" alignItems="center" paddingY="10px">
         <Typography
@@ -26,7 +26,7 @@ const OrderStatus: React.FC<Job> = ({ job }) => {
         >
           Status
         </Typography>
-        <StatusBox status={job.status!} />
+        <StatusBox status={props.job.status!} />
       </Box>
       <Divider />
 
@@ -83,6 +83,4 @@ const OrderStatus: React.FC<Job> = ({ job }) => {
       </Box>
     </Paper>
   );
-};
-
-export default OrderStatus;
+}
