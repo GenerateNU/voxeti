@@ -17,7 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func CreateUser(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
+func CreateUser(user *schema.User, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
 	// validate request body
 	if reqError := validateCreateUser(user, dbClient); reqError != nil {
 		return nil, reqError
@@ -37,12 +37,12 @@ func CreateUser(user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID,
 	user.Password = *hashedPassword
 
 	// insert user into database
-	id, dbErr := createUserDB(user, dbClient)
+	newUser, dbErr := createUserDB(user, dbClient)
 	if dbErr != nil {
 		return nil, dbErr
 	}
 
-	return id, nil
+	return newUser, nil
 }
 
 func GetUserById(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
@@ -72,7 +72,7 @@ func GetAllUsers(page int, limit int, dbClient *mongo.Client) ([]*schema.User, *
 	return users, nil
 }
 
-func UpdateUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
+func UpdateUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
 
 	// validate request body
 	if reqError := validateUpdateUser(id, user, dbClient); reqError != nil {
@@ -86,15 +86,15 @@ func UpdateUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.C
 	}
 
 	// update user in database
-	updatedId, dbErr := updateUserByIdDB(id, user, dbClient)
+	updatedUser, dbErr := updateUserByIdDB(id, user, dbClient)
 	if dbErr != nil {
 		return nil, dbErr
 	}
 
-	return updatedId, nil
+	return updatedUser, nil
 }
 
-func PatchUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*primitive.ObjectID, *schema.ErrorResponse) {
+func PatchUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
 
 	// validate request body
 	if reqError := validatePatchUser(id, user, dbClient); reqError != nil {
@@ -108,12 +108,24 @@ func PatchUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Cl
 	}
 
 	// update user in database
-	updatedId, dbErr := patchUserByIdDB(id, user, dbClient)
+	patchedUser, dbErr := patchUserByIdDB(id, user, dbClient)
 	if dbErr != nil {
 		return nil, dbErr
 	}
 
-	return updatedId, nil
+	return patchedUser, nil
+}
+
+func DeleteUserById(id *primitive.ObjectID, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
+
+	// delete user from database
+	deletedUser, dbErr := deleteUserByIdDB(id, dbClient)
+
+	if dbErr != nil {
+		return nil, dbErr
+	}
+
+	return deletedUser, nil
 }
 
 func validatePatchUser(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) *schema.ErrorResponse {
