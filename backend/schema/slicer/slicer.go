@@ -1,4 +1,4 @@
-package job
+package slicer
 
 import (
 	"math"
@@ -9,13 +9,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-func LoadEstimateConfig() schema.EstimateConfig {
+func LoadEstimateConfig(location string) schema.EstimateConfig {
 	// Set the file name of the configurations file
 	viper.SetConfigName("estimate_config")
 
 	// Set the path to look for the configurations file
 	// Root directory
-	viper.AddConfigPath("../../..")
+	viper.AddConfigPath(location)
 
 	viper.SetConfigType("yml")
 	var configuration schema.EstimateConfig
@@ -32,11 +32,11 @@ func LoadEstimateConfig() schema.EstimateConfig {
 	return configuration
 }
 
-func EstimatePrice(job schema.Job, sliceData schema.SliceData, config schema.EstimateConfig) (schema.EstimateBreakdown, *schema.ErrorResponse) {
+func EstimatePrice(filamentType schema.FilamentType, sliceData schema.SliceData, config schema.EstimateConfig) (schema.EstimateBreakdown, *schema.ErrorResponse) {
 	// Convert time in seconds to hours then with hourly rate
 	timeCost := float32(sliceData.TimeS) / 3600.0 * config.HourlyCost
 	// Filament used (in meters) multiplied with the cost per meter
-	filamentCost := sliceData.FilamentUsed * config.FilamentCost[strings.ToLower(string(job.Filament))]
+	filamentCost := sliceData.FilamentUsed * config.FilamentCost[strings.ToLower(string(filamentType))]
 
 	// Get volume in millimeters cubed
 	volume := (sliceData.MaxX - sliceData.MinX) * (sliceData.MaxY - sliceData.MinY) * (sliceData.MaxZ - sliceData.MinZ)
@@ -68,6 +68,7 @@ func EstimatePrice(job schema.Job, sliceData schema.SliceData, config schema.Est
 	total := producerTotal + taxCost + stripeCost + voxetiCost
 
 	estimate := schema.EstimateBreakdown{
+		File: 						sliceData.File,
 		BaseCost:         float32(math.Round(float64(config.BaseCost)*100) / 100),
 		TimeCost:         float32(math.Round(float64(timeCost)*100) / 100),
 		FilamentCost:     float32(math.Round(float64(filamentCost)*100) / 100),

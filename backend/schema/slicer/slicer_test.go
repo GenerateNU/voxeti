@@ -1,4 +1,4 @@
-package job
+package slicer
 
 import (
 	"strings"
@@ -6,8 +6,7 @@ import (
 	"voxeti/backend/schema"
 )
 
-var config = LoadEstimateConfig()
-
+var config = LoadEstimateConfig("../../..")
 /* schema.EstimateConfig{
 	BaseCost:   1.00,
 	HourlyCost: 3.00,
@@ -30,7 +29,7 @@ var config = LoadEstimateConfig()
 } */
 
 func TestLoadConfig(t *testing.T) {
-	loadedConfig := LoadEstimateConfig()
+	loadedConfig := LoadEstimateConfig("../../..")
 
 	expectedConfig := schema.EstimateConfig{
 		BaseCost:   1.00,
@@ -115,10 +114,6 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestEstimation(t *testing.T) {
-	job := schema.Job{
-		Filament: schema.PLA,
-	}
-
 	sliceData := schema.SliceData{
 		Flavor:            "Marlin",
 		TimeS:             6093,
@@ -133,7 +128,7 @@ func TestEstimation(t *testing.T) {
 		TargetMachineName: "Creality Ender 3",
 	}
 
-	estimate, _ := EstimatePrice(job, sliceData, config)
+	estimate, _ := EstimatePrice(schema.PLA, sliceData, config)
 
 	expected := schema.EstimateBreakdown{
 		BaseCost:         1.00,
@@ -159,13 +154,12 @@ func TestEstimation(t *testing.T) {
 func TestMultipleEstimates(t *testing.T) {
 	var tests = []struct {
 		name      string
-		job       schema.Job
+		filament  schema.FilamentType
 		sliceData schema.SliceData
 		expected  schema.EstimateBreakdown
 	}{
-		{"BottomWithFinger.stl PLA", schema.Job{
-			Filament: schema.PLA,
-		}, schema.SliceData{
+		{"BottomWithFinger.stl PLA", schema.PLA,
+		schema.SliceData{
 			Flavor:            "Marlin",
 			TimeS:             6093,
 			FilamentUsed:      2.326,
@@ -190,9 +184,8 @@ func TestMultipleEstimates(t *testing.T) {
 			VoxetiCost:       0.82,
 			Total:            22.17,
 		}},
-		{"BottomWithFinger.stl ABS", schema.Job{
-			Filament: schema.ABS,
-		}, schema.SliceData{
+		{"BottomWithFinger.stl ABS", schema.ABS,
+		schema.SliceData{
 			Flavor:            "Marlin",
 			TimeS:             6093,
 			FilamentUsed:      2.326,
@@ -217,9 +210,8 @@ func TestMultipleEstimates(t *testing.T) {
 			VoxetiCost:       0.82,
 			Total:            22.11,
 		}},
-		{"BottomWithFinger.stl TPE", schema.Job{
-			Filament: schema.TPE,
-		}, schema.SliceData{
+		{"BottomWithFinger.stl TPE", schema.TPE,
+		schema.SliceData{
 			Flavor:            "Marlin",
 			TimeS:             6093,
 			FilamentUsed:      2.326,
@@ -244,9 +236,8 @@ func TestMultipleEstimates(t *testing.T) {
 			VoxetiCost:       0.83,
 			Total:            22.27,
 		}},
-		{"BladeInvertedSpearOfHeaven.stl", schema.Job{
-			Filament: schema.PLA,
-		}, schema.SliceData{
+		{"BladeInvertedSpearOfHeaven.stl", schema.PLA,
+		schema.SliceData{
 			Flavor:            "Marlin",
 			TimeS:             2106,
 			FilamentUsed:      0.735,
@@ -276,7 +267,7 @@ func TestMultipleEstimates(t *testing.T) {
 	for _, tt := range tests {
 		testname := tt.name
 		t.Run(testname, func(t *testing.T) {
-			estimate, _ := EstimatePrice(tt.job, tt.sliceData, config)
+			estimate, _ := EstimatePrice(tt.filament, tt.sliceData, config)
 			if estimate != tt.expected {
 				t.Logf("%+v\n", tt.expected)
 				t.Logf("%+v\n", estimate)
