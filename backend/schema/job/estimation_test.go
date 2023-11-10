@@ -1,11 +1,14 @@
 package job
 
 import (
+	"strings"
 	"testing"
 	"voxeti/backend/schema"
 )
 
-var config = schema.EstimateConfig{
+var config = LoadEstimateConfig()
+
+/* schema.EstimateConfig{
 	BaseCost:   1.00,
 	HourlyCost: 3.00,
 	FilamentCost: map[string]float32{
@@ -24,6 +27,91 @@ var config = schema.EstimateConfig{
 	ProducerFee: 0.20,
 	StripeFee:   0.03,
 	VoxetiFee:   0.05,
+} */
+
+func TestLoadConfig(t *testing.T) {
+	loadedConfig := LoadEstimateConfig()
+
+	expectedConfig := schema.EstimateConfig{
+		BaseCost:   1.00,
+		HourlyCost: 3.00,
+		FilamentCost: map[string]float32{
+			strings.ToLower(schema.PLA): 0.09,
+			strings.ToLower(schema.ABS): 0.07,
+			strings.ToLower(schema.TPE): 0.12,
+		},
+		ShippingRate: map[int]float32{
+			100:  10.20,
+			250:  13.35,
+			650:  16.05,
+			1050: 21.05,
+			1728: 26.05,
+		},
+		TaxRate:     0.065,
+		ProducerFee: 0.20,
+		StripeFee:   0.03,
+		VoxetiFee:   0.05,
+	}
+
+	if loadedConfig.BaseCost != expectedConfig.BaseCost {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("BaseCost (%f) is different from expected (%f)", loadedConfig.BaseCost, expectedConfig.BaseCost)
+	}
+
+	if loadedConfig.HourlyCost != expectedConfig.HourlyCost {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("HourlyCost (%f) is different from expected (%f)", loadedConfig.HourlyCost, expectedConfig.HourlyCost)
+	}
+
+	if len(loadedConfig.FilamentCost) != len(expectedConfig.FilamentCost) {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("FilamentCost length (%d) is different from expected (%d)", len(loadedConfig.FilamentCost), len(expectedConfig.FilamentCost))
+	}
+
+	for k, v := range loadedConfig.FilamentCost {
+		if expectedConfig.FilamentCost[k] != v {
+			t.Errorf("FilamentCost keyvalue (%f) is different from expected (%f)", v, expectedConfig.FilamentCost[k])
+		}
+	}
+
+	if len(loadedConfig.ShippingRate) != len(expectedConfig.ShippingRate) {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("ShippingRate length (%d) is different from expected (%d)", len(loadedConfig.ShippingRate), len(expectedConfig.ShippingRate))
+	}
+
+	for k, v := range loadedConfig.ShippingRate {
+		if expectedConfig.ShippingRate[k] != v {
+			t.Errorf("ShippingRate keyvalue (%f) is different from expected (%f)", v, expectedConfig.ShippingRate[k])
+		}
+	}
+
+	if loadedConfig.TaxRate != expectedConfig.TaxRate {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("TaxRate (%f) is different from expected (%f)", loadedConfig.TaxRate, expectedConfig.TaxRate)
+	}
+
+	if loadedConfig.ProducerFee != expectedConfig.ProducerFee {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("ProducerFee (%f) is different from expected (%f)", loadedConfig.ProducerFee, expectedConfig.ProducerFee)
+	}
+
+	if loadedConfig.StripeFee != expectedConfig.StripeFee {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("StripeFee (%f) is different from expected (%f)", loadedConfig.StripeFee, expectedConfig.StripeFee)
+	}
+
+	if loadedConfig.VoxetiFee != expectedConfig.VoxetiFee {
+		t.Logf("%+v\n", expectedConfig)
+		t.Logf("%+v\n", loadedConfig)
+		t.Errorf("VoxetiFee (%f) is different from expected (%f)", loadedConfig.VoxetiFee, expectedConfig.VoxetiFee)
+	}
 }
 
 func TestEstimation(t *testing.T) {

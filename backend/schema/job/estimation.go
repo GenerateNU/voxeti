@@ -3,17 +3,19 @@ package job
 import (
 	"math"
 	"sort"
+	"strings"
 	"voxeti/backend/schema"
 
 	"github.com/spf13/viper"
 )
 
-func LoadEstimateConfig() {
+func LoadEstimateConfig() schema.EstimateConfig {
 	// Set the file name of the configurations file
 	viper.SetConfigName("estimate_config")
 
 	// Set the path to look for the configurations file
-	viper.AddConfigPath("/config/")
+	// Root directory
+	viper.AddConfigPath("../../..")
 
 	viper.SetConfigType("yml")
 	var configuration schema.EstimateConfig
@@ -26,13 +28,15 @@ func LoadEstimateConfig() {
 	if err != nil {
 		panic(err)
 	}
+
+	return configuration
 }
 
 func EstimatePrice(job schema.Job, sliceData schema.SliceData, config schema.EstimateConfig) (schema.EstimateBreakdown, *schema.ErrorResponse) {
 	// Convert time in seconds to hours then with hourly rate
 	timeCost := float32(sliceData.TimeS) / 3600.0 * config.HourlyCost
 	// Filament used (in meters) multiplied with the cost per meter
-	filamentCost := sliceData.FilamentUsed * config.FilamentCost[string(job.Filament)]
+	filamentCost := sliceData.FilamentUsed * config.FilamentCost[strings.ToLower(string(job.Filament))]
 
 	// Get volume in millimeters cubed
 	volume := (sliceData.MaxX - sliceData.MinX) * (sliceData.MaxY - sliceData.MinY) * (sliceData.MaxZ - sliceData.MinZ)
