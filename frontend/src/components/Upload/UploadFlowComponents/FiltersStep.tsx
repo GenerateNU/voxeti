@@ -6,29 +6,18 @@ import {
     FormGroup, 
     Radio, 
     RadioGroup,
-    Grid
+    Grid,
+    Select,
+    OutlinedInput,
+    MenuItem
 } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { AddCircle, RemoveCircle } from '@mui/icons-material';
 import BottomNavOptions from '../BottomNavOptions';
+import { Setters, States } from '../upload.types';
 export interface FiltersStepProps {
-    states: {
-        currentStep: number,
-        uploadedFiles: File[],
-        color: string,
-        quantity: number,
-        delivery: string,
-        expirationDate: string
-        price: number,
-    },
-    setters: {
-        currentStep: React.Dispatch<React.SetStateAction<number>>;
-        uploadedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-        color: React.Dispatch<React.SetStateAction<string>>;
-        quantity: React.Dispatch<React.SetStateAction<number>>;
-        delivery: React.Dispatch<React.SetStateAction<string>>;
-        expirationDate: React.Dispatch<React.SetStateAction<string>>;
-        price: React.Dispatch<React.SetStateAction<number>>;
-    }
+    states: States,
+    setters: Setters,
     setNextStep: () => void,
     cancelStep: () => void
 }
@@ -41,9 +30,26 @@ export default function FiltersStep({
 }: FiltersStepProps) {
     const colors = ["White", "Black"];
     const delivery = ["Shipping", "Pick up"];
-    const expirations = ["2 days", "7 days", "30 days"]
+    const expirations = ["2 days", "7 days", "30 days"];
 
-    console.log(states.expirationDate)
+    const types = ["PLA", "ABS", "TPS"];
+
+    console.log(states.expirationDate);
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setters.filament(event.target.value);
+    };
+
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+            },
+        },
+    };
 
     return (
         <Container>
@@ -51,6 +57,31 @@ export default function FiltersStep({
                 Filters
             </div>
             <FormGroup className='flex flex-col gap-y-6 w-[100%]'>
+                <Box className='border-2 rounded-md w-full p-4 border-[#F1F1F1]'>
+                    <div className='text-md font-semibold mb-2'>
+                        Filament Type
+                    </div>
+                    <Select
+                        value={states.filament}
+                        className='w-full'
+                        onChange={handleChange}
+                        input={<OutlinedInput label="Name" />}
+                        label="filament"
+                        MenuProps={MenuProps}>
+                            {
+                                types.map((filamentType) => {
+                                    return (
+                                        <MenuItem
+                                            key={filamentType}
+                                            value={filamentType}
+                                            >
+                                            {filamentType}
+                                        </MenuItem>
+                                    )
+                                })
+                            }
+                    </Select>
+                </Box>
                 <Box className='flex flex-row gap-x-6 justiy-between'>
                     <Box className='border-2 rounded-md w-[50%] p-4 border-[#F1F1F1]'>
                         <div className='text-md font-semibold'>

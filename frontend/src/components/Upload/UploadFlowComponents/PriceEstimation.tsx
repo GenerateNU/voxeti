@@ -1,28 +1,13 @@
 import { Box, Container, CircularProgress } from "@mui/material"
 import BottomNavOptions from "../BottomNavOptions"
 import { useEffect, useState } from "react"
-import PriceEstimateBox, { PriceEstimateBoxProps } from "../PriceEstimateBox"
+import PriceEstimateBox from "../PriceEstimateBox"
 import { createPrintAPI } from "../../../api/printAPI"
+import { PriceEstimate, Setters, States } from "../upload.types"
 
 export interface PriceEstimationProps {
-    states: {
-        currentStep: number,
-        uploadedFiles: File[],
-        color: string,
-        quantity: number,
-        delivery: string,
-        expirationDate: string,
-        price: number,
-    },
-    setters: {
-        currentStep: React.Dispatch<React.SetStateAction<number>>;
-        uploadedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-        color: React.Dispatch<React.SetStateAction<string>>;
-        quantity: React.Dispatch<React.SetStateAction<number>>;
-        delivery: React.Dispatch<React.SetStateAction<string>>;
-        expirationDate: React.Dispatch<React.SetStateAction<string>>;
-        price: React.Dispatch<React.SetStateAction<number>>;
-    }
+    states: States,
+    setters: Setters,
     setNextStep: () => void,
     cancelStep: () => void,
     editFile: () => void,
@@ -43,7 +28,7 @@ export default function PriceEstimation({
         {label: "Delivery", value: states.delivery},
         {label: "Expiration Date", value: states.expirationDate}
     ]
-    const [priceBody, setPriceBody] = useState<PriceEstimateBoxProps | undefined>();
+    const [priceBody, setPriceBody] = useState<PriceEstimate | undefined>();
 
     const handleUpload = async () => {
         const result = await createPrintAPI();
@@ -116,8 +101,8 @@ export default function PriceEstimation({
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <PriceEstimateBox price={priceBody.price} 
-                                    taxPercent={priceBody.taxPercent}
+                                <PriceEstimateBox prices={priceBody.prices} 
+                                    taxRate={priceBody.taxRate}
                                     shippingCost={priceBody.shippingCost}/>
                             )
                         }

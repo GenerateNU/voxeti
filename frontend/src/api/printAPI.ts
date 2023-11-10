@@ -11,8 +11,11 @@
 export const createPrintAPI = async () => {
     await new Promise<void>(resolve => setTimeout(()=>resolve(), 3000)).then(()=>console.log("retrieved the mock data"));
     return {
-        price: 180.35,
-        taxPercent: 0.0625,
+        prices: [ 
+            {fileName: "File_1.stl", price: 60.35},
+            {fileName: "File_2.stl", price: 120.00}
+        ],
+        taxRate: 0.0625,
         shippingCost: 45.67
     }
 }

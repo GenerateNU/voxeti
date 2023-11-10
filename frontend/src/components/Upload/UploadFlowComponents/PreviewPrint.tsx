@@ -2,17 +2,10 @@ import { Container, Box, CircularProgress } from "@mui/material";
 import BottomNavOptions from "../BottomNavOptions";
 import {StlViewer} from "react-stl-viewer";
 import { useState } from "react";
+import { States } from "../upload.types";
 
 export type PreviewPrintProps = {
-    states: {
-        currentStep: number,
-        uploadedFiles: File[],
-        color: string,
-        quantity: number,
-        delivery: string,
-        expirationDate: string,
-        price: number,
-    },
+    states: States,
     setNextStep: () => void,
     cancelStep: () => void
 }
