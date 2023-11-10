@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"os"
+	"voxeti/backend/schema/slicer"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -32,11 +33,15 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 		AllowHeaders:     []string{"Content-Type"},
 	}))
 
+	// Load price estimation config:
+	configuration := slicer.LoadEstimateConfig("../voxeti")
+
 	// Register extra route handlers
 	RegisterAuthHandlers(api, store, dbClient, logger)
 	RegisterDesignHandlers(api, dbClient, logger)
 	RegisterUserHandlers(api, dbClient, logger)
 	RegisterJobHandlers(api, dbClient, logger)
+	RegisterSlicerHandlers(api, configuration, logger)
 
 	// catch any invalid endpoints with a 404 error
 	api.GET("*", func(c echo.Context) error {

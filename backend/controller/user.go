@@ -26,13 +26,13 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		id, err := user.CreateUser(&u, dbClient)
+		newUser, err := user.CreateUser(&u, dbClient)
 
 		if err != nil {
 			return c.JSON(err.Code, err)
 		}
-		// return object id of new user
-		return c.JSON(http.StatusOK, user.IdResponse{Id: *id})
+		// return new user
+		return c.JSON(http.StatusOK, *newUser)
 	})
 
 	api.GET("/:id", func(c echo.Context) error {
@@ -94,14 +94,14 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		patchedId, patchErr := user.PatchUserById(&id, &u, dbClient)
+		patchedUser, patchErr := user.PatchUserById(&id, &u, dbClient)
 
 		if patchErr != nil {
 			return c.JSON(patchErr.Code, patchErr)
 		}
 
-		// return object id of updated user
-		return c.JSON(http.StatusOK, user.IdResponse{Id: *patchedId})
+		// return patched user
+		return c.JSON(http.StatusOK, *patchedUser)
 	})
 	api.PUT("/:id", func(c echo.Context) error {
 		logger.Info("update user endpoint hit!")
@@ -118,14 +118,14 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		updatedId, updateErr := user.UpdateUserById(&id, &u, dbClient)
+		updatedUser, updateErr := user.UpdateUserById(&id, &u, dbClient)
 
 		if updateErr != nil {
 			return c.JSON(updateErr.Code, updateErr)
 		}
 
-		// return object id of updated user
-		return c.JSON(http.StatusOK, user.IdResponse{Id: *updatedId})
+		// return updated user
+		return c.JSON(http.StatusOK, *updatedUser)
 	})
 
 	api.DELETE("/:id", func(c echo.Context) error {
@@ -143,13 +143,13 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 			return c.JSON(utilities.CreateErrorResponse(400, "Failed to unmarshal request body"))
 		}
 
-		deletedId, deleteErr := user.DeleteUserByIdDB(&id, dbClient)
+		deletedUser, deleteErr := user.DeleteUserById(&id, dbClient)
 
 		if deleteErr != nil {
 			return c.JSON(deleteErr.Code, deleteErr)
 		}
 
-		// return object id of updated user
-		return c.JSON(http.StatusOK, user.IdResponse{Id: *deletedId})
+		// return deleted user
+		return c.JSON(http.StatusOK, *deletedUser)
 	})
 }

@@ -58,6 +58,11 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
+          
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v2.0.2
+        with:
+          envkey_G_MAPS_API_KEY: ${{ secrets.G_MAPS_API_KEY }}
 
       - name: Run unit tests
         run: make backend-unit-test
@@ -76,6 +81,11 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
+
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v2.0.2
+        with:
+          envkey_G_MAPS_API_KEY: ${{ secrets.G_MAPS_API_KEY }}
 
       - name: Run end-to-end tests
         run: make backend-e2e-test
