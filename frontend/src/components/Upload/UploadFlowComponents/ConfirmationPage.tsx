@@ -3,17 +3,10 @@ import BottomNavOptions from "../BottomNavOptions"
 import { useEffect, useState } from "react"
 import PriceEstimateBox, { PriceEstimateBoxProps } from "../PriceEstimateBox"
 import { createPrintAPI } from "../../../api/printAPI"
+import { States } from "../upload.types"
 
 export interface ConfirmationPageProps {
-    states: {
-        currentStep: number,
-        uploadedFiles: File[],
-        color: string,
-        quantity: number,
-        delivery: string,
-        expirationDate: string,
-        price: number,
-    },
+    states: States,
     finalAction: () => void,
     cancelStep: () => void,
 }
@@ -91,8 +84,8 @@ export default function ConfirmationPage({
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <PriceEstimateBox price={priceBody.price} 
-                                    taxPercent={priceBody.taxPercent}
+                                <PriceEstimateBox prices={priceBody.prices} 
+                                    taxRate={priceBody.taxRate}
                                     shippingCost={priceBody.shippingCost}/>
                             )
                         }

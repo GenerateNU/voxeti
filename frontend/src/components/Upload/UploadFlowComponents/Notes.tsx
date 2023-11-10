@@ -1,17 +1,10 @@
 import { Box, Container, TextareaAutosize } from "@mui/material"
 import { useState } from "react";
 import BottomNavOptions from "../BottomNavOptions";
+import { States } from "../upload.types";
 
 export interface NotesProps {
-    states: {
-        currentStep: number,
-        uploadedFiles: File[],
-        color: string,
-        quantity: number,
-        delivery: string,
-        expirationDate: string,
-        price: number
-    },
+    states: States,
     cancelStep: () => void,
     nextStep: () => void
 }

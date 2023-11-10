@@ -4,26 +4,11 @@ import UploadFile from "./UploadFlowComponents/UploadFile";
 import Notes from "./UploadFlowComponents/Notes";
 import PreviewPrint from "./UploadFlowComponents/PreviewPrint";
 import ConfirmationPage from "./UploadFlowComponents/ConfirmationPage";
+import { Setters, States } from "./upload.types";
 
 export interface UploadFlowProps {
-    states: {
-        currentStep: number,
-        uploadedFiles: File[],
-        color: string,
-        quantity: number,
-        delivery: string,
-        expirationDate: string,
-        price: number
-    },
-    setters: {
-        currentStep: React.Dispatch<React.SetStateAction<number>>;
-        uploadedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-        color: React.Dispatch<React.SetStateAction<string>>;
-        quantity: React.Dispatch<React.SetStateAction<number>>;
-        delivery: React.Dispatch<React.SetStateAction<string>>;
-        expirationDate: React.Dispatch<React.SetStateAction<string>>;
-        price: React.Dispatch<React.SetStateAction<number>>;
-    }
+    states: States,
+    setters: Setters
 }
 export default function UploadFlow({
     states,

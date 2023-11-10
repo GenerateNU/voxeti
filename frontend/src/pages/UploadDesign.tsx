@@ -11,6 +11,7 @@ export function UploadDesign() {
     const [delivery, setDelivery] = useState<string>("Shipping");
     const [expirationDate, setExpirationDate] = useState<string>("2 days");
     const [price, setPrice] = useState<number>(0);
+    const [filament, setFilament] = useState('')
 
     // ----------- helpful objects to track state for the forms
     const states = {
@@ -21,6 +22,7 @@ export function UploadDesign() {
         delivery: delivery,
         expirationDate: expirationDate,
         price: price,
+        filament: filament
     }
 
     const setters = {
@@ -30,7 +32,8 @@ export function UploadDesign() {
         quantity: setQuantity,
         delivery: setDelivery,
         expirationDate: setExpirationDate,
-        price: setPrice
+        price: setPrice,
+        filament: setFilament
     }
     // -----------
     return (
