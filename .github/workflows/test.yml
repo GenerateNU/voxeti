@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-          
+
       - name: Create .env file
         uses: SpicyPizza/create-envfile@v2.0.2
         with:
