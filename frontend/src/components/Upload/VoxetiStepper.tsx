@@ -37,7 +37,7 @@ export default function VoxetiStepper({currentStep}: StepperProps) {
     }));
 
     return(
-        <Stepper 
+        <Stepper
             alternativeLabel
             activeStep={currentStep}
             connector={<VoxetiConnector />}
@@ -50,5 +50,5 @@ export default function VoxetiStepper({currentStep}: StepperProps) {
             ))}
         </Stepper>
     );
-    
+
 }

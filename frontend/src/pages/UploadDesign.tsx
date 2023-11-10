@@ -54,7 +54,7 @@ export function UploadDesign() {
 				.then((responses) => {
 					const priceEstimateRequest : PriceEstimation = {
 						filamentType: "PLA",
-						slices: responses 
+						slices: responses
 					}
 					handlePriceEstimation(priceEstimateRequest);
 				})

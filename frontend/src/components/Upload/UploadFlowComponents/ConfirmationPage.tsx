@@ -11,8 +11,8 @@ export interface ConfirmationPageProps {
 }
 
 export default function ConfirmationPage({
-    states, 
-    finalAction, 
+    states,
+    finalAction,
     cancelStep
 }: ConfirmationPageProps) {
     type filterItem = {label: string, value: string | number}
@@ -62,7 +62,7 @@ export default function ConfirmationPage({
                             }
                             </div>
                         </Box>
-                    
+
                     </Box>
                     <Box className="p-6 px-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
                         <Box>
@@ -81,13 +81,13 @@ export default function ConfirmationPage({
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
-                        { 
+                        {
                             !priceBody ? (
                                 <Box className="flex flex-col items-center h-full w-full">
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <PriceEstimateBox prices={priceBody.prices} 
+                                <PriceEstimateBox prices={priceBody.prices}
                                     taxRate={priceBody.taxRate}
                                     shippingCost={priceBody.shippingCost}/>
                             )

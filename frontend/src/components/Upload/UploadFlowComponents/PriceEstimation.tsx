@@ -16,7 +16,7 @@ export interface PriceEstimationProps {
 }
 
 export default function PriceEstimation({
-    states, 
+    states,
     setNextStep,
     cancelStep,
     editFile,
@@ -45,7 +45,7 @@ export default function PriceEstimation({
         handleUpload()
     }, [states.uploadedFiles, states.delivery, states.quantity, states.color])
 
-    
+
     return (
         <Container>
             <Box>
@@ -72,12 +72,12 @@ export default function PriceEstimation({
                             }
                             </div>
                         </Box>
-                        <div 
+                        <div
                             className="p-2 px-6 bg-[#F1F1F1] text-md rounded-xl hover:bg-[#777777] h-[fit-content]"
                             onClick={editFile}>
                                 edit
                         </div>
-                    
+
                     </Box>
                     <Box className="p-6 px-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
                         <Box>
@@ -92,7 +92,7 @@ export default function PriceEstimation({
                                 })
                             }
                         </Box>
-                        <div 
+                        <div
                             className="p-2 px-6 bg-[#F1F1F1] text-md rounded-xl hover:bg-[#777777] h-[fit-content]"
                             onClick={editFilter}>
                                 edit
@@ -101,13 +101,13 @@ export default function PriceEstimation({
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
-                        { 
+                        {
                             !priceBody ? (
                                 <Box className="flex flex-col items-center h-full w-full">
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <PriceEstimateBox prices={priceBody.prices} 
+                                <PriceEstimateBox prices={priceBody.prices}
                                     taxRate={priceBody.taxRate}
                                     shippingCost={priceBody.shippingCost}/>
                             )

@@ -39,7 +39,7 @@ export default function UploadFile({
             setOpen(true);
             setErrors(fileRejections[0].errors[0].message)
         }
-        
+
         if(files.length != 0) {
             setFiles(files.concat(acceptedFiles))
         } else {
@@ -47,7 +47,7 @@ export default function UploadFile({
         }
     }, [files, setFiles]);
     const {getRootProps, getInputProps, isDragActive} = useDropzone({
-        onDrop, 
+        onDrop,
         maxSize: 52428800,
         accept: {
             'stl': ['.stl'],
@@ -93,19 +93,19 @@ export default function UploadFile({
                 <UploadFileList/>
             </Box>
             <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={files.length >= 1}/>
-            <Snackbar 
-                open={open} 
+            <Snackbar
+                open={open}
                 autoHideDuration={3000}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center'}} 
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center'}}
                 onClose={handleClose}>
-                <Alert 
-                    onClose={handleClose} 
-                    severity="error" 
+                <Alert
+                    onClose={handleClose}
+                    severity="error"
                     sx={{ width: '100%' }}>
                     Error uploading files: {errors}
                 </Alert>
             </Snackbar>
-                
+
         </Container>
     )
 }
