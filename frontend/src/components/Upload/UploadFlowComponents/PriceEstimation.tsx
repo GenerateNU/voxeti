@@ -2,7 +2,7 @@ import { Box, Container, CircularProgress } from "@mui/material"
 import BottomNavOptions from "../BottomNavOptions"
 import { useEffect, useState } from "react"
 import PriceEstimateBox from "../PriceEstimateBox"
-import { createPrintAPI } from "../../../api/printAPI"
+import StyledButton from "../../Button/Button"
 import { PriceEstimate, Setters, States } from "../upload.types"
 
 export interface PriceEstimationProps {
@@ -11,7 +11,8 @@ export interface PriceEstimationProps {
     setNextStep: () => void,
     cancelStep: () => void,
     editFile: () => void,
-    editFilter: () => void
+    editFilter: () => void,
+    slice: () => void,
 }
 
 export default function PriceEstimation({
@@ -19,7 +20,8 @@ export default function PriceEstimation({
     setNextStep,
     cancelStep,
     editFile,
-    editFilter
+    editFilter,
+    slice,
 }: PriceEstimationProps) {
     type filterItem = {label: string, value: string | number}
     const listFilters: filterItem[] = [
@@ -31,7 +33,11 @@ export default function PriceEstimation({
     const [priceBody, setPriceBody] = useState<PriceEstimate | undefined>();
 
     const handleUpload = async () => {
-        const result = await createPrintAPI();
+        const result = {
+			price: 180.35,
+			taxPercent: 0.0625,
+			shippingCost: 45.67
+        }
         setPriceBody(result);
     }
 
@@ -94,7 +100,7 @@ export default function PriceEstimation({
                     </Box>
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
-                    <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
+                    <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
                         { 
                             !priceBody ? (
                                 <Box className="flex flex-col items-center h-full w-full">
@@ -106,6 +112,9 @@ export default function PriceEstimation({
                                     shippingCost={priceBody.shippingCost}/>
                             )
                         }
+                        <StyledButton onClick={slice}>
+                            Get Price Estimate
+                        </StyledButton>
                     </Box>
                 </Box>
             </Box>

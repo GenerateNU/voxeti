@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
-import { authApi, userApi } from "../api/api";
+import { authApi, priceEstimationApi, slicerApi, userApi } from "../api/api";
 import {
   FLUSH,
   PAUSE,
@@ -18,6 +18,8 @@ const combinedReducers = combineReducers({
   user: userReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
+  [slicerApi.reducerPath]: slicerApi.reducer,
+  [priceEstimationApi.reducerPath]: priceEstimationApi.reducer,
 });
 
 type RootReducer = ReturnType<typeof combinedReducers>;
@@ -26,7 +28,7 @@ const persistConfig = {
   key: "root",
   storage,
   stateReconciler: autoMergeLevel2,
-  blacklist: [authApi.reducerPath, userApi.reducerPath],
+  blacklist: [authApi.reducerPath, userApi.reducerPath, slicerApi.reducerPath],
 };
 
 const persistedReducer = persistReducer<RootReducer>(
@@ -42,7 +44,9 @@ export const store = configureStore({
       },
     })
       .concat(authApi.middleware)
-      .concat(userApi.middleware),
+      .concat(userApi.middleware)
+      .concat(slicerApi.middleware)
+      .concat(priceEstimationApi.middleware),
   reducer: persistedReducer,
 });
 

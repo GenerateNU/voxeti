@@ -78,44 +78,20 @@ export default function UploadFile({
             <div className='text-sm text-[#777777] mb-6'>
                 Upload  and attach your design for this project.
             </div>
-            {
-                files.length <= 1 ?
-                (
-                    <Box className="flex flex-col gap-y-8">
-                        <Box className="h-80">
-                            <Box {...getRootProps()} className={`flex flex-col items-center justify-center border-2 h-full rounded-md border-[#F0F0F0] hover:bg-[#F2F2F2] ${isDragActive && "bg-[#F2F2F2]"}`}>
-                                <div className="text-xl">
-                                    Click to upload or drag and drop
-                                </div>
-                                <div className="text-sm text-[#777777]">
-                                    Maxium file size 50 MB.
-                                </div>
-                                <input {...getInputProps()} className="hidden"/>
-                            </Box>
-                        </Box>
-                        <UploadFileList/>
+            <Box className={`flex ${files.length <= 1 ? 'flex-col gap-y-8' : 'flex-row gap-x-8'}`}>
+                <Box className={`${files.length <= 1 ? 'h-80' : 'h-[50vh] w-[40vw]'}`}>
+                    <Box {...getRootProps()} className={`flex flex-col items-center justify-center border-2 h-full rounded-md border-[#F0F0F0] hover:bg-[#F2F2F2] ${isDragActive && "bg-[#F2F2F2]"}`}>
+                        <div className="text-xl">
+                            Click to upload or drag and drop
+                        </div>
+                        <div className="text-sm text-[#777777]">
+                            Maxium file size 50 MB.
+                        </div>
+                        <input {...getInputProps()} className="hidden"/>
                     </Box>
-                    
-                    
-                ) : (
-                    <Box className="flex flex-row gap-x-8">
-                        <Box className="h-[50vh] w-[40vw]">
-                            <Box {...getRootProps()} className={`flex flex-col items-center justify-center border-2 h-full rounded-md border-[#F0F0F0] hover:bg-[#F2F2F2] ${isDragActive && "bg-[#F2F2F2]"}`}>
-                                <div className="text-xl">
-                                    Click to upload or drag and drop
-                                </div>
-                                <div className="text-sm text-[#777777]">
-                                    Maxium file size 50 MB.
-                                </div>
-                                <input {...getInputProps()} className="hidden"/>
-                            </Box>
-                        </Box>
-                        <UploadFileList/>
-                    </Box>
-                    
-                )
-            }
-
+                </Box>
+                <UploadFileList/>
+            </Box>
             <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={files.length >= 1}/>
             <Snackbar 
                 open={open} 

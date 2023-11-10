@@ -24,6 +24,7 @@ export default function UploadFlow({
     const finalStep = () => {
         console.log(states);
     }
+
     return (
         <div>
             {
@@ -52,6 +53,7 @@ export default function UploadFlow({
                             cancelStep={cancelStep}
                             editFile={() => setters.currentStep(1)}
                             editFilter={() => setters.currentStep(2)}
+                            slice={setters.slice}
                             />,
                     5: <Notes 
                             states={states} 

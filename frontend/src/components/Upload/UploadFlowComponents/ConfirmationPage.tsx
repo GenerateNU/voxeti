@@ -2,7 +2,6 @@ import { Box, Container, CircularProgress } from "@mui/material"
 import BottomNavOptions from "../BottomNavOptions"
 import { useEffect, useState } from "react"
 import PriceEstimateBox, { PriceEstimateBoxProps } from "../PriceEstimateBox"
-import { createPrintAPI } from "../../../api/printAPI"
 import { States } from "../upload.types"
 
 export interface ConfirmationPageProps {
@@ -26,7 +25,11 @@ export default function ConfirmationPage({
     const [priceBody, setPriceBody] = useState<PriceEstimateBoxProps | undefined>();
 
     const handleUpload = async () => {
-        const result = await createPrintAPI();
+        const result = {
+			price: 180.35,
+			taxPercent: 0.0625,
+			shippingCost: 45.67
+        }
         setPriceBody(result);
     }
 
