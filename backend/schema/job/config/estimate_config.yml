@@ -1,0 +1,10 @@
+params:
+	basecost          : 1.00
+	hourlycost        : 3.00
+	shippingcostsmall : 10.20
+	shippingcostmedium: 16.05
+	shippingcostlarge : 26.05
+	taxesrate         : 0.065
+	producerfee       : 0.20
+	stripefee         : 0.03
+	voxetifee         : 0.05
