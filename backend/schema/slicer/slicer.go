@@ -68,7 +68,7 @@ func EstimatePrice(filamentType schema.FilamentType, sliceData schema.SliceData,
 	total := producerTotal + taxCost + stripeCost + voxetiCost
 
 	estimate := schema.EstimateBreakdown{
-		File: 						sliceData.File,
+		File:             sliceData.File,
 		BaseCost:         float32(math.Round(float64(config.BaseCost)*100) / 100),
 		TimeCost:         float32(math.Round(float64(timeCost)*100) / 100),
 		FilamentCost:     float32(math.Round(float64(filamentCost)*100) / 100),

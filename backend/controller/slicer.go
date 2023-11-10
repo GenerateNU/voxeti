@@ -15,9 +15,9 @@ func RegisterSlicerHandlers(e *echo.Group, configuration schema.EstimateConfig, 
 
 	api.POST("/", func(c echo.Context) error {
 		// Unmarshal the body of the request:
-		var body schema.PriceEstimation;
+		var body schema.PriceEstimation
 		err := c.Bind(&body)
-		if (err != nil) {
+		if err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid request body!"))
 		}
 
@@ -33,7 +33,7 @@ func RegisterSlicerHandlers(e *echo.Group, configuration schema.EstimateConfig, 
 			// Append the price estimates to the list of estimates:
 			priceEstimates = append(priceEstimates, priceEstimate)
 		}
-		
+
 		return c.JSON(http.StatusOK, priceEstimates)
 	})
 }
