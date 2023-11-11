@@ -73,9 +73,9 @@ export function UploadDesign() {
 		delivery: delivery,
 		expirationDate: expirationDate,
 		prices: prices,
-        filament: filament,
-        isLoading: isSlicing,
-        isEstimating: isEstimatingPrice
+		filament: filament,
+		isLoading: isSlicing,
+		isEstimating: isEstimatingPrice
     }
 
     const setters = {
@@ -97,7 +97,6 @@ export function UploadDesign() {
 				<div className="z-0">
 					<VoxetiStepper currentStep={currentStep}/>
 					<UploadFlow states={states} setters={setters}/>
-					{prices.map((price) => price.timeCost)}
 				</div>
 			</div>
     )

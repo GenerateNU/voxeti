@@ -46,6 +46,8 @@ export default function PriceEstimation({
         setShippings(states.prices.map((breakdown: EstimateBreakdown) => breakdown.shippingCost));
     }, [states.prices])
 
+    console.log(states.isLoading)
+    console.log(states.isEstimating)
 
     return (
         <Container>
@@ -103,7 +105,7 @@ export default function PriceEstimation({
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
                         {
-                            !states.isLoading && !states.isEstimating ? (
+                            states.isLoading || states.isEstimating ? (
                                 <Box className="flex flex-col items-center h-full w-full">
                                     <CircularProgress />
                                 </Box>

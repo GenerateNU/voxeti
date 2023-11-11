@@ -4,7 +4,6 @@ export type PriceEstimate = {
   prices: PriceObject[],
   taxRate: number,
   shippingCost: number
-
 }
 
 export type PriceObject = {
