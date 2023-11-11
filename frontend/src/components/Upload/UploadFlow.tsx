@@ -62,7 +62,8 @@ export default function UploadFlow({
                     6: <ConfirmationPage
                             states={states}
                             cancelStep={cancelStep}
-                            finalAction={finalStep}/>
+                            finalAction={finalStep}
+                            slice={setters.slice}/>
                 }[states.currentStep]
             }
         </div>

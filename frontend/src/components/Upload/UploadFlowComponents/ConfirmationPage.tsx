@@ -1,19 +1,23 @@
 import { Box, Container, CircularProgress } from "@mui/material"
 import BottomNavOptions from "../BottomNavOptions"
 import { useEffect, useState } from "react"
-import PriceEstimateBox, { PriceEstimateBoxProps } from "../PriceEstimateBox"
-import { States } from "../upload.types"
+import PriceEstimateBox from "../PriceEstimateBox"
+import { PriceObject, States } from "../upload.types"
+import { EstimateBreakdown } from "../../../api/api.types"
+import StyledButton from "../../Button/Button"
 
 export interface ConfirmationPageProps {
     states: States,
     finalAction: () => void,
     cancelStep: () => void,
+    slice: () => void,
 }
 
 export default function ConfirmationPage({
     states,
     finalAction,
-    cancelStep
+    cancelStep,
+    slice,
 }: ConfirmationPageProps) {
     type filterItem = {label: string, value: string | number}
     const listFilters: filterItem[] = [
@@ -22,26 +26,34 @@ export default function ConfirmationPage({
         {label: "Delivery", value: states.delivery},
         {label: "Expiration Date", value: states.expirationDate}
     ]
-    const [priceBody, setPriceBody] = useState<PriceEstimateBoxProps | undefined>();
-
-    const handleUpload = async () => {
-        const result = {
-			price: 180.35,
-			taxPercent: 0.0625,
-			shippingCost: 45.67
-        }
-        setPriceBody(result);
-    }
+    const [prices, setPrices] = useState<PriceObject[]>([]);
+    const [taxes, setTaxes] = useState<number[]>([]);
+    const [shippings, setShippings] = useState<number[]>([]);
 
     useEffect(() => {
+        setPrices(states.prices.map( (breakdown: EstimateBreakdown) => {
+            return {
+                file: breakdown.file,
+                total: breakdown.total - breakdown.taxCost - breakdown.shippingCost
+            };
+        }));
+        setTaxes(states.prices.map((breakdown: EstimateBreakdown) => breakdown.taxCost));
+        setShippings(states.prices.map((breakdown: EstimateBreakdown) => breakdown.shippingCost));
+    }, [states.prices])
+
+
+    useEffect(() => {
+        const handleUpload = async () => {
+            console.log(states)
+        }
         handleUpload()
-    }, [states.uploadedFiles, states.delivery, states.quantity, states.color])
+    }, [states])
     return (
         <Container>
             <Box>
-                <div className="text-xl font-semibold">Confirmation</div>
+                <div className="text-xl font-semibold">Price Estimation</div>
                 <div className="text-sm text-[#777777] mb-6">
-                    Please review your order!
+                    This is the price estimated from your filter choices.
                 </div>
             </Box>
 
@@ -80,18 +92,21 @@ export default function ConfirmationPage({
                     </Box>
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
-                    <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
+                    <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
                         {
-                            !priceBody ? (
+                            !states.isLoading && !states.isEstimating ? (
                                 <Box className="flex flex-col items-center h-full w-full">
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <PriceEstimateBox prices={priceBody.prices}
-                                    taxRate={priceBody.taxRate}
-                                    shippingCost={priceBody.shippingCost}/>
+                                <PriceEstimateBox prices={prices}
+                                    taxes={taxes}
+                                    shippingCost={shippings}/>
                             )
                         }
+                        <StyledButton onClick={slice}>
+                            Get Price Estimate
+                        </StyledButton>
                     </Box>
                 </Box>
             </Box>

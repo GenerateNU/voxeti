@@ -1,15 +1,15 @@
 import { EstimateBreakdown } from "../../api/api.types"
 
 export type PriceEstimate = {
-    prices: PriceObject[],
-    taxRate: number,
-    shippingCost: number
+  prices: PriceObject[],
+  taxRate: number,
+  shippingCost: number
 
 }
 
 export type PriceObject = {
-    fileName: string,
-    price: number
+  file: string,
+  total: number,
 }
 
 export type States = {
@@ -20,7 +20,9 @@ export type States = {
     delivery: string,
     expirationDate: string
     prices: EstimateBreakdown[],
-    filament: string
+    filament: string,
+    isLoading: boolean,
+    isEstimating: boolean
 }
 
 export type Setters = {

@@ -3,7 +3,8 @@ import BottomNavOptions from "../BottomNavOptions"
 import { useEffect, useState } from "react"
 import PriceEstimateBox from "../PriceEstimateBox"
 import StyledButton from "../../Button/Button"
-import { PriceEstimate, Setters, States } from "../upload.types"
+import { PriceObject, Setters, States } from "../upload.types"
+import { EstimateBreakdown } from "../../../api/api.types"
 
 export interface PriceEstimationProps {
     states: States,
@@ -30,20 +31,20 @@ export default function PriceEstimation({
         {label: "Delivery", value: states.delivery},
         {label: "Expiration Date", value: states.expirationDate}
     ]
-    const [priceBody, setPriceBody] = useState<PriceEstimate | undefined>();
-
-    const handleUpload = async () => {
-        const result = {
-			price: 180.35,
-			taxPercent: 0.0625,
-			shippingCost: 45.67
-        }
-        setPriceBody(result);
-    }
+    const [prices, setPrices] = useState<PriceObject[]>([]);
+    const [taxes, setTaxes] = useState<number[]>([]);
+    const [shippings, setShippings] = useState<number[]>([]);
 
     useEffect(() => {
-        handleUpload()
-    }, [states.uploadedFiles, states.delivery, states.quantity, states.color])
+        setPrices(states.prices.map( (breakdown: EstimateBreakdown) => {
+            return {
+                file: breakdown.file,
+                total: breakdown.total - breakdown.taxCost - breakdown.shippingCost
+            };
+        }));
+        setTaxes(states.prices.map((breakdown: EstimateBreakdown) => breakdown.taxCost));
+        setShippings(states.prices.map((breakdown: EstimateBreakdown) => breakdown.shippingCost));
+    }, [states.prices])
 
 
     return (
@@ -102,14 +103,14 @@ export default function PriceEstimation({
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
                         {
-                            !priceBody ? (
+                            !states.isLoading && !states.isEstimating ? (
                                 <Box className="flex flex-col items-center h-full w-full">
                                     <CircularProgress />
                                 </Box>
                             ) : (
-                                <PriceEstimateBox prices={priceBody.prices}
-                                    taxRate={priceBody.taxRate}
-                                    shippingCost={priceBody.shippingCost}/>
+                                <PriceEstimateBox prices={prices}
+                                    taxes={taxes}
+                                    shippingCost={shippings}/>
                             )
                         }
                         <StyledButton onClick={slice}>

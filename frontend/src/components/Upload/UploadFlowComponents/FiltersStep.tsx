@@ -170,7 +170,7 @@ export default function FiltersStep({
                 </Box>
             </FormGroup>
 
-            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={true}/>
+            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={states.filament != ""}/>
 
         </Container>
     )

@@ -3,19 +3,29 @@ import { PriceObject } from "./upload.types";
 
 export interface PriceEstimateBoxProps {
   prices: PriceObject[],
-  taxRate: number,
-  shippingCost: number,
+  taxes: number[],
+  shippingCost: number[],
 }
 
 export default function PriceEstimateBox({
   prices,
-  taxRate,
+  taxes,
   shippingCost
 }: PriceEstimateBoxProps) {
   const totalBasePrice = prices.reduce(
-    (accum: number, currentValue: PriceObject) => accum + currentValue.price,
+    (accum: number, currentValue: PriceObject) => accum + currentValue.total,
     0
   );
+	const totalTaxAmount = taxes.reduce(
+		(accum: number, currentValue: number) => accum + currentValue,
+		0
+	);
+	const taxRate = (totalTaxAmount / totalBasePrice) * 100;
+	const totalShippingAmount = shippingCost.reduce(
+		(accum: number, currentValue: number) => accum + currentValue,
+		0
+	);
+
   return (
     <List className="h-full w-full flex flex-col items-center">
       <Box className="w-full mb-4 flex flex-col">
@@ -32,8 +42,8 @@ export default function PriceEstimateBox({
               prices.map((priceObj: PriceObject, index: number) => {
                 return (
                   <div className={`flex flex-row justify-between w-full text-[#777777] text-sm ${index > 0 ?? "mt-2"} mb-0`}>
-                    <div className="text-[#444444]">{priceObj.fileName}</div>
-                    <div>${priceObj.price}</div>
+                    <div className="text-[#444444]">{priceObj.file}</div>
+                    <div>${priceObj.total}</div>
                   </div>
                 )
               })
@@ -42,22 +52,22 @@ export default function PriceEstimateBox({
         )}
       </Box>
       <Box className="w-full mb-4 justify-between flex flex-row">
-				<div className="font-semibold">Tax ({taxRate * 100}%)</div>
+				<div className="font-semibold">Tax ({taxRate}%)</div>
         <div className="text-[#777777]">
-          ${(totalBasePrice * taxRate).toFixed(2)}
+          ${totalTaxAmount.toFixed(2)}
         </div>
       </Box>
       <Box className="w-full mb-4 justify-between flex flex-row">
         <div className="font-semibold">Shipping cost</div>
         <div className="text-[#777777]">
-          ${shippingCost}
+          ${totalShippingAmount}
         </div>
       </Box>
       <Divider className="w-[100%]" />
       <Box className="w-full mt-4 justify-between flex flex-row">
         <div className="font-semibold">Total price</div>
           <div className="text-[#777777]">
-            ${(totalBasePrice + totalBasePrice * taxRate + shippingCost).toFixed(2)}
+            ${(totalBasePrice + totalTaxAmount + totalShippingAmount).toFixed(2)}
           </div>
         </Box>
     </List>

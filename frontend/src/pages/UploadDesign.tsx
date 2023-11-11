@@ -13,13 +13,13 @@ export function UploadDesign() {
     const [delivery, setDelivery] = useState<string>("Shipping");
     const [expirationDate, setExpirationDate] = useState<string>("2 days");
     const [prices, setPrices] = useState<EstimateBreakdown[]>([]);
-		const [filament, setFilament] = useState('')
+	const [filament, setFilament] = useState('')
 
 
-    const [sliceDesign] = slicerApi.useSliceDesignsMutation();
-		const [estimatePrice] = priceEstimationApi.useEstimatePricesMutation();
+    const [sliceDesign, { isLoading: isSlicing }] = slicerApi.useSliceDesignsMutation();
+	const [estimatePrice, { isLoading: isEstimatingPrice }] = priceEstimationApi.useEstimatePricesMutation();
 
-		function handlePriceEstimation(priceEstimateRequest : PriceEstimation) {
+	function handlePriceEstimation(priceEstimateRequest : PriceEstimation) {
 			estimatePrice(priceEstimateRequest)
 				.unwrap()
 				.then((response : EstimateBreakdown[]) => {
@@ -53,7 +53,7 @@ export function UploadDesign() {
 			Promise.all(file.map((file : File) => handleSliceDesign(file)))
 				.then((responses) => {
 					const priceEstimateRequest : PriceEstimation = {
-						filamentType: "PLA",
+						filamentType: filament,
 						slices: responses
 					}
 					handlePriceEstimation(priceEstimateRequest);
@@ -66,14 +66,16 @@ export function UploadDesign() {
 
     // ----------- helpful objects to track state for the forms
     const states = {
-			currentStep: currentStep,
-			uploadedFiles: file,
-			color: color,
-			quantity: quantity,
-			delivery: delivery,
-			expirationDate: expirationDate,
-			prices: prices,
-      filament: filament
+		currentStep: currentStep,
+		uploadedFiles: file,
+		color: color,
+		quantity: quantity,
+		delivery: delivery,
+		expirationDate: expirationDate,
+		prices: prices,
+        filament: filament,
+        isLoading: isSlicing,
+        isEstimating: isEstimatingPrice
     }
 
     const setters = {
