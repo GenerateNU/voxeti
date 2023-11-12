@@ -1,15 +1,16 @@
-import { useState, useRef } from "react";
-import { useForm, Controller, FieldValues } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { useForm, FieldValues } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
 import { ExperienceLevel, User } from "../main.types.ts";
 import router from "../router.tsx";
 import { useStateDispatch } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
 import Auth from "../components/Auth/Auth.tsx";
-import { FormQuestion, FormSection, allQuestions } from "../utils/questions.ts";
+import {FormSection, allQuestions } from "../utils/questions.ts";
 import DefaultQuestion from "../components/Registration/DefaultQuestion.tsx"
 import SelectQuestion from "../components/Registration/SelectQuestion.tsx";
 import MultiQuestion from "../components/Registration/MultiQuestion.tsx";
+import TextQuestion from "../components/Registration/TextQuestion.tsx";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
@@ -20,10 +21,12 @@ const QuestionForm = () => {
   const {
     control,
     handleSubmit,
-    getValues,
     trigger,
+    watch,
+    getValues,
     formState: { errors, isValid, isDirty },
   } = useForm({ mode: "onChange" });
+
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [createUser] = userApi.useCreateUserMutation();
   const [login] = authApi.useLoginMutation();
@@ -34,21 +37,16 @@ const QuestionForm = () => {
   const [questions, setQuestions] = useState<FormSection[]>(
     allQuestions.sections,
   );
-
-  const useFocus = () => {
-    const htmlElRef = useRef<HTMLButtonElement>(null);
-    const setFocus = () => {
-      htmlElRef.current && htmlElRef.current.focus();
-    };
-
-    return [htmlElRef, setFocus] as const;
-  };
-
-  const [submitButtonRef, setSubmitButtonRef] = useFocus();
-  const [continueButtonRef, setContinueButtonRef] = useFocus();
-
-  console.log("errors", errors);
-  console.log("valid?", isValid);
+  
+  useEffect( () => {
+    if (getValues("userType") === "producer") {
+      setQuestions(producerQuestions);
+      setTotalSections(producerQuestions.length);
+    } else {
+      setQuestions(designerQuestions);
+      setTotalSections(designerQuestions.length);
+    }
+  }, [watch("userType")]);
 
   const onSubmit = (data: FieldValues) => {
     console.log("errors:", errors);
@@ -98,56 +96,12 @@ const QuestionForm = () => {
       });
   };
 
-  const handleSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
-    switch (e.target.name) {
-      case "userType": {
-        if (e.target.value === "producer") {
-          setQuestions(producerQuestions);
-          setTotalSections(producerQuestions.length);
-        } else {
-          setQuestions(designerQuestions);
-          setTotalSections(designerQuestions.length);
-        }
-        break;
-      }
-    }
-  };
-
-  const peerCheckedColors = {
-    producer: "peer-checked:bg-producer",
-    designer: "peer-checked:bg-designer",
-    default: "peer-checked:bg-primary",
-  };
-
-  const peerCheckedOpacity = {
-    100: "peer-checked:bg-opacity-100",
-    10: "peer-checked:bg-opacity-10",
-  };
-
-  const hoverColors = {
-    producer: "hover:bg-producer",
-    designer: "hover:bg-designer",
-    default: "hover:bg-primary",
-  };
-
-  const hoverOpacity = {
-    50: "hover:bg-opacity-50",
-    5: "hover:bg-opacity-5",
-  };
-
   const currentSection: FormSection = questions[currentSectionIndex];
-
-  const gridColumns = {
-    1: "grid-cols-1",
-    2: "grid-cols-1 lg:grid-cols-2",
-    3: "grid-cols-1 lg:grid-cols-3",
-    4: "grid-cols-1 lg:grid-cols-4",
-  };
 
   const RenderQuestions = () => {
     return (
       <Auth authRoute={false} key={"Auth"}>
-        <div className="flex flex-col justify-center lg:min-w-[450px]">
+        <div className="flex flex-col justify-center lg:min-w-[450px] space-y-2">
           <h2
             className={`text-xl text-center font-semibold mb-6 ${
               currentSectionIndex !== 0 && "mt-10"
@@ -156,15 +110,18 @@ const QuestionForm = () => {
             {currentSection?.sectionTitle}
           </h2>
           {currentSection?.questionGroups.map((group, index) => (
-            <div key={"group_" + index} className="flex flex-wrap lg:flex-nowrap">
+            <div key={"group_" + index} 
+            className="flex flex-wrap lg:flex-nowrap justify-center">
               {group.questions?.map((question) => {
                 switch (question.format) {
                   case "selection":
-                    return SelectQuestion({question, control});
+                    return (<SelectQuestion key={question.key  + "master"} question={question} control={control}/>);
                   case "multiple":
-                    return MultiQuestion({question, control});
+                    return (<MultiQuestion key={question.key  + "master"} question={question} control={control}/>);
+                  case "text":
+                    return (<TextQuestion key={question.key  + "master"} question={question} control={control}/>);
                   default:
-                    return DefaultQuestion({question, control});
+                    return (<DefaultQuestion key={question.key  + "master"} question={question} control={control}/>);
                 }
               })}
             </div>
@@ -212,7 +169,7 @@ const QuestionForm = () => {
   // Only show appropriate buttons based on section index
   const RenderButtons = () => {
     return (
-      <div className="m-2 mt-4 flex justify-between" key="top">
+      <div className="m-2 mt-4 flex justify-center space-x-4" key="top">
         {currentSectionIndex === 0 && (
           <div className="py-4 w-full" key="create">
             <button
@@ -240,11 +197,11 @@ const QuestionForm = () => {
         {currentSectionIndex < totalSections - 1 && currentSectionIndex > 0 && (
           <div className=" float-right py-4" key="continue">
             <button
+              key={"Continue_button"}
               className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-24"
               type="button"
               disabled={!isValid || !isDirty}
               onClick={handleNext}
-              ref={continueButtonRef}
             >
               Continue
             </button>
@@ -253,10 +210,10 @@ const QuestionForm = () => {
         {currentSectionIndex == totalSections - 1 && (
           <div className=" float-right py-4" key="enter">
             <button
+              key={"Submit_button"}
               className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-24"
               type="submit"
               disabled={!isValid || !isDirty}
-              ref={submitButtonRef}
             >
               Submit
             </button>
@@ -286,14 +243,14 @@ const QuestionForm = () => {
         </div>
       )}
       <div
-        className={`flex justify-center h-full ${
+        className={`flex flex-col justify-center items-center h-full w-full ${
           currentSectionIndex === 0 && "lg:w-2/5 items-center"
         }`}
       >
-        <form key={"formOverhead"} onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyPress}>
-          <RenderQuestions key={"renderQuestions"}/>
-          <RenderButtons key={"renderButtons"}/>
-        </form>
+          <form key={"formOverhead"} onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyPress}>
+            {RenderQuestions()}
+          </form>
+          {RenderButtons()}
       </div>
     </div>
   );
