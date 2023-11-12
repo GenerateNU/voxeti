@@ -38,7 +38,7 @@ const QuestionForm = () => {
     allQuestions.sections,
   );
 
-  let temp = watch("userType");
+  const temp:string = watch("userType");
   
   useEffect( () => {
     if (getValues("userType") === "producer") {
