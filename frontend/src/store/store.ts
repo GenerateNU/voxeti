@@ -28,7 +28,12 @@ const persistConfig = {
   key: "root",
   storage,
   stateReconciler: autoMergeLevel2,
-  blacklist: [authApi.reducerPath, userApi.reducerPath, jobApi.reducerPath, designApi.reducerPath],
+  blacklist: [
+    authApi.reducerPath,
+    userApi.reducerPath,
+    jobApi.reducerPath,
+    designApi.reducerPath,
+  ],
 };
 
 const persistedReducer = persistReducer<RootReducer>(

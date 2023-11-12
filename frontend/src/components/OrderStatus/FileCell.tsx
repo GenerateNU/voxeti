@@ -3,20 +3,15 @@ import { Job } from "../../main.types";
 import { Design } from "../../main.types";
 import { useState } from "react";
 
-export default function FileCell(props: { job: Job }){
+export default function FileCell(props: { job: Job }) {
+  const [design, setDesign] = useState<Design>({} as Design);
 
-    const [design, setDesign] = useState<Design>({} as Design);
+  console.log(design);
 
-    console.log(design)
+  const { data: data } = designApi.useGetDesignQuery(props.job.designId);
+  if (data) {
+    setDesign(data);
+  }
 
-    const { data : data } = designApi.useGetDesignQuery(props.job.designId);
-    if (data) {
-        setDesign(data);
-    }
-
-    return (
-        <div className="flex items-center text-lg">
-            {props.job.designId}
-        </div>
-    )
+  return <div className="flex items-center text-lg">{props.job.designId}</div>;
 }
