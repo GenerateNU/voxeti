@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
-import { authApi, userApi, jobApi } from "../api/api";
+import { authApi, userApi, jobApi, designApi } from "../api/api";
 import {
   FLUSH,
   PAUSE,
@@ -19,6 +19,7 @@ const combinedReducers = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [jobApi.reducerPath]: jobApi.reducer,
+  [designApi.reducerPath]: designApi.reducer,
 });
 
 type RootReducer = ReturnType<typeof combinedReducers>;
@@ -27,7 +28,7 @@ const persistConfig = {
   key: "root",
   storage,
   stateReconciler: autoMergeLevel2,
-  blacklist: [authApi.reducerPath, userApi.reducerPath, jobApi.reducerPath],
+  blacklist: [authApi.reducerPath, userApi.reducerPath, jobApi.reducerPath, designApi.reducerPath],
 };
 
 const persistedReducer = persistReducer<RootReducer>(
@@ -44,7 +45,8 @@ export const store = configureStore({
     })
       .concat(authApi.middleware)
       .concat(userApi.middleware)
-      .concat(jobApi.middleware),
+      .concat(jobApi.middleware)
+      .concat(designApi.middleware),
   reducer: persistedReducer,
 });
 
