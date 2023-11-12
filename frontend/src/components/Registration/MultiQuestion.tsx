@@ -17,7 +17,7 @@ export default function MultiQuestion({
             name={question.key}
             defaultValue={[]}
             rules={question.rules}
-            render={({ field: { onChange, value } }: { field: { onChange: (value: any[]) => void, value: any[] } }) => {
+            render={({ field: { onChange, value } }: { field: { onChange: (value: Array<string | number>) => void, value: Array<string | number> } }) => {
                 if(question.options != undefined){
                     return (
                     <div key={question.key + "Div"} className={question.gridPattern ? question.gridPattern : '!w-full flex flex-row justify-center lg:min-w-[450px] space-x-2'}>
@@ -52,4 +52,4 @@ export default function MultiQuestion({
             }}
         />
     );
-  };
+  }

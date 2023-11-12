@@ -7,7 +7,6 @@ import { useStateDispatch } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
 import Auth from "../components/Auth/Auth.tsx";
 import {FormSection, allQuestions } from "../utils/questions.ts";
-import DefaultQuestion from "../components/Registration/DefaultQuestion.tsx"
 import SelectQuestion from "../components/Registration/SelectQuestion.tsx";
 import MultiQuestion from "../components/Registration/MultiQuestion.tsx";
 import TextQuestion from "../components/Registration/TextQuestion.tsx";
@@ -23,7 +22,6 @@ const QuestionForm = () => {
     handleSubmit,
     trigger,
     watch,
-    getValues,
     formState: { errors, isValid, isDirty },
   } = useForm({ mode: "onChange" });
 
@@ -41,7 +39,7 @@ const QuestionForm = () => {
   const temp:string = watch("userType");
   
   useEffect( () => {
-    if (getValues("userType") === "producer") {
+    if (temp === "producer") {
       setQuestions(producerQuestions);
       setTotalSections(producerQuestions.length);
     } else {
@@ -123,7 +121,7 @@ const QuestionForm = () => {
                   case "text":
                     return (<TextQuestion key={question.key  + "master"} question={question} control={control}/>);
                   default:
-                    return (<DefaultQuestion key={question.key  + "master"} question={question} control={control}/>);
+                    return (<>Something went wrong here</>)
                 }
               })}
             </div>
