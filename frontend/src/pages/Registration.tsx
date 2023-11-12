@@ -37,6 +37,8 @@ const QuestionForm = () => {
   const [questions, setQuestions] = useState<FormSection[]>(
     allQuestions.sections,
   );
+
+  let temp = watch("userType");
   
   useEffect( () => {
     if (getValues("userType") === "producer") {
@@ -46,7 +48,7 @@ const QuestionForm = () => {
       setQuestions(designerQuestions);
       setTotalSections(designerQuestions.length);
     }
-  }, [watch("userType")]);
+  }, [temp]);
 
   const onSubmit = (data: FieldValues) => {
     console.log("errors:", errors);
