@@ -158,6 +158,7 @@ const QuestionForm = () => {
         {Array.from(Array(totalSections).keys()).map((index) => {
           return (
             <div
+              key={"section" + index}
               className={`w-3 h-[2px] bg-producer ${
                 currentSectionIndex === index ? "opacity-100" : "opacity-50"
               } rounded-full`}

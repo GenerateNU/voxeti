@@ -1,4 +1,4 @@
-import { Control, Controller, FieldValues } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 import { FormQuestion } from "../../utils/questions";
 import { TextField } from "@mui/material";
 
@@ -7,7 +7,7 @@ export default function TextQuestion({
     control
 }:{
     question: FormQuestion
-    control: Control<FieldValues, any>
+    control: Control
 }) {
 
     return (

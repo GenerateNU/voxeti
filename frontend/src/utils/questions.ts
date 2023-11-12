@@ -452,7 +452,7 @@ export const allQuestions: MultiForm = {
             {
               prompt: "Projects",
               key: "projects",
-              format: "selection",
+              format: "multiple",
               type: "radio",
               rules: { required: true },
               defaultOption: "other",

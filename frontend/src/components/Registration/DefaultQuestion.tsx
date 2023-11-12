@@ -1,4 +1,4 @@
-import { Control, Controller, FieldValues } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 import { FormQuestion } from "../../utils/questions";
 
 export default function DefaultQuestion({
@@ -6,7 +6,7 @@ export default function DefaultQuestion({
     control
 }:{
     question: FormQuestion
-    control: Control<FieldValues, any>
+    control: Control
 }) {
     return (
       <Controller
