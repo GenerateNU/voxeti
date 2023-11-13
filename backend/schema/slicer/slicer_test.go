@@ -6,31 +6,10 @@ import (
 	"voxeti/backend/schema"
 )
 
-var config = LoadEstimateConfig("../../..")
-
-/* schema.EstimateConfig{
-	BaseCost:   1.00,
-	HourlyCost: 3.00,
-	FilamentCost: map[string]float32{
-		schema.PLA: 0.09,
-		schema.ABS: 0.07,
-		schema.TPE: 0.12,
-	},
-	ShippingRate: map[int]float32{
-		100:  10.20,
-		250:  13.35,
-		650:  16.05,
-		1050: 21.05,
-		1728: 26.05,
-	},
-	TaxRate:     0.065,
-	ProducerFee: 0.20,
-	StripeFee:   0.03,
-	VoxetiFee:   0.05,
-} */
+var config = LoadEstimateConfig("../../..", "estimate_config_test_do_not_change")
 
 func TestLoadConfig(t *testing.T) {
-	loadedConfig := LoadEstimateConfig("../../..")
+	loadedConfig := LoadEstimateConfig("../../..", "estimate_config_test_do_not_change")
 
 	expectedConfig := schema.EstimateConfig{
 		BaseCost:   1.00,
@@ -40,13 +19,13 @@ func TestLoadConfig(t *testing.T) {
 			strings.ToLower(schema.ABS): 0.07,
 			strings.ToLower(schema.TPE): 0.12,
 		},
-		ShippingRate: map[int]float32{
+		ShippingRate: schema.Shipping{Rates: map[int]float32{
 			100:  10.20,
 			250:  13.35,
 			650:  16.05,
 			1050: 21.05,
 			1728: 26.05,
-		},
+		}, OversizedRate: 0.015},
 		TaxRate:     0.065,
 		ProducerFee: 0.20,
 		StripeFee:   0.03,
@@ -77,15 +56,15 @@ func TestLoadConfig(t *testing.T) {
 		}
 	}
 
-	if len(loadedConfig.ShippingRate) != len(expectedConfig.ShippingRate) {
+	if len(loadedConfig.ShippingRate.Rates) != len(expectedConfig.ShippingRate.Rates) {
 		t.Logf("%+v\n", expectedConfig)
 		t.Logf("%+v\n", loadedConfig)
-		t.Errorf("ShippingRate length (%d) is different from expected (%d)", len(loadedConfig.ShippingRate), len(expectedConfig.ShippingRate))
+		t.Errorf("ShippingRate length (%d) is different from expected (%d)", len(loadedConfig.ShippingRate.Rates), len(expectedConfig.ShippingRate.Rates))
 	}
 
-	for k, v := range loadedConfig.ShippingRate {
-		if expectedConfig.ShippingRate[k] != v {
-			t.Errorf("ShippingRate keyvalue (%f) is different from expected (%f)", v, expectedConfig.ShippingRate[k])
+	for k, v := range loadedConfig.ShippingRate.Rates {
+		if expectedConfig.ShippingRate.Rates[k] != v {
+			t.Errorf("ShippingRate keyvalue (%f) is different from expected (%f)", v, expectedConfig.ShippingRate.Rates[k])
 		}
 	}
 
@@ -114,6 +93,41 @@ func TestLoadConfig(t *testing.T) {
 	}
 }
 
+func TestShippingEstimation(t *testing.T) {
+	var tests = []struct {
+		name     string
+		volume   float32
+		quantity int
+		expected float32
+	}{
+		{"extra small single", 20, 1, 10.20},
+		{"extra small multiple", 20, 2, 5.10},
+		{"small single", 120, 1, 13.35},
+		{"small multiple", 120, 2, 6.68},
+		{"medium single", 350, 1, 16.05},
+		{"medium multiple", 350, 2, 8.02},
+		{"large single", 1000, 1, 21.05},
+		{"large multiple", 1000, 2, 10.52},
+		{"extra large single", 1200, 1, 26.05},
+		{"extra large multiple", 1200, 2, 13.02},
+		{"oversized single", 5000, 1, 75},
+		{"oversized single", 10000, 1, 150},
+		{"oversized multiple", 10000, 2, 75},
+	}
+
+	for _, tt := range tests {
+		testname := tt.name
+		t.Run(testname, func(t *testing.T) {
+			estimate, _ := EstimateShipping(tt.volume, tt.quantity, config.ShippingRate)
+			if estimate != tt.expected {
+				t.Logf("%+v\n", tt.expected)
+				t.Logf("%+v\n", estimate)
+				t.Errorf("EstimatePrice = %f; want %f", estimate, tt.expected)
+			}
+		})
+	}
+}
+
 func TestEstimation(t *testing.T) {
 	sliceData := schema.SliceData{
 		Flavor:            "Marlin",
@@ -129,7 +143,7 @@ func TestEstimation(t *testing.T) {
 		TargetMachineName: "Creality Ender 3",
 	}
 
-	estimate, _ := EstimatePrice(schema.PLA, true, sliceData, config)
+	estimate, _, _ := EstimatePrice(schema.PLA, true, sliceData, config)
 
 	expected := schema.EstimateBreakdown{
 		BaseCost:         1.00,
@@ -139,10 +153,10 @@ func TestEstimation(t *testing.T) {
 		ProducerSubtotal: 16.49,
 		ProducerFee:      3.30,
 		ProducerTotal:    19.78,
-		TaxCost:          1.07,
+		TaxCost:          1.37,
 		StripeCost:       0.49,
 		VoxetiCost:       0.82,
-		Total:            22.17,
+		Total:            22.47,
 	}
 
 	if estimate != expected {
@@ -180,10 +194,10 @@ func TestMultipleEstimates(t *testing.T) {
 				ProducerSubtotal: 16.49,
 				ProducerFee:      3.30,
 				ProducerTotal:    19.78,
-				TaxCost:          1.07,
+				TaxCost:          1.37,
 				StripeCost:       0.49,
 				VoxetiCost:       0.82,
-				Total:            22.17,
+				Total:            22.47,
 			}},
 		{"BottomWithFinger.stl ABS", schema.ABS,
 			schema.SliceData{
@@ -206,10 +220,10 @@ func TestMultipleEstimates(t *testing.T) {
 				ProducerSubtotal: 16.44,
 				ProducerFee:      3.29,
 				ProducerTotal:    19.73,
-				TaxCost:          1.07,
+				TaxCost:          1.37,
 				StripeCost:       0.49,
 				VoxetiCost:       0.82,
-				Total:            22.11,
+				Total:            22.41,
 			}},
 		{"BottomWithFinger.stl TPE", schema.TPE,
 			schema.SliceData{
@@ -232,10 +246,10 @@ func TestMultipleEstimates(t *testing.T) {
 				ProducerSubtotal: 16.56,
 				ProducerFee:      3.31,
 				ProducerTotal:    19.87,
-				TaxCost:          1.08,
+				TaxCost:          1.38,
 				StripeCost:       0.50,
 				VoxetiCost:       0.83,
-				Total:            22.27,
+				Total:            22.57,
 			}},
 		{"BladeInvertedSpearOfHeaven.stl", schema.PLA,
 			schema.SliceData{
@@ -258,17 +272,17 @@ func TestMultipleEstimates(t *testing.T) {
 				ProducerSubtotal: 13.02,
 				ProducerFee:      2.60,
 				ProducerTotal:    15.63,
-				TaxCost:          0.85,
+				TaxCost:          1.08,
 				StripeCost:       0.39,
 				VoxetiCost:       0.65,
-				Total:            17.51,
+				Total:            17.75,
 			}},
 	}
 
 	for _, tt := range tests {
 		testname := tt.name
 		t.Run(testname, func(t *testing.T) {
-			estimate, _ := EstimatePrice(tt.filament, true, tt.sliceData, config)
+			estimate, _, _ := EstimatePrice(tt.filament, true, tt.sliceData, config)
 			if estimate != tt.expected {
 				t.Logf("%+v\n", tt.expected)
 				t.Logf("%+v\n", estimate)

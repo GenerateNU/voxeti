@@ -23,15 +23,28 @@ func RegisterSlicerHandlers(e *echo.Group, configuration schema.EstimateConfig, 
 
 		var priceEstimates []schema.EstimateBreakdown
 
+		var totalVolume float32
+
 		for _, file := range body.Slices {
 			// Compute a price estimate for the file:
-			priceEstimate, err := slicer.EstimatePrice(body.Filament, body.Shipping, file, configuration)
+			priceEstimate, volume, err := slicer.EstimatePrice(body.Filament, body.Shipping, file, configuration)
 			if err != nil {
 				return c.JSON(utilities.CreateErrorResponse(err.Code, err.Message))
 			}
 
+			totalVolume += volume
+
 			// Append the price estimates to the list of estimates:
 			priceEstimates = append(priceEstimates, priceEstimate)
+		}
+
+		// Divide the shipping cost am
+		if len(priceEstimates) > 1 {
+			shippingEstimate, _ := slicer.EstimateShipping(totalVolume, len(priceEstimates), configuration.ShippingRate)
+			for i, estimate := range priceEstimates {
+				estimate.ShippingCost = shippingEstimate
+				priceEstimates[i] = estimate
+			}
 		}
 
 		return c.JSON(http.StatusOK, priceEstimates)

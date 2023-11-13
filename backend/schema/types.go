@@ -66,11 +66,16 @@ type EstimateBreakdown struct {
 	Total            float32 `json:"total"`
 }
 
+type Shipping struct {
+	Rates         map[int]float32
+	OversizedRate float32
+}
+
 type EstimateConfig struct {
 	BaseCost     float32
 	HourlyCost   float32
 	FilamentCost map[string]float32
-	ShippingRate map[int]float32
+	ShippingRate Shipping
 	TaxRate      float32
 	ProducerFee  float32
 	StripeFee    float32

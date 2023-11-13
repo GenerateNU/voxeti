@@ -9,9 +9,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func LoadEstimateConfig(location string) schema.EstimateConfig {
+func LoadEstimateConfig(location string, name string) schema.EstimateConfig {
 	// Set the file name of the configurations file
-	viper.SetConfigName("estimate_config")
+	viper.SetConfigName(name)
 
 	// Set the path to look for the configurations file
 	// Root directory
@@ -32,7 +32,7 @@ func LoadEstimateConfig(location string) schema.EstimateConfig {
 	return configuration
 }
 
-func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData schema.SliceData, config schema.EstimateConfig) (schema.EstimateBreakdown, *schema.ErrorResponse) {
+func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData schema.SliceData, config schema.EstimateConfig) (breakdown schema.EstimateBreakdown, printVolume float32, err *schema.ErrorResponse) {
 	// Convert time in seconds to hours then with hourly rate
 	timeCost := float32(sliceData.TimeS) / 3600.0 * config.HourlyCost
 	// Filament used (in meters) multiplied with the cost per meter
@@ -44,19 +44,11 @@ func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData sc
 	volume = volume * 0.000061024
 
 	// Check volume is in range and use that cost
-	var shippingCost float32 = 0
+	var shippingCost float32
 	if shipping {
-		keys := make([]int, 0)
-		for k := range config.ShippingRate {
-			keys = append(keys, k)
-		}
-		sort.Ints(keys)
-		for _, k := range keys {
-			if int(volume) <= k {
-				shippingCost = config.ShippingRate[k]
-				break
-			}
-		}
+		shippingCost, _ = EstimateShipping(volume, 1, config.ShippingRate)
+	} else {
+		shippingCost = 0
 	}
 
 	producerSubtotal := config.BaseCost + timeCost + filamentCost + shippingCost
@@ -85,5 +77,22 @@ func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData sc
 		Total:            float32(math.Round(float64(total)*100) / 100),
 	}
 
-	return estimate, nil
+	return estimate, volume, nil
+}
+
+// Estimates the total cost when given the volume and number of items, uses oversized rate if too big for set prices
+func EstimateShipping(totalVolume float32, quantity int, shippingRates schema.Shipping) (shippingCost float32, err *schema.ErrorResponse) {
+	keys := make([]int, 0)
+	for k := range shippingRates.Rates {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+	for _, k := range keys {
+		if int(totalVolume) <= k {
+			return float32(math.Round(float64(shippingRates.Rates[k]/float32(quantity))*100) / 100), nil
+		}
+	}
+
+	// If oversized
+	return float32(math.Round(float64(totalVolume*shippingRates.OversizedRate/float32(quantity))*100) / 100), nil
 }

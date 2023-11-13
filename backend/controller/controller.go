@@ -34,7 +34,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	}))
 
 	// Load price estimation config:
-	configuration := slicer.LoadEstimateConfig("../voxeti")
+	configuration := slicer.LoadEstimateConfig("../voxeti", "estimate_config")
 
 	// Register extra route handlers
 	RegisterAuthHandlers(api, store, dbClient, logger)
