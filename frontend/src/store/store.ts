@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
-import { authApi, priceEstimationApi, slicerApi, userApi } from "../api/api";
+import { authApi, designApi, jobApi, priceEstimationApi, slicerApi, userApi } from "../api/api";
 import {
   FLUSH,
   PAUSE,
@@ -20,6 +20,8 @@ const combinedReducers = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
   [slicerApi.reducerPath]: slicerApi.reducer,
   [priceEstimationApi.reducerPath]: priceEstimationApi.reducer,
+  [designApi.reducerPath]: designApi.reducer,
+  [jobApi.reducerPath]: jobApi.reducer,
 });
 
 type RootReducer = ReturnType<typeof combinedReducers>;
@@ -28,7 +30,14 @@ const persistConfig = {
   key: "root",
   storage,
   stateReconciler: autoMergeLevel2,
-  blacklist: [authApi.reducerPath, userApi.reducerPath, slicerApi.reducerPath],
+  blacklist: [
+    authApi.reducerPath,
+    userApi.reducerPath,
+    slicerApi.reducerPath,
+    priceEstimationApi.reducerPath,
+    designApi.reducerPath,
+    jobApi.reducerPath,
+  ],
 };
 
 const persistedReducer = persistReducer<RootReducer>(
@@ -46,7 +55,9 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(userApi.middleware)
       .concat(slicerApi.middleware)
-      .concat(priceEstimationApi.middleware),
+      .concat(priceEstimationApi.middleware)
+      .concat(designApi.middleware)
+      .concat(jobApi.middleware),
   reducer: persistedReducer,
 });
 

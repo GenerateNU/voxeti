@@ -1,4 +1,6 @@
 import { createAuthApi } from "./authAPI";
+import { createDesignApi } from "./designAPI";
+import { createJobApi } from "./jobAPI";
 import { createPriceEstimationApi, createSlicerApi } from "./slicerAPI";
 import { createUserApi } from "./userAPI";
 
@@ -9,5 +11,7 @@ const authApi = createAuthApi(API_BASE_URL);
 const userApi = createUserApi(API_BASE_URL);
 const slicerApi = createSlicerApi(MICRO_SERVICE_URL);
 const priceEstimationApi = createPriceEstimationApi(API_BASE_URL);
+const designApi = createDesignApi(API_BASE_URL);
+const jobApi = createJobApi(API_BASE_URL);
 
-export { authApi, userApi, slicerApi, priceEstimationApi };
+export { authApi, userApi, slicerApi, priceEstimationApi, designApi, jobApi };

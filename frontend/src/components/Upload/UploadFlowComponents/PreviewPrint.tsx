@@ -45,6 +45,7 @@ export default function PreviewPrint({
                 {
                     dataUrl ? (
                         <StlViewer 
+                            className='!max-h-[45vh]'
                             url={dataUrl}
                             orbitControls
                             style={style}
@@ -53,7 +54,8 @@ export default function PreviewPrint({
                                     color: "#0057FF"
                                 }
                             }
-                            shadows/>
+                            shadows
+                        />
                     ) : (
                         <Box className="flex flex-col items-center h-full w-full p-4">
                             <CircularProgress />

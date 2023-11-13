@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"voxeti/backend/schema"
 	"voxeti/backend/schema/design"
 	"voxeti/backend/utilities"
 
@@ -26,30 +27,48 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 
 	api.POST("", func(c echo.Context) error {
 		// Extract the file from the request:
-		file, err := c.FormFile("file")
+		form, err := c.MultipartForm()
 		if err != nil {
-			return c.JSON(utilities.CreateErrorResponse(400, "No file has been provided to the request"))
+			return c.JSON(utilities.CreateErrorResponse(400, "Unable to parse form!"))
 		}
 
-		// Check to make sure the file does not exceed 20MB:
-		if file.Size > (1000 * 1000 * 20) {
-			return c.JSON(utilities.CreateErrorResponse(400, "STL file exceeds the 20MB file limit"))
+		// Extract the list of files:
+		files := form.File["files"]
+
+		if len(files) == 0 {
+			return c.JSON(utilities.CreateErrorResponse(400, "No files have been provided!"))
 		}
 
-		// Validate STL file:
-		validationErr := design.ValidateSTLFile(file)
-		if validationErr != nil {
-			return c.JSON(utilities.CreateErrorResponse(validationErr.Code, validationErr.Message))
+		// Instantiate Design Array: 
+		var designs []schema.Design;
+
+		// Validate each file:
+		for _, file := range files {
+			// Check to make sure the file does not exceed 20MB:
+			if file.Size > (1000 * 1000 * 20) {
+				return c.JSON(utilities.CreateErrorResponse(400, "STL file exceeds the 20MB file limit"))
+			}
+
+			// Validate STL file:
+			validationErr := design.ValidateSTLFile(file)
+			if validationErr != nil {
+				return c.JSON(utilities.CreateErrorResponse(validationErr.Code, validationErr.Message))
+			}
 		}
 
-		// Add STL file to DB:
-		uploadErr, design := design.UploadSTLFile(file, bucket)
-		if uploadErr != nil {
-			return c.JSON(utilities.CreateErrorResponse(uploadErr.Code, uploadErr.Message))
+		// Upload each file:
+		for _, file := range files {
+			// Add STL file to DB:
+			uploadErr, design := design.UploadSTLFile(file, bucket)
+			if uploadErr != nil {
+				return c.JSON(utilities.CreateErrorResponse(uploadErr.Code, uploadErr.Message))
+			}
+
+			designs = append(designs, *design)
 		}
 
 		// Return file id as response:
-		return c.JSON(http.StatusOK, design)
+		return c.JSON(http.StatusOK, designs)
 	})
 
 	api.GET("/:id", func(c echo.Context) error {

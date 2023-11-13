@@ -152,11 +152,14 @@ func TestPatchJob(t *testing.T) {
 	defer mt.Close()
 
 	mt.Run("Throws Error When Given Invalid JobID", func(mt *mtest.T) {
+		var designId []primitive.ObjectID
+		designId = append(designId, primitive.NewObjectID())
+
 		mockJob := &schema.Job{
 			Id:         primitive.NewObjectID(),
 			DesignerId: primitive.NewObjectID(),
 			ProducerId: primitive.NewObjectID(),
-			DesignId:   primitive.NewObjectID(),
+			DesignId:   designId,
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
@@ -184,11 +187,14 @@ func TestPatchJob(t *testing.T) {
 	})
 
 	mt.Run("Successfully Updates and Returns Job", func(mt *mtest.T) {
+		var designId []primitive.ObjectID
+		designId = append(designId, primitive.NewObjectID())
+
 		mockJob := &schema.Job{
 			Id:         primitive.NewObjectID(),
 			DesignerId: primitive.NewObjectID(),
 			ProducerId: primitive.NewObjectID(),
-			DesignId:   primitive.NewObjectID(),
+			DesignId:   designId,
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",

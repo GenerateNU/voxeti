@@ -6,5 +6,7 @@ export interface StyledButtonProps {
   type?: "submit";
   icon?: string;
   disabled?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  color?: 'primary' | 'seconday';
   onClick?: () => void;
 }

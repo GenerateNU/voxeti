@@ -10,13 +10,10 @@ export interface NotesProps {
 }
 
 export default function Notes({states, cancelStep, nextStep}: NotesProps){
-    
     const [notes, setNotes] = useState("");
     const data = {...states, notes: notes}
-    const handleContinue = () => {
-        console.log(data);
-        nextStep();
-    }
+    console.log(data)
+
     return (
         <Container>
             <Box>
@@ -28,12 +25,12 @@ export default function Notes({states, cancelStep, nextStep}: NotesProps){
 
             <TextareaAutosize 
                 aria-label="minimum height" 
-                className="w-full p-4 border-2 rounded-md border-[#999999]"
+                className="w-full p-4 border-2 rounded-md border-[#999999] !h-[45vh]"
                 minRows={6} 
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Message to the producer"/>
 
-            <BottomNavOptions cancel={cancelStep} nextPage={handleContinue} enabled={true}/>
+            <BottomNavOptions cancel={cancelStep} nextPage={nextStep} enabled={true} step={states.currentStep}/>
         </Container>
     )
 }

@@ -1,3 +1,5 @@
+import { Job } from "../main.types";
+
 // User credentials:
 export type UserCredentials = {
   email: string;
@@ -33,6 +35,7 @@ export type SlicerData = {
 }
 
 export type PriceEstimation = {
+  shipping: boolean,
   filamentType: string,
   slices: SlicerData[],
 }
@@ -50,4 +53,9 @@ export type EstimateBreakdown = {
   stripeCost: number,
   voxetiCost: number,
   total: number,
+}
+
+export type VoxetiJob = {
+  id: string,
+  job: Job,
 }

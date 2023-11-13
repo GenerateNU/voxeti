@@ -21,7 +21,6 @@ export type States = {
     prices: EstimateBreakdown[],
     filament: string,
     isLoading: boolean,
-    isEstimating: boolean
 }
 
 export type Setters = {
@@ -33,4 +32,5 @@ export type Setters = {
     expirationDate: React.Dispatch<React.SetStateAction<string>>;
     filament: React.Dispatch<React.SetStateAction<string>>;
     slice: () => void;
+    prices: React.Dispatch<React.SetStateAction<EstimateBreakdown[]>>;
 }

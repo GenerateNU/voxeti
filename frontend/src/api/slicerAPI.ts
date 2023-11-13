@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { EstimateBreakdown, PriceEstimation, SlicerData } from "./api.types";
 
-// Slicer API:
 export const createSlicerApi = (baseUrl: string) =>
   createApi({
     reducerPath: "slicerApi",

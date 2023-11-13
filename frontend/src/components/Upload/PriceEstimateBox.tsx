@@ -5,12 +5,14 @@ export interface PriceEstimateBoxProps {
   prices: PriceObject[],
   taxes: number[],
   shippingCost: number[],
+  shipping: string,
 }
 
 export default function PriceEstimateBox({
   prices,
   taxes,
-  shippingCost
+  shippingCost,
+  shipping,
 }: PriceEstimateBoxProps) {
   const totalBasePrice = prices.reduce(
     (accum: number, currentValue: PriceObject) => accum + currentValue.total,
@@ -20,16 +22,16 @@ export default function PriceEstimateBox({
 		(accum: number, currentValue: number) => accum + currentValue,
 		0
 	);
-	const taxRate = 6.5// (totalTaxAmount / totalBasePrice) * 100;
 	const totalShippingAmount = shippingCost.reduce(
 		(accum: number, currentValue: number) => accum + currentValue,
 		0
 	);
+  const taxRate = (totalTaxAmount / (totalBasePrice + totalShippingAmount)) * 100
 
   return (
     <List className="h-full w-full flex flex-col items-center">
       <Box className="w-full mb-4 flex flex-col">
-				<Box className="w-full justify-between flex flex-row mb-2">
+				<Box className="w-full justify-between flex flex-row">
 					<div className="font-semibold">Price</div>
           <div className="text-[#777777]">
             ${totalBasePrice.toFixed(2)}
@@ -51,16 +53,19 @@ export default function PriceEstimateBox({
 				</Box>
         )}
       </Box>
+      { shipping === 'Shipping' ?
+        <Box className="w-full mb-4 justify-between flex flex-row">
+          <div className="font-semibold">Shipping cost</div>
+          <div className="text-[#777777]">
+            ${totalShippingAmount.toFixed(2)}
+          </div>
+        </Box>
+        : <></>
+      }
       <Box className="w-full mb-4 justify-between flex flex-row">
-				<div className="font-semibold">Tax ({taxRate}%)</div>
+				<div className="font-semibold">Tax ({taxRate.toFixed(2)}%)</div>
         <div className="text-[#777777]">
           ${totalTaxAmount.toFixed(2)}
-        </div>
-      </Box>
-      <Box className="w-full mb-4 justify-between flex flex-row">
-        <div className="font-semibold">Shipping cost</div>
-        <div className="text-[#777777]">
-          ${totalShippingAmount.toFixed(2)}
         </div>
       </Box>
       <Divider className="w-[100%]" />

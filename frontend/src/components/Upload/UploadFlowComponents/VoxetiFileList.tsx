@@ -1,22 +1,25 @@
 import { Box } from '@mui/material';
+import { EstimateBreakdown } from '../../../api/api.types';
+import StyledButton from '../../Button/Button';
 
 export type UploadFileListProps = {
     fileList: File[],
-    setFilesList: React.Dispatch<React.SetStateAction<File[]>>
+    setFilesList: React.Dispatch<React.SetStateAction<File[]>>,
+    setPrices: React.Dispatch<React.SetStateAction<EstimateBreakdown[]>>
 }
 
 export default function VoxetiFileList({
     fileList,
-    setFilesList
+    setFilesList,
+    setPrices
 }: UploadFileListProps) {
 
     const FileLineItem = (file: File) =>  {
         const size = (file.size / 1000000) < 1 ? Number((file.size / 1000).toPrecision(2)) + " KB" : Number((file.size / 1000000).toPrecision(2)) + "  MB"
         const handleClick = () => {
-            console.log("file is, " + file);
             const newList = fileList.filter((fileItem) => fileItem.name !== file.name);
-            console.log(newList);
             setFilesList(newList);
+            setPrices([]);
         };
         return (
             <Box className="w-full rounded-xl border-2 border-[#F1F1F1] p-4 h-24 flex flex-row justify-between items-center" key={file.name}>
@@ -28,11 +31,12 @@ export default function VoxetiFileList({
                         {size}
                     </div>
                 </Box>
-                <div 
-                    className="p-2 bg-[#F1F1F1] text-md rounded-xl hover:bg-[#777777]"
+                <StyledButton
+                    size={'sm'}
+                    color={'seconday'}
                     onClick={handleClick}>
-                        delete
-                </div>
+                        Remove
+                </StyledButton>
             </Box>
         )
     }

@@ -17,12 +17,14 @@ export interface User {
 
 // A Voxeti print Job
 export interface Job {
-  id: string;
+  id?: string;
   designerId: string;
-  producerId: string;
-  designId: string;
+  producerId?: string;
+  designId: string[];
   status: JobStatus;
   price: number;
+  shipping: number;
+  taxes: number;
   color: string;
   filament: FilamentType;
 }
@@ -100,3 +102,8 @@ export type ExperienceLevel = 1 | 2 | 3;
 export type SocialProvider = "NONE" | "GOOGLE";
 
 // 4. Extra Types:
+
+export type Error = {
+  code: number;
+  message: string;
+}

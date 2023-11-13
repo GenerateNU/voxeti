@@ -5,28 +5,41 @@ import Notes from "./UploadFlowComponents/Notes";
 import PreviewPrint from "./UploadFlowComponents/PreviewPrint";
 import ConfirmationPage from "./UploadFlowComponents/ConfirmationPage";
 import { Setters, States } from "./upload.types";
+import router from "../../router";
+import JobSubmitting from "./UploadFlowComponents/JobSubmitting";
 
 export interface UploadFlowProps {
     states: States,
-    setters: Setters
+    setters: Setters,
+    onSubmit: () => void
 }
 export default function UploadFlow({
     states,
-    setters
+    setters,
+    onSubmit
 }: UploadFlowProps) {
+
     const nextStep = () => {
         setters.currentStep(states.currentStep += 1);
     }
     const cancelStep = () => {
         setters.currentStep(1);
         setters.uploadedFiles([])
+        setters.prices([])
     }
     const finalStep = () => {
-        console.log(states);
+        setters.color("")
+        setters.uploadedFiles([])
+        setters.delivery("")
+        setters.expirationDate("")
+        setters.filament("")
+        setters.prices([])
+        setters.quantity(1)
+        router.navigate({ to: "/" })
     }
 
     return (
-        <div>
+        <div className=''>
             {
                 {
                     1: <UploadFile
@@ -34,6 +47,7 @@ export default function UploadFlow({
                             setFiles={setters.uploadedFiles}
                             setNextStep={nextStep}
                             cancelStep={cancelStep}
+                            setPrices={setters.prices}
                             />,
                     2: <PreviewPrint
                             states={states}
@@ -52,18 +66,20 @@ export default function UploadFlow({
                             setNextStep={nextStep}
                             cancelStep={cancelStep}
                             editFile={() => setters.currentStep(1)}
-                            editFilter={() => setters.currentStep(2)}
+                            editFilter={() => setters.currentStep(3)}
                             slice={setters.slice}
                             />,
                     5: <Notes
                             states={states}
                             cancelStep={cancelStep}
-                            nextStep={nextStep}/>,
-                    6: <ConfirmationPage
+                            nextStep={onSubmit}
+                        />,
+                    6: <JobSubmitting />,
+                    7: <ConfirmationPage
                             states={states}
                             cancelStep={cancelStep}
                             finalAction={finalStep}
-                            slice={setters.slice}/>
+                        />
                 }[states.currentStep]
             }
         </div>

@@ -1,24 +1,22 @@
-import { Box, Container, CircularProgress } from "@mui/material"
+import { Box, Container } from "@mui/material"
 import BottomNavOptions from "../BottomNavOptions"
 import { useEffect, useState } from "react"
 import PriceEstimateBox from "../PriceEstimateBox"
 import { PriceObject, States } from "../upload.types"
 import { EstimateBreakdown } from "../../../api/api.types"
-import StyledButton from "../../Button/Button"
 
 export interface ConfirmationPageProps {
     states: States,
     finalAction: () => void,
     cancelStep: () => void,
-    slice: () => void,
 }
 
 export default function ConfirmationPage({
     states,
     finalAction,
     cancelStep,
-    slice,
 }: ConfirmationPageProps) {
+
     type filterItem = {label: string, value: string | number}
     const listFilters: filterItem[] = [
         {label: "Color", value: states.color},
@@ -41,19 +39,12 @@ export default function ConfirmationPage({
         setShippings(states.prices.map((breakdown: EstimateBreakdown) => breakdown.shippingCost));
     }, [states.prices])
 
-
-    useEffect(() => {
-        const handleUpload = async () => {
-            console.log(states)
-        }
-        handleUpload()
-    }, [states])
     return (
         <Container>
             <Box>
-                <div className="text-xl font-semibold">Price Estimation</div>
+                <div className="text-xl font-semibold">Confirmation</div>
                 <div className="text-sm text-[#777777] mb-6">
-                    This is the price estimated from your filter choices.
+                    Please review your order!.
                 </div>
             </Box>
 
@@ -74,7 +65,6 @@ export default function ConfirmationPage({
                             }
                             </div>
                         </Box>
-
                     </Box>
                     <Box className="p-6 px-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
                         <Box>
@@ -93,24 +83,16 @@ export default function ConfirmationPage({
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
-                        {
-                            !states.isLoading && !states.isEstimating ? (
-                                <Box className="flex flex-col items-center h-full w-full">
-                                    <CircularProgress />
-                                </Box>
-                            ) : (
-                                <PriceEstimateBox prices={prices}
-                                    taxes={taxes}
-                                    shippingCost={shippings}/>
-                            )
-                        }
-                        <StyledButton onClick={slice}>
-                            Get Price Estimate
-                        </StyledButton>
+                        <PriceEstimateBox 
+                            prices={prices}
+                            taxes={taxes}
+                            shippingCost={shippings}
+                            shipping={states.delivery}
+                        />
                     </Box>
                 </Box>
             </Box>
-            <BottomNavOptions cancel={cancelStep} nextPage={finalAction} enabled={true}/>
+            <BottomNavOptions cancel={cancelStep} nextPage={finalAction} enabled={true} step={states.currentStep}/>
         </Container>
     )
 }

@@ -129,7 +129,7 @@ func TestEstimation(t *testing.T) {
 		TargetMachineName: "Creality Ender 3",
 	}
 
-	estimate, _ := EstimatePrice(schema.PLA, sliceData, config)
+	estimate, _ := EstimatePrice(schema.PLA, true, sliceData, config)
 
 	expected := schema.EstimateBreakdown{
 		BaseCost:         1.00,
@@ -268,7 +268,7 @@ func TestMultipleEstimates(t *testing.T) {
 	for _, tt := range tests {
 		testname := tt.name
 		t.Run(testname, func(t *testing.T) {
-			estimate, _ := EstimatePrice(tt.filament, tt.sliceData, config)
+			estimate, _ := EstimatePrice(tt.filament, true, tt.sliceData, config)
 			if estimate != tt.expected {
 				t.Logf("%+v\n", tt.expected)
 				t.Logf("%+v\n", estimate)

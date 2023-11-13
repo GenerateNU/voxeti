@@ -1,15 +1,17 @@
-import { Box, Container, Snackbar } from '@mui/material';
+import { Box, Container, Slide, Snackbar } from '@mui/material';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { useCallback, forwardRef, useState } from 'react';
 import {useDropzone, FileRejection} from 'react-dropzone';
 import VoxetiFileList from './VoxetiFileList';
 import BottomNavOptions from '../BottomNavOptions';
+import { EstimateBreakdown } from '../../../api/api.types';
 
 export interface UploadFileProps {
     files: File[],
     setFiles: React.Dispatch<React.SetStateAction<File[]>>,
     setNextStep: () => void,
-    cancelStep: () => void
+    cancelStep: () => void,
+    setPrices: React.Dispatch<React.SetStateAction<EstimateBreakdown[]>>
 }
 
 export type onDropTypeGen<T extends File> = (acceptedFiles: T[], fileRejections: FileRejection[]) => void;
@@ -19,7 +21,8 @@ export default function UploadFile({
     files,
     setFiles,
     setNextStep,
-    cancelStep
+    cancelStep,
+    setPrices,
 }: UploadFileProps) {
     const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
         props,
@@ -32,9 +35,6 @@ export default function UploadFile({
     const [errors, setErrors] = useState("");
 
     const onDrop: onDropType = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
-        // Do something with the files
-        console.log(acceptedFiles);
-        console.log(fileRejections);
         if(fileRejections.length > 0) {
             setOpen(true);
             setErrors(fileRejections[0].errors[0].message)
@@ -45,7 +45,9 @@ export default function UploadFile({
         } else {
             setFiles(acceptedFiles)
         }
-    }, [files, setFiles]);
+        setPrices([])
+    }, [files, setFiles, setPrices]);
+
     const {getRootProps, getInputProps, isDragActive} = useDropzone({
         onDrop,
         maxSize: 52428800,
@@ -56,7 +58,7 @@ export default function UploadFile({
 
     function UploadFileList() {
         return (
-            <VoxetiFileList fileList={files} setFilesList={setFiles}/>
+            <VoxetiFileList fileList={files} setFilesList={setFiles} setPrices={setPrices}/>
         )
     }
 
@@ -65,7 +67,6 @@ export default function UploadFile({
         event?.isTrusted;
         return;
         }
-
         setOpen(false);
     };
 
@@ -90,14 +91,18 @@ export default function UploadFile({
                         <input {...getInputProps()} className="hidden"/>
                     </Box>
                 </Box>
-                <UploadFileList/>
+                <UploadFileList />
             </Box>
             <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={files.length >= 1}/>
             <Snackbar
+                className='!mt-16'
                 open={open}
-                autoHideDuration={3000}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center'}}
-                onClose={handleClose}>
+                autoHideDuration={5000}
+                transitionDuration={200}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center'}}
+                onClose={handleClose}
+                TransitionComponent={Slide}
+            >
                 <Alert
                     onClose={handleClose}
                     severity="error"

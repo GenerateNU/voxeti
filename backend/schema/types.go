@@ -46,6 +46,7 @@ type SliceData struct {
 }
 
 type PriceEstimation struct {
+	Shipping bool					`json:"shipping"`
 	Filament FilamentType `json:"filamentType"`
 	Slices   []SliceData  `json:"slices"`
 }

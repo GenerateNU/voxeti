@@ -46,9 +46,6 @@ export default function PriceEstimation({
         setShippings(states.prices.map((breakdown: EstimateBreakdown) => breakdown.shippingCost));
     }, [states.prices])
 
-    console.log(states.isLoading)
-    console.log(states.isEstimating)
-
     return (
         <Container>
             <Box>
@@ -75,11 +72,12 @@ export default function PriceEstimation({
                             }
                             </div>
                         </Box>
-                        <div
-                            className="p-2 px-6 bg-[#F1F1F1] text-md rounded-xl hover:bg-[#777777] h-[fit-content]"
+                        <StyledButton
+                            size={'sm'}
+                            color={'seconday'}
                             onClick={editFile}>
-                                edit
-                        </div>
+                                Edit
+                        </StyledButton>
 
                     </Box>
                     <Box className="p-6 px-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-row justify-between gap-x-2">
@@ -95,33 +93,41 @@ export default function PriceEstimation({
                                 })
                             }
                         </Box>
-                        <div
-                            className="p-2 px-6 bg-[#F1F1F1] text-md rounded-xl hover:bg-[#777777] h-[fit-content]"
+                        <StyledButton
+                            size={'sm'}
+                            color={'seconday'}
                             onClick={editFilter}>
-                                edit
-                        </div>
+                                Edit
+                        </StyledButton>
                     </Box>
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
                         {
-                            states.isLoading || states.isEstimating ? (
-                                <Box className="flex flex-col items-center h-full w-full">
-                                    <CircularProgress />
+                            states.isLoading ? (
+                                <Box className="flex flex-col items-center h-full w-full justify-center align-middle">
+                                    <CircularProgress sx={{marginBottom: '15px'}}/>
+                                    <h1 className='text-md font-medium animate-pulse'>Calculating your estimated price...</h1>
                                 </Box>
                             ) : (
-                                <PriceEstimateBox prices={prices}
+                                <PriceEstimateBox 
+                                    prices={prices}
                                     taxes={taxes}
-                                    shippingCost={shippings}/>
+                                    shippingCost={shippings}
+                                    shipping={states.delivery}
+                                />
                             )
                         }
-                        <StyledButton onClick={slice}>
+                        <StyledButton 
+                            onClick={slice}
+                            disabled={states.isLoading || states.prices.length > 0}
+                        >
                             Get Price Estimate
                         </StyledButton>
                     </Box>
                 </Box>
             </Box>
-            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={true}/>
+            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={states.prices.length !== 0}/>
         </Container>
     )
 

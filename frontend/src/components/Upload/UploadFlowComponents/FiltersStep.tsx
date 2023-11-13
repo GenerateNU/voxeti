@@ -38,6 +38,7 @@ export default function FiltersStep({
 
     const handleChange = (event: SelectChangeEvent) => {
         setters.filament(event.target.value);
+        setters.prices([]);
     };
 
     const ITEM_HEIGHT = 48;
@@ -82,8 +83,8 @@ export default function FiltersStep({
                             }
                     </Select>
                 </Box>
-                <Box className='flex flex-row gap-x-6 justiy-between'>
-                    <Box className='border-2 rounded-md w-[50%] p-4 border-[#F1F1F1]'>
+                <Box className='w-full flex flex-row flex-wrap justify-between align-middle'>
+                    <Box className='border-2 rounded-md w-full md:w-[49%] p-4 border-[#F1F1F1]'>
                         <div className='text-md font-semibold'>
                             Colors
                         </div>
@@ -97,14 +98,14 @@ export default function FiltersStep({
                                                 value={color} 
                                                 control={<Radio color="secondary" />} 
                                                 label={color}
-                                                onClick={() => setters.color(color)} />
+                                                onClick={() => setters.color(color)} 
+                                            />
                                         )
                                     })
                                 }
                         </RadioGroup>
                     </Box>
-
-                    <Box className='border-2 rounded-md w-[50%] p-4 border-[#F1F1F1]'>
+                    <Box className='border-2 rounded-md w-full mt-6 md:mt-0 md:w-[49%] p-4 border-[#F1F1F1]'>
                         <div className='text-md font-semibold'>
                             Delivery
                         </div>
@@ -116,19 +117,20 @@ export default function FiltersStep({
                                             <FormControlLabel 
                                                 control={<Checkbox checked={delivery == states.delivery} />} 
                                                 label={delivery}
-                                                onClick={() => setters.delivery(delivery)} />
+                                                onClick={() => {
+                                                    setters.delivery(delivery)
+                                                    setters.prices([])
+                                                }} 
+                                            />
                                         )
                                     })
                                 }
                         </FormGroup>
                     </Box>
-                
-
                 </Box>
-
-                <Box className='flex flex-row gap-x-6 justiy-between'>
-                    <Box className='border-2 rounded-md w-[50%] p-4 border-[#F1F1F1]'>
-                        <div className='text-md font-semibold'>
+                <Box className='w-full flex flex-row flex-wrap justify-between align-middle'>
+                    <Box className='border-2 rounded-md w-full md:w-[49%] p-4 border-[#F1F1F1]'>
+                        <div className='text-md font-semibold mb-3'>
                             Quanity
                         </div>
                         <div className='flex flex-row gap-x-6'>
@@ -144,8 +146,7 @@ export default function FiltersStep({
                             <AddCircle onClick={() => setters.quantity(states.quantity + 1)}/>
                         </div>
                     </Box>
-                    
-                    <Box className='border-2 rounded-md w-[50%] p-4 border-[#F1F1F1]'>
+                    <Box className='border-2 rounded-md w-full mt-6 md:mt-0 md:w-[49%] p-4 border-[#F1F1F1]'>
                         <div className='text-md font-semibold'>
                             Expiration Date
                         </div>

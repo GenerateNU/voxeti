@@ -32,7 +32,7 @@ func LoadEstimateConfig(location string) schema.EstimateConfig {
 	return configuration
 }
 
-func EstimatePrice(filamentType schema.FilamentType, sliceData schema.SliceData, config schema.EstimateConfig) (schema.EstimateBreakdown, *schema.ErrorResponse) {
+func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData schema.SliceData, config schema.EstimateConfig) (schema.EstimateBreakdown, *schema.ErrorResponse) {
 	// Convert time in seconds to hours then with hourly rate
 	timeCost := float32(sliceData.TimeS) / 3600.0 * config.HourlyCost
 	// Filament used (in meters) multiplied with the cost per meter
@@ -44,16 +44,18 @@ func EstimatePrice(filamentType schema.FilamentType, sliceData schema.SliceData,
 	volume = volume * 0.000061024
 
 	// Check volume is in range and use that cost
-	var shippingCost float32
-	keys := make([]int, 0)
-	for k := range config.ShippingRate {
-		keys = append(keys, k)
-	}
-	sort.Ints(keys)
-	for _, k := range keys {
-		if int(volume) <= k {
-			shippingCost = config.ShippingRate[k]
-			break
+	var shippingCost float32 = 0
+	if (shipping) {
+		keys := make([]int, 0)
+		for k := range config.ShippingRate {
+			keys = append(keys, k)
+		}
+		sort.Ints(keys)
+		for _, k := range keys {
+			if int(volume) <= k {
+				shippingCost = config.ShippingRate[k]
+				break
+			}
 		}
 	}
 
@@ -61,11 +63,13 @@ func EstimatePrice(filamentType schema.FilamentType, sliceData schema.SliceData,
 	producerFee := producerSubtotal * config.ProducerFee
 	producerTotal := producerSubtotal + producerFee
 
-	taxCost := producerSubtotal * config.TaxRate
 	stripeCost := producerSubtotal * config.StripeFee
 	voxetiCost := producerSubtotal * config.VoxetiFee
 
-	total := producerTotal + taxCost + stripeCost + voxetiCost
+	tempTotal := producerTotal + stripeCost + voxetiCost
+	taxCost := tempTotal * config.TaxRate
+	total := tempTotal + taxCost
+
 
 	estimate := schema.EstimateBreakdown{
 		File:             sliceData.File,

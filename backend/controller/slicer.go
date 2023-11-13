@@ -20,12 +20,12 @@ func RegisterSlicerHandlers(e *echo.Group, configuration schema.EstimateConfig, 
 		if err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid request body!"))
 		}
-
+		
 		var priceEstimates []schema.EstimateBreakdown
 
 		for _, file := range body.Slices {
 			// Compute a price estimate for the file:
-			priceEstimate, err := slicer.EstimatePrice(body.Filament, file, configuration)
+			priceEstimate, err := slicer.EstimatePrice(body.Filament, body.Shipping, file, configuration)
 			if err != nil {
 				return c.JSON(utilities.CreateErrorResponse(err.Code, err.Message))
 			}
