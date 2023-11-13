@@ -7,6 +7,8 @@ import (
 	"voxeti/backend/schema"
 
 	"github.com/joho/godotenv"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -138,7 +140,9 @@ func TestDeleteJob(t *testing.T) {
 
 func TestCreateJob(t *testing.T) {
 	assert := assert.New(t)
-	mockEmailService := MockEmailService{}
+	designerId := primitive.NewObjectID()
+	producerId := primitive.NewObjectID()
+	designId := primitive.NewObjectID()
 
 	// insert the mock job document into the mock MongoDB database
 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
@@ -146,14 +150,110 @@ func TestCreateJob(t *testing.T) {
 	defer mt.Close()
 
 	mt.Run("Given Valid Job Object, Should Successfully Create Job", func(mt *mtest.T) {
-		mt.AddMockResponses(bson.D{{Key: "ok", Value: 1}, {Key: "acknowledged", Value: true}, {Key: "n", Value: 1}})
+		mockEmailService := MockEmailService{}
+
+		job := &schema.Job{
+			DesignerId: designerId,
+			ProducerId: producerId,
+			DesignId:   designId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			Filament:   schema.PLA,
+			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
+			Scale:      89,
+		}
+
+		user := schema.User{
+			Id:             primitive.NewObjectID(),
+			FirstName:      "Kevin",
+			LastName:       "Durant",
+			Email:          "kd35@gmail.com",
+			Password:       "iamkevindurant",
+			SocialProvider: "NONE",
+			Addresses: []schema.Address{
+				{
+					Name:    "Home",
+					Line1:   "35 Oklahoma St",
+					Line2:   "Apt 1",
+					ZipCode: "12345",
+					City:    "Phoenix",
+					State:   "AZ",
+					Country: "USA",
+					Location: geojson.Geometry{
+						Type:        "Point",
+						Coordinates: orb.Point{1, 1},
+					},
+				},
+			},
+			PhoneNumber: &schema.PhoneNumber{
+				CountryCode: "1",
+				Number:      "1234567890",
+			},
+			Experience: 1,
+			Printers: []schema.Printer{
+				{
+					SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+					Dimensions: schema.Dimensions{
+						Height: 10,
+						Width:  10,
+						Depth:  10,
+					},
+				},
+			},
+			AvailableFilament: []schema.Filament{
+				{
+					Type:         "PLA",
+					Color:        "Red",
+					PricePerUnit: 10,
+				},
+				{
+					Type:         "ABS",
+					Color:        "Blue",
+					PricePerUnit: 10,
+				},
+			},
+		}
+
+		userBSON, _ := bson.Marshal(user)
+		var bsonD bson.D
+		err1 := bson.Unmarshal(userBSON, &bsonD)
+		if err1 != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
+		}
+
+		userRes := mtest.CreateCursorResponse(
+			1,
+			"data.users",
+			mtest.FirstBatch,
+			bsonD)
+
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
+
+		mt.AddMockResponses(mtest.CreateSuccessResponse(), userRes, end)
+
 		// Assertions
-		validJobId := primitive.NewObjectID().Hex()
-		err := DeleteJob(validJobId, mt.Client)
+		createdJob, err := CreateJob(*job, mt.Client, &mockEmailService)
 		assert.Nil(err)
+		assert.Equal(createdJob.DesignerId, job.DesignerId)
+		assert.Equal(createdJob.ProducerId, job.ProducerId)
+		assert.Equal(createdJob.DesignId, job.DesignId)
+		assert.Equal(createdJob.Status, job.Status)
+		assert.Equal(createdJob.Price, job.Price)
+		assert.Equal(createdJob.Color, job.Color)
+		assert.Equal(createdJob.Filament, job.Filament)
+		assert.Equal(createdJob.Dimensions, job.Dimensions)
+		assert.Equal(createdJob.Scale, job.Scale)
+		// status was updated, send email
+		assert.Equal(1, mockEmailService.numCallsSendNotification)
 	})
 
 	mt.Run("Should Throw Correct Error When Creation Fails", func(mt *mtest.T) {
+		mockEmailService := MockEmailService{}
+
 		_, err := CreateJob(schema.Job{}, mt.Client, &mockEmailService)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
@@ -291,6 +391,65 @@ func TestPatchJob(t *testing.T) {
 			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
 			Scale:      89,
 		}
+
+		user := schema.User{
+			Id:             primitive.NewObjectID(),
+			FirstName:      "Kevin",
+			LastName:       "Durant",
+			Email:          "kd35@gmail.com",
+			Password:       "iamkevindurant",
+			SocialProvider: "NONE",
+			Addresses: []schema.Address{
+				{
+					Name:    "Home",
+					Line1:   "35 Oklahoma St",
+					Line2:   "Apt 1",
+					ZipCode: "12345",
+					City:    "Phoenix",
+					State:   "AZ",
+					Country: "USA",
+					Location: geojson.Geometry{
+						Type:        "Point",
+						Coordinates: orb.Point{1, 1},
+					},
+				},
+			},
+			PhoneNumber: &schema.PhoneNumber{
+				CountryCode: "1",
+				Number:      "1234567890",
+			},
+			Experience: 1,
+			Printers: []schema.Printer{
+				{
+					SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+					Dimensions: schema.Dimensions{
+						Height: 10,
+						Width:  10,
+						Depth:  10,
+					},
+				},
+			},
+			AvailableFilament: []schema.Filament{
+				{
+					Type:         "PLA",
+					Color:        "Red",
+					PricePerUnit: 10,
+				},
+				{
+					Type:         "ABS",
+					Color:        "Blue",
+					PricePerUnit: 10,
+				},
+			},
+		}
+
+		userBSON, _ := bson.Marshal(user)
+		var bsonD bson.D
+		err1 := bson.Unmarshal(userBSON, &bsonD)
+		if err1 != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
+		}
+
 		patchField := bson.M{"Status": schema.InProgress}
 		// Prepare Patched Field
 		patchFieldMap, marshalerr := bson.Marshal(patchField)
@@ -316,6 +475,12 @@ func TestPatchJob(t *testing.T) {
 			assert.Fail("Failed to unmarshal patched job")
 		}
 
+		userRes := mtest.CreateCursorResponse(
+			1,
+			"data.users",
+			mtest.FirstBatch,
+			bsonD)
+
 		// Represents the Previous Job
 		res := mtest.CreateCursorResponse(
 			1,
@@ -337,28 +502,24 @@ func TestPatchJob(t *testing.T) {
 			"data.job",
 			mtest.FirstBatch,
 			patchedJobBsonData)
-		patchedEnd := mtest.CreateCursorResponse(
-			0,
-			"data.job",
-			mtest.NextBatch)
-		mt.AddMockResponses(res, end, updateRes, patchedRes, patchedEnd)
 
-		/*
-			currently failing because of not enough mocking, later when jobNotificationCreate is removed
-			uncomment test.
-			TODO: create mock user
-		*/
+		mt.AddMockResponses(res, end, updateRes, patchedRes, end, userRes, end)
+
 		// Assertions
-		// job, err := PatchJob(mockJob.Id.Hex(), patchFieldM, mt.Client, &mockEmailService)
-		// assert.Nil(err)
-		// assert.Equal(mockJob.Id, job.Id)
+		job, err := PatchJob(mockJob.Id.Hex(), patchFieldM, mt.Client, &mockEmailService)
+		assert.Nil(err)
+		assert.Equal(mockJob.Id, job.Id)
 		// status was updated, send email
-		// assert.Equal(1, mockEmailService.numCallsSendNotification)
+		assert.Equal(1, mockEmailService.numCallsSendNotification)
 	})
 }
 
 func TestUpdateJob(t *testing.T) {
 	assert := assert.New(t)
+	id := primitive.NewObjectID()
+	designerId := primitive.NewObjectID()
+	producerId := primitive.NewObjectID()
+	designId := primitive.NewObjectID()
 	mockEmailService := MockEmailService{}
 
 	// Mock MongoDB setup
@@ -433,6 +594,153 @@ func TestUpdateJob(t *testing.T) {
 		if assert.NotNil(err) {
 			assert.Contains(err.Message, "Job does not exist!")
 		}
+	})
+
+	mt.Run("Sends Email Notification After Updating Status Field", func(mt *mtest.T) {
+		mockJob := &schema.Job{
+			Id:         id,
+			DesignerId: designerId,
+			ProducerId: producerId,
+			DesignId:   designId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			Filament:   schema.PLA,
+			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
+			Scale:      89,
+		}
+		patchedJob := &schema.Job{
+			Id:         id,
+			DesignerId: designerId,
+			ProducerId: producerId,
+			DesignId:   designId,
+			Status:     schema.InProgress,
+			Price:      123,
+			Color:      "purple",
+			Filament:   schema.PLA,
+			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
+			Scale:      89,
+		}
+
+		user := schema.User{
+			Id:             primitive.NewObjectID(),
+			FirstName:      "Kevin",
+			LastName:       "Durant",
+			Email:          "kd35@gmail.com",
+			Password:       "iamkevindurant",
+			SocialProvider: "NONE",
+			Addresses: []schema.Address{
+				{
+					Name:    "Home",
+					Line1:   "35 Oklahoma St",
+					Line2:   "Apt 1",
+					ZipCode: "12345",
+					City:    "Phoenix",
+					State:   "AZ",
+					Country: "USA",
+					Location: geojson.Geometry{
+						Type:        "Point",
+						Coordinates: orb.Point{1, 1},
+					},
+				},
+			},
+			PhoneNumber: &schema.PhoneNumber{
+				CountryCode: "1",
+				Number:      "1234567890",
+			},
+			Experience: 1,
+			Printers: []schema.Printer{
+				{
+					SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+					Dimensions: schema.Dimensions{
+						Height: 10,
+						Width:  10,
+						Depth:  10,
+					},
+				},
+			},
+			AvailableFilament: []schema.Filament{
+				{
+					Type:         "PLA",
+					Color:        "Red",
+					PricePerUnit: 10,
+				},
+				{
+					Type:         "ABS",
+					Color:        "Blue",
+					PricePerUnit: 10,
+				},
+			},
+		}
+
+		userBSON, _ := bson.Marshal(user)
+		var bsonD bson.D
+		err1 := bson.Unmarshal(userBSON, &bsonD)
+		if err1 != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Method: 'Success'")
+		}
+
+		patchField := bson.M{"Status": schema.InProgress}
+		// Prepare Patched Field
+		patchFieldMap, marshalerr := bson.Marshal(patchField)
+		if marshalerr != nil {
+			assert.Fail("Failed to marshal mock job")
+		}
+		var patchFieldM primitive.M
+		if unmarshalErr := bson.Unmarshal(patchFieldMap, &patchFieldM); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
+
+		// Previous Job
+		jobBSON, _ := bson.Marshal(mockJob)
+		var jobBsonData bson.D
+		if unmarshalErr := bson.Unmarshal(jobBSON, &jobBsonData); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal mock job")
+		}
+
+		// Patched Job
+		patchedJobBSON, _ := bson.Marshal(patchedJob)
+		var patchedJobBsonData bson.D
+		if unmarshalErr := bson.Unmarshal(patchedJobBSON, &patchedJobBsonData); unmarshalErr != nil {
+			assert.Fail("Failed to unmarshal patched job")
+		}
+
+		userRes := mtest.CreateCursorResponse(
+			1,
+			"data.users",
+			mtest.FirstBatch,
+			bsonD)
+
+		// Represents the Previous Job
+		res := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			jobBsonData)
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.job",
+			mtest.NextBatch)
+		// mock UpdateOne response
+		updateRes := bson.D{
+			{Key: "ok", Value: 1},
+			{Key: "value", Value: patchedJobBsonData},
+		}
+		// represents the newly patched job
+		patchedRes := mtest.CreateCursorResponse(
+			1,
+			"data.job",
+			mtest.FirstBatch,
+			patchedJobBsonData)
+
+		mt.AddMockResponses(res, end, updateRes, patchedRes, end, userRes, end)
+
+		// Assertions
+		job, err := UpdateJob(mockJob.Id.Hex(), *patchedJob, mt.Client, &mockEmailService)
+		assert.Nil(err)
+		assert.Equal(mockJob.Id, job.Id)
+		// status was updated, send email
+		assert.Equal(1, mockEmailService.numCallsSendNotification)
 	})
 }
 

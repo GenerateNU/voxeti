@@ -36,9 +36,6 @@ type NotificationService interface {
 	SendNotification(email *schema.Email) *schema.ErrorResponse
 }
 
-/**
-* Service that handles sending mails through mailchimp
- */
 type EmailService struct{}
 
 func (emailService *EmailService) SendNotification(email *schema.Email) *schema.ErrorResponse {

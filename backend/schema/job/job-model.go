@@ -93,39 +93,6 @@ func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailServi
 	return patchedJob, patchErr
 }
 
-// something that accepts the email, something that accepts
-// Given two jobs objects with the same ID, determine if the statuses are different
-// If they are, send an email to the designer and update the designer's notifications
-// func handleJobUpdated(previousJob *schema.Job, changedJob *schema.Job, dbClient *mongo.Client, emailService utilities.NotificationService) *schema.ErrorResponse {
-// 	if previousJob.Id != changedJob.Id {
-// 		return &schema.ErrorResponse{Code: 500, Message: "Job Ids do not match"}
-// 	}
-// 	if previousJob.Status != changedJob.Status {
-// 		email, emailErr := constructUpdateJobStatusEmail(changedJob, dbClient)
-// 		if emailErr != nil {
-// 			return emailErr
-// 		}
-
-// 		statusChangeErr := handleJobStatusChange(changedJob, email, dbClient, emailService)
-// 		if statusChangeErr != nil {
-// 			// * something to consider, if the email fails to send but the update is correct, should we still send the updatedJob
-// 			return statusChangeErr
-// 		}
-// 	}
-// 	return nil
-// }
-
-// sends an email to the designer and adds a notification to the designer
-// func handleJobStatusChange(job *schema.Job, email *schema.Email, dbClient *mongo.Client, emailService utilities.NotificationService) *schema.ErrorResponse {
-
-// 	sendEmailErr := emailService.SendNotification(email)
-// 	if sendEmailErr != nil {
-// 		return sendEmailErr
-// 	}
-
-// 	return nil
-// }
-
 // given a job, constructs an email for the job's designer that indicates the job's status has been updated
 func constructUpdateJobStatusEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Email, *schema.ErrorResponse) {
 	designer, designerErr := user.GetUserById(&job.DesignerId, dbClient)
