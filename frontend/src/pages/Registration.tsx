@@ -250,8 +250,8 @@ const QuestionForm = () => {
       >
           <form key={"formOverhead"} onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyPress}>
             {RenderQuestions()}
+            {RenderButtons()}
           </form>
-          {RenderButtons()}
       </div>
     </div>
   );
