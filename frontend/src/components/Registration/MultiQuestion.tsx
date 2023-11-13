@@ -28,7 +28,8 @@ export default function MultiQuestion({
                                 variant="contained"
                                 className={`h-12 w-full 
                                 ${ (value.includes(o.choiceValue)) ? (o.selectedColor ? o.selectedColor : `!bg-[#ababab]`) : `!bg-[#fefefe]` }
-                                !rounded-[5px] hover:!bg-[#898989] !normal-case !font-light !text-lg !flex !flex-col !items-start !p-8`}
+                                !rounded-[5px] hover:!bg-[#bcbcbc] !normal-case !font-light !text-lg !flex !flex-col 
+                                ${!(o.choiceSubtitle) ? "!items-center" : "!items-start"} !p-8`}
                                 onClick={() => {
                                     if(value.includes(o.choiceValue)){
                                         onChange(value.filter((v) => v != o.choiceValue));
@@ -45,7 +46,7 @@ export default function MultiQuestion({
                     );
                 }else{
                     return (
-                        <>here</>
+                        <></>
                     );
                 }
                 

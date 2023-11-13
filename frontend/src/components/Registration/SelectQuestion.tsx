@@ -26,10 +26,11 @@ export default function SelectQuestion({
                                 variant="contained"
                                 className={`h-12 w-full 
                                 ${ (value == o.choiceValue) ? (o.selectedColor ? o.selectedColor : `!bg-[#ababab]`) : `!bg-[#fefefe]` }
-                                !rounded-[5px] hover:!bg-[#898989] !normal-case !font-light !text-lg !flex !flex-col !items-start !p-8`}
+                                !rounded-[5px] hover:!bg-[#bcbcbc] !normal-case !font-light !text-lg !flex !flex-col 
+                                ${!(o.choiceSubtitle) ? "!items-center" : "!items-start"} !p-8`}
                                 onClick={() => onChange(o.choiceValue)}
                             >
-                                <h1 className=" !text-[#000000] font-medium">{o.choiceLabel}</h1>
+                                <h1 className={'!text-[#000000] font-medium'}>{o.choiceLabel}</h1>
                                 <p className={'!text-sm !text-[#434343]'}>{o.choiceSubtitle}</p>
                             </Button>
                         ))}
