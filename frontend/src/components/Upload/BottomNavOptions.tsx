@@ -18,21 +18,21 @@ export default function BottomNavOptions({
         <Box className='flex flex-row justify-center gap-x-6 mt-[10vh] mb-8'>
             {step !== 7 ?
                 <>
-                    <StyledButton 
+                    <StyledButton
                         size={'md'}
                         onClick={cancel}
                     >
                         Cancel
                     </StyledButton>
-                    <StyledButton 
+                    <StyledButton
                         size={'md'}
-                        onClick={nextPage} 
+                        onClick={nextPage}
                         disabled={!enabled}
                     >
                         { step === 5 ? 'Submit' : 'Continue' }
                     </StyledButton>
                 </>
-                : 
+                :
                     <StyledButton
                         size={'lg'}
                         onClick={nextPage}

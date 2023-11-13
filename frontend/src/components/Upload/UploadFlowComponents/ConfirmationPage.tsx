@@ -83,7 +83,7 @@ export default function ConfirmationPage({
                 </Box>
                 <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
-                        <PriceEstimateBox 
+                        <PriceEstimateBox
                             prices={prices}
                             taxes={taxes}
                             shippingCost={shippings}

@@ -39,8 +39,8 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 			return c.JSON(utilities.CreateErrorResponse(400, "No files have been provided!"))
 		}
 
-		// Instantiate Design Array: 
-		var designs []schema.Design;
+		// Instantiate Design Array:
+		var designs []schema.Design
 
 		// Validate each file:
 		for _, file := range files {

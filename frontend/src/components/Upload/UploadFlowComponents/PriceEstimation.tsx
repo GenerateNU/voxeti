@@ -110,7 +110,7 @@ export default function PriceEstimation({
                                     <h1 className='text-md font-medium animate-pulse'>Calculating your estimated price...</h1>
                                 </Box>
                             ) : (
-                                <PriceEstimateBox 
+                                <PriceEstimateBox
                                     prices={prices}
                                     taxes={taxes}
                                     shippingCost={shippings}
@@ -118,7 +118,7 @@ export default function PriceEstimation({
                                 />
                             )
                         }
-                        <StyledButton 
+                        <StyledButton
                             onClick={slice}
                             disabled={states.isLoading || states.prices.length > 0}
                         >

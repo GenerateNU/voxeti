@@ -23,10 +23,10 @@ export default function Notes({states, cancelStep, nextStep}: NotesProps){
                 </div>
             </Box>
 
-            <TextareaAutosize 
-                aria-label="minimum height" 
+            <TextareaAutosize
+                aria-label="minimum height"
                 className="w-full p-4 border-2 rounded-md border-[#999999] !h-[45vh]"
-                minRows={6} 
+                minRows={6}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Message to the producer"/>
 

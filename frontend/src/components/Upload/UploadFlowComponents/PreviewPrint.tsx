@@ -44,7 +44,7 @@ export default function PreviewPrint({
             <Box className="border-2 border-[#999999] rounded-lg">
                 {
                     dataUrl ? (
-                        <StlViewer 
+                        <StlViewer
                             className='!max-h-[45vh]'
                             url={dataUrl}
                             orbitControls

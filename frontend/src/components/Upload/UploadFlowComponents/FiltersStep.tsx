@@ -1,10 +1,10 @@
-import { 
-    Box, 
-    Checkbox, 
-    Container, 
-    FormControlLabel, 
-    FormGroup, 
-    Radio, 
+import {
+    Box,
+    Checkbox,
+    Container,
+    FormControlLabel,
+    FormGroup,
+    Radio,
     RadioGroup,
     Grid,
     Select,
@@ -88,17 +88,17 @@ export default function FiltersStep({
                         <div className='text-md font-semibold'>
                             Colors
                         </div>
-                        <RadioGroup 
+                        <RadioGroup
                             defaultValue={states.color}
                             name="colors">
                                 {
                                     colors.map((color: string) => {
                                         return (
-                                            <FormControlLabel 
-                                                value={color} 
-                                                control={<Radio color="secondary" />} 
+                                            <FormControlLabel
+                                                value={color}
+                                                control={<Radio color="secondary" />}
                                                 label={color}
-                                                onClick={() => setters.color(color)} 
+                                                onClick={() => setters.color(color)}
                                             />
                                         )
                                     })
@@ -109,18 +109,18 @@ export default function FiltersStep({
                         <div className='text-md font-semibold'>
                             Delivery
                         </div>
-                        <FormGroup 
+                        <FormGroup
                             defaultValue={states.delivery}>
                                 {
                                     delivery.map((delivery: string) => {
                                         return (
-                                            <FormControlLabel 
-                                                control={<Checkbox checked={delivery == states.delivery} />} 
+                                            <FormControlLabel
+                                                control={<Checkbox checked={delivery == states.delivery} />}
                                                 label={delivery}
                                                 onClick={() => {
                                                     setters.delivery(delivery)
                                                     setters.prices([])
-                                                }} 
+                                                }}
                                             />
                                         )
                                     })
@@ -151,7 +151,7 @@ export default function FiltersStep({
                             Expiration Date
                         </div>
                         <FormGroup defaultValue={states.delivery}>
-                            <Grid container spacing={2} 
+                            <Grid container spacing={2}
                                 className='flex flex-row'>
                                     {
                                         expirations.map((expiration: string) => {

@@ -45,7 +45,7 @@ func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData sc
 
 	// Check volume is in range and use that cost
 	var shippingCost float32 = 0
-	if (shipping) {
+	if shipping {
 		keys := make([]int, 0)
 		for k := range config.ShippingRate {
 			keys = append(keys, k)
@@ -69,7 +69,6 @@ func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData sc
 	tempTotal := producerTotal + stripeCost + voxetiCost
 	taxCost := tempTotal * config.TaxRate
 	total := tempTotal + taxCost
-
 
 	estimate := schema.EstimateBreakdown{
 		File:             sliceData.File,

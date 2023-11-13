@@ -17,7 +17,7 @@ export function UploadDesign() {
 	const [prices, setPrices] = useState<EstimateBreakdown[]>([]);
 	const [filament, setFilament] = useState('')
 	const [isSlicing, setIsSlicing] = useState(false);
-	
+
 	const { user : { id } } = useStateSelector((state) => state.user)
   const uploadDesigns = useDesignUpload(file);
 
@@ -76,7 +76,7 @@ export function UploadDesign() {
 	const formSubmit = async () => {
 		// Upload the designs:
 		const uploadResponse = await uploadDesigns();
-		
+
 		// Check if there was an error:
 		if ('code' in uploadResponse) {
 				console.log(uploadResponse);
@@ -96,7 +96,7 @@ export function UploadDesign() {
 				shipping += prices.shippingCost
 				taxes = prices.taxCost
 		})
-		
+
 		const job : Job = {
 				designerId: id,
 				designId: designIds,
