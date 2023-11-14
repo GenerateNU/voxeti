@@ -31,7 +31,7 @@ export default function PreviewPrint({
                 return states.uploadedFiles.length - 1;
             } else {
                 return (current + increment) % states.uploadedFiles.length;
-            }   
+            }
         })
     }
 

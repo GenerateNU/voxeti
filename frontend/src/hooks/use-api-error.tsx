@@ -16,7 +16,7 @@ export const ApiErrorProvider = ({ children } : ApiErrorContextProps) => {
     addError,
     removeError,
   };
-    
+
   return (
     <ApiErrorContext.Provider value={contextValue}>
       {children}

@@ -8,7 +8,7 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { error, open, setOpen, removeError } = useApiError();
-  
+
   // Handle Error Closing:
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
