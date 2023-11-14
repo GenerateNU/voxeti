@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./store/store.ts";
 import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ApiErrorProvider } from "./hooks/use-api-error.tsx";
 
 const rootElement = document.getElementById("app")!;
 if (!rootElement.innerHTML) {
@@ -17,7 +18,9 @@ if (!rootElement.innerHTML) {
       <React.StrictMode>
         <Provider store={store}>
           <PersistGate persistor={persistor}>
-            <RouterProvider router={router} />
+            <ApiErrorProvider>
+              <RouterProvider router={router} />
+            </ApiErrorProvider>
           </PersistGate>
         </Provider>
       </React.StrictMode>

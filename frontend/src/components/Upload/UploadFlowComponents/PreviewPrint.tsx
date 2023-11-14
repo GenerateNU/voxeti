@@ -1,8 +1,10 @@
-import { Container, Box, CircularProgress } from "@mui/material";
+import { Container, Box, CircularProgress, IconButton } from "@mui/material";
 import BottomNavOptions from "../BottomNavOptions";
 import {StlViewer} from "react-stl-viewer";
 import { useState } from "react";
 import { States } from "../upload.types";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 export type PreviewPrintProps = {
     states: States,
@@ -20,18 +22,27 @@ export default function PreviewPrint({
     }
 
     const [dataUrl, setDataUrl] = useState<string>("");
+    const [currentFile, setCurrentFile] = useState(0);
     const reader = new FileReader();
 
+    const nextFile = (increment : number) => {
+        setCurrentFile((current) => {
+            if (current + increment < 0) {
+                return states.uploadedFiles.length - 1;
+            } else {
+                return (current + increment) % states.uploadedFiles.length;
+            }   
+        })
+    }
+
     reader.onloadend = function() {
-        console.log(reader.result);
         const result = reader.result;
         if (result != null) {
             setDataUrl(String(result));
-            console.log(reader.result);
         }
     }
 
-    reader.readAsDataURL(states.uploadedFiles[0]);
+    reader.readAsDataURL(states.uploadedFiles[currentFile]);
 
     return (
         <Container>
@@ -41,27 +52,42 @@ export default function PreviewPrint({
                     See a preview of your print.
                 </div>
             </Box>
-            <Box className="border-2 border-[#999999] rounded-lg">
-                {
-                    dataUrl ? (
-                        <StlViewer
-                            className='!max-h-[45vh]'
-                            url={dataUrl}
-                            orbitControls
-                            style={style}
-                            modelProps={
-                                {
-                                    color: "#0057FF"
-                                }
-                            }
-                            shadows
-                        />
-                    ) : (
-                        <Box className="flex flex-col items-center h-full w-full p-4">
-                            <CircularProgress />
-                        </Box>
-                    )
-                }
+            <div className='flex items-center justify-center w-[100%]'>
+                <IconButton className='h-10 w-10 !p-0 !mr-2' onClick={() => nextFile(-1)}>
+                    <KeyboardArrowLeftIcon />
+                </IconButton>
+                <div className='w-[80%] md:w-[100%]'>
+                    <Box className="flex border-2 border-[#999999] rounded-lg">
+                        {
+                            dataUrl ? (
+                                <StlViewer
+                                    className='!max-h-[45vh] min-h-[350px]'
+                                    url={dataUrl}
+                                    orbitControls
+                                    style={style}
+                                    modelProps={
+                                        {
+                                            color: "#0057FF"
+                                        }
+                                    }
+                                    shadows
+                                />
+                            ) : (
+                                <Box className="flex flex-col items-center h-full w-full p-4">
+                                    <CircularProgress />
+                                </Box>
+                            )
+                        }
+                    </Box>
+                </div>
+                <IconButton className='h-10 w-10 !p-0 !ml-2' onClick={() => nextFile(1)}>
+                    <KeyboardArrowRightIcon />
+                </IconButton>
+            </div>
+            <Box className='mt-5 ml-12 md:ml-16'>
+                <div className='text-base text-[#777777]'>
+                    Currently viewing {states.uploadedFiles[currentFile].name}
+                </div>
             </Box>
             <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={true}/>
         </Container>

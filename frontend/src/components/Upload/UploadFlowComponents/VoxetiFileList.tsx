@@ -22,7 +22,7 @@ export default function VoxetiFileList({
             setPrices([]);
         };
         return (
-            <Box className="w-full rounded-xl border-2 border-[#F1F1F1] p-4 h-24 flex flex-row justify-between items-center" key={file.name}>
+            <Box className="w-full min-h-[100px] rounded-xl border-2 border-[#F1F1F1] pr-12 pl-12 h-24 flex flex-row justify-between items-center" key={file.name}>
                 <Box>
                     <div className="text-md">
                         {file.name}
@@ -35,7 +35,7 @@ export default function VoxetiFileList({
                     size={'sm'}
                     color={'seconday'}
                     onClick={handleClick}>
-                        Remove
+                        Delete
                 </StyledButton>
             </Box>
         )

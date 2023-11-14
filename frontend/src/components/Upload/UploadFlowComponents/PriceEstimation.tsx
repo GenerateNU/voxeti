@@ -54,9 +54,8 @@ export default function PriceEstimation({
                     This is the price estimated from your filter choices.
                 </div>
             </Box>
-
-            <Box className="flex flex-row gap-x-6 justify-between">
-                <Box className="flex flex-col gap-y-4 w-[55vw] h-[45vh]">
+            <Box className="flex flex-row flex-wrap gap-x-6 justify-between">
+                <Box className="flex flex-col gap-y-4 w-[100%] sm:w-[55%] h-[45vh] min-h-[350px]">
                     <Box className="p-6 px-8 rounded-md border-2 border-[#F1F1F1] h-1/2 flex flex-row justify-between gap-x-2">
                         <Box className="flex flex-col h-[100%]">
                             <div className="text-xl font-semibold mb-2">File Upload</div>
@@ -101,7 +100,7 @@ export default function PriceEstimation({
                         </StyledButton>
                     </Box>
                 </Box>
-                <Box className="flex flex-col gap-y-4 w-[35vw] h-[45vh]">
+                <Box className="flex flex-col gap-y-4 w-[100%] sm:w-[40%] h-[45vh] min-h-[350px] mt-4 sm:mt-0">
                     <Box className="p-8 rounded-md border-2 border-[#F1F1F1] h-full flex flex-col justify-between gap-x-2">
                         {
                             states.isLoading ? (

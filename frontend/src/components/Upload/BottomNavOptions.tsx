@@ -15,7 +15,7 @@ export default function BottomNavOptions({
     enabled
 }: BottomNavProps) {
     return (
-        <Box className='flex flex-row justify-center gap-x-6 mt-[10vh] mb-8'>
+        <Box className='flex flex-row justify-center gap-x-6 mt-10 mb-10'>
             {step !== 7 ?
                 <>
                     <StyledButton

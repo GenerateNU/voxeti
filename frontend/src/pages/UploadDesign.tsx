@@ -6,6 +6,7 @@ import { EstimateBreakdown, PriceEstimation, SlicerData } from '../api/api.types
 import useDesignUpload from '../hooks/use-design-upload';
 import { useStateSelector } from '../hooks/use-redux';
 import { FilamentType, Job } from '../main.types';
+import { useApiError } from '../hooks/use-api-error';
 
 export function UploadDesign() {
 	const [currentStep, setCurrentStep] = useState<number>(1); // number, React.Dispatch<React.SetStateAction<number>>
@@ -24,6 +25,8 @@ export function UploadDesign() {
   const [sliceDesign] = slicerApi.useSliceDesignsMutation();
 	const [estimatePrice] = priceEstimationApi.useEstimatePricesMutation();
 	const [createJob] = jobApi.useCreateJobMutation();
+
+	const { addError, setOpen } = useApiError();
 
 	function handlePriceEstimation(priceEstimateRequest : PriceEstimation) {
 			estimatePrice(priceEstimateRequest)
@@ -60,16 +63,19 @@ export function UploadDesign() {
 		setIsSlicing(true);
 		Promise.all(file.map((file : File) => handleSliceDesign(file)))
 			.then((responses) => {
-				const priceEstimateRequest : PriceEstimation = {
-					shipping: delivery === 'Shipping' ? true : false,
-					filamentType: filament,
-					slices: responses
+				const errors = responses.filter((response) => response.status === 'FETCH_ERROR')
+				if (errors.length > 0) {
+					addError("Something wen't wrong, please try again.");
+					setOpen(true);
+					setIsSlicing(false);
+				} else {
+					const priceEstimateRequest : PriceEstimation = {
+						shipping: delivery === 'Shipping' ? true : false,
+						filamentType: filament,
+						slices: responses
+					}
+					handlePriceEstimation(priceEstimateRequest);
 				}
-				handlePriceEstimation(priceEstimateRequest);
-			})
-			.catch((error) => {
-				console.log(error)
-				return;
 			})
 	}
 
@@ -115,8 +121,10 @@ export function UploadDesign() {
 				.then(() => {
 						setters.currentStep(states.currentStep += 1);
 				})
-				.catch((error) => {
-						console.log(error);
+				.catch(() => {
+					addError("An error occurred while creating your job. Please try again.");
+					setOpen(true);
+					setIsSlicing(false);
 				})
 	}
 
