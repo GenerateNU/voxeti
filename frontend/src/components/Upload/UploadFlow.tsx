@@ -35,6 +35,7 @@ export default function UploadFlow({
         setters.filament("")
         setters.prices([])
         setters.quantity(1)
+        setters.quality('0.2')
         router.navigate({ to: "/" })
     }
 

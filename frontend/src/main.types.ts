@@ -27,6 +27,7 @@ export interface Job {
   taxes: number;
   color: string;
   filament: FilamentType;
+  quality: number;
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding

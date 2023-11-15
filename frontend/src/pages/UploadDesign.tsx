@@ -13,10 +13,11 @@ export function UploadDesign() {
 	const [file, setFile] = useState<File[]>([]);
 	const [color, setColor] = useState<string>("White");
 	const [quantity, setQuantity] = useState<number>(1);
+	const [quality, setQuality] = useState<string>('0.2');
 	const [delivery, setDelivery] = useState<string>("Shipping");
 	const [expirationDate, setExpirationDate] = useState<string>("2 days");
 	const [prices, setPrices] = useState<EstimateBreakdown[]>([]);
-	const [filament, setFilament] = useState('')
+	const [filament, setFilament] = useState('PLA')
 	const [isSlicing, setIsSlicing] = useState(false);
 
 	const { user : { id } } = useStateSelector((state) => state.user)
@@ -43,9 +44,10 @@ export function UploadDesign() {
 		}
 
 	// Slice an uploaded design:
-	async function handleSliceDesign(file : File) {
+	async function handleSliceDesign(file : File, layerHeight : string) {
 		const formData = new FormData()
 		formData.append("file", file)
+		formData.append("layerHeight", layerHeight)
 
 		return sliceDesign(formData)
 			.unwrap()
@@ -61,7 +63,7 @@ export function UploadDesign() {
 	// Slice a list of uploaded designs:
 	const handleSlicing = async () => {
 		setIsSlicing(true);
-		Promise.all(file.map((file : File) => handleSliceDesign(file)))
+		Promise.all(file.map((file : File) => handleSliceDesign(file, quality)))
 			.then((responses) => {
 				const errors = responses.filter((response) => response.status === 'FETCH_ERROR')
 				if (errors.length > 0) {
@@ -111,7 +113,8 @@ export function UploadDesign() {
 				shipping: shipping,
 				taxes: taxes,
 				color: states.color,
-				filament: states.filament as FilamentType
+				filament: states.filament as FilamentType,
+				quality: parseFloat(quality),
 		}
 
 		setters.currentStep(states.currentStep += 1)
@@ -134,6 +137,7 @@ export function UploadDesign() {
 		uploadedFiles: file,
 		color: color,
 		quantity: quantity,
+		quality: quality,
 		delivery: delivery,
 		expirationDate: expirationDate,
 		prices: prices,
@@ -146,6 +150,7 @@ export function UploadDesign() {
 		uploadedFiles: setFile,
 		color: setColor,
 		quantity: setQuantity,
+		quality: setQuality,
 		delivery: setDelivery,
 		expirationDate: setExpirationDate,
 		slice: handleSlicing,

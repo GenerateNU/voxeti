@@ -33,11 +33,17 @@ export default function FiltersStep({
     const expirations = ["2 days", "7 days", "30 days"];
 
     const types = ["PLA", "ABS", "TPS"];
+    const qualities = [{label: "Ultra (0.12mm)", height: '0.12'},{ label: "High (0.16mm)", height: '0.16'}, {label: "Standard (0.2mm)", height: '0.2'}, {label: "Low (0.28mm)", height: '0.28'}];
 
     console.log(states.expirationDate);
 
-    const handleChange = (event: SelectChangeEvent) => {
+    const handleChangeFilament = (event: SelectChangeEvent) => {
         setters.filament(event.target.value);
+        setters.prices([]);
+    };
+
+    const handleChangeQuality = (event: SelectChangeEvent) => {
+        setters.quality(event.target.value);
         setters.prices([]);
     };
 
@@ -65,7 +71,7 @@ export default function FiltersStep({
                     <Select
                         value={states.filament}
                         className='w-full'
-                        onChange={handleChange}
+                        onChange={handleChangeFilament}
                         input={<OutlinedInput label="Name" />}
                         label="filament"
                         MenuProps={MenuProps}>
@@ -77,6 +83,31 @@ export default function FiltersStep({
                                             value={filamentType}
                                             >
                                             {filamentType}
+                                        </MenuItem>
+                                    )
+                                })
+                            }
+                    </Select>
+                </Box>
+                <Box className='border-2 rounded-md w-full p-4 border-[#F1F1F1]'>
+                    <div className='text-md font-semibold mb-2'>
+                        Print Quality
+                    </div>
+                    <Select
+                        value={states.quality}
+                        className='w-full'
+                        onChange={handleChangeQuality}
+                        input={<OutlinedInput label="Name" />}
+                        label="quality"
+                        MenuProps={MenuProps}>
+                            {
+                                qualities.map((qualityType) => {
+                                    return (
+                                        <MenuItem
+                                            key={qualityType.label}
+                                            value={qualityType.height}
+                                            >
+                                            {qualityType.label}
                                         </MenuItem>
                                     )
                                 })
@@ -171,7 +202,7 @@ export default function FiltersStep({
                 </Box>
             </FormGroup>
 
-            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={states.filament != ""}/>
+            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={states.filament != "" && states.quality != ''}/>
 
         </Container>
     )
