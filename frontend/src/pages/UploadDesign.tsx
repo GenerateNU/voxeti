@@ -36,9 +36,10 @@ export function UploadDesign() {
 					setIsSlicing(false);
 					return;
 				})
-				.catch((error) => {
-					console.log(error)
-					return
+				.catch(() => {
+					addError("Something wen't wrong, please try again.");
+					setOpen(true);
+					setIsSlicing(false);
 				})
 		}
 
@@ -46,6 +47,7 @@ export function UploadDesign() {
 	async function handleSliceDesign(file : File) {
 		const formData = new FormData()
 		formData.append("file", file)
+		formData.append("layerHeight", "0.20");
 
 		return sliceDesign(formData)
 			.unwrap()
