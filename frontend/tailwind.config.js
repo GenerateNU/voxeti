@@ -17,6 +17,8 @@ export default {
       animation: {
         rotateOpen: "rotateOpen 0.2s ease-in-out",
         rotateClose: "rotateClose 0.2s ease-in-out",
+        slideIn: "slideIn 0.2s ease-in-out",
+        slideOut: "slideOut 0.2s ease-in-out",
       },
       keyframes: {
         rotateOpen: {
@@ -27,6 +29,14 @@ export default {
           "0%": { transform: "rotate(90deg)" },
           "100%": { transform: "rotate(0)" },
         },
+        slideIn: {
+          "0%": { transform: "translateY(0px)"},
+          "100%": { transform: "translateY(252px)"},
+        },
+        slideOut: {
+          "0%": { transform: "translateY(252px)"},
+          "100%": { transform: "translateY(0)"},
+        }
       },
     },
   },
