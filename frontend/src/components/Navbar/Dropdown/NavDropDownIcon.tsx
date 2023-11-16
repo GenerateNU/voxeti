@@ -5,7 +5,7 @@ import { NavDropDownIconProps } from './NavDropDown.types';
 
 export default function NavDropDownIcon({ setNavOpen, setHidden, hidden } : NavDropDownIconProps) {
   return (
-    <Button 
+    <Button
       className='!flex !flex-row !items-center !bg-[#D9D9D9] !rounded-full !p-4 !gap-x-2 !text-[#000000]'
       onClick={() =>
         setNavOpen((state) => {
