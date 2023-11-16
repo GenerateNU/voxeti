@@ -21,6 +21,7 @@ export type ProviderUser = {
 // Slicer Response:
 export type SlicerData = {
   fileName: string;
+  quantity: number;
   flavor: string;
   time: number;
   filamentUsed: number;

@@ -16,17 +16,17 @@ export default function VoxetiStepper({currentStep}: StepperProps) {
     const VoxetiConnector = styled(StepConnector)(({ theme }) => ({
         [`&.${stepConnectorClasses.alternativeLabel}`]: {
             top: 10,
-            left: 'calc(-50% + 16px)',
-            right: 'calc(50% + 16px)',
+            left: 'calc(-50% + 10px)',
+            right: 'calc(50% + 10px)',
         },
         [`&.${stepConnectorClasses.active}`]: {
             [`& .${stepConnectorClasses.line}`]: {
-            borderColor: '#333333',
+            borderColor: '#EFAF00',
             },
         },
         [`&.${stepConnectorClasses.completed}`]: {
             [`& .${stepConnectorClasses.line}`]: {
-            borderColor: '#333333',
+            borderColor: '#EFAF00',
             },
         },
         [`& .${stepConnectorClasses.line}`]: {
@@ -41,7 +41,7 @@ export default function VoxetiStepper({currentStep}: StepperProps) {
             alternativeLabel
             activeStep={currentStep}
             connector={<VoxetiConnector />}
-            className='mt-8 mb-10'
+            className='mb-16'
         >
             {steps.map((label) => (
                 <Step key={label}>

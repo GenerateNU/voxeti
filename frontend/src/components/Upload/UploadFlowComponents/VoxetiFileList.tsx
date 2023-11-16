@@ -24,16 +24,16 @@ export default function VoxetiFileList({
         return (
             <Box className="w-full min-h-[100px] rounded-xl border-2 border-[#F1F1F1] pr-12 pl-12 h-24 flex flex-row justify-between items-center" key={file.name}>
                 <Box>
-                    <div className="text-md">
+                    <div className="text-lg mb-2">
                         {file.name}
                     </div>
-                    <div className="text-sm text-[#777777]">
+                    <div className="text-md text-[#777777]">
                         {size}
                     </div>
                 </Box>
                 <StyledButton
                     size={'sm'}
-                    color={'seconday'}
+                    color={'delete'}
                     onClick={handleClick}>
                         Delete
                 </StyledButton>

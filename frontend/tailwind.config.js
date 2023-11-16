@@ -16,7 +16,6 @@ export default {
     extend: {
       animation: {
         rotateOpen: "rotateOpen 0.2s ease-in-out",
-        rotateClose: "rotateClose 0.2s ease-in-out",
       },
       keyframes: {
         rotateOpen: {

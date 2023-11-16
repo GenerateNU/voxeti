@@ -19,15 +19,17 @@ export default function StyledButton({
   }
 
   const colors = {
-    primary: ['!bg-primary', '!text-background'],
-    seconday: ['!bg-[#F5F5F5]', '!text-primary'],
-    producer: ['!bg-producer', '!text-background'],
-    designer: ['!bg-designer', '!text-background']
+    // Background Color, Text Color, Background Hover Color
+    primary: ['!bg-primary', '!text-background', 'hover:!bg-[#565656]'],
+    seconday: ['!bg-[#F5F5F5]', '!text-primary', 'hover:!bg-[#565656]'],
+    producer: ['!bg-producer', '!text-background', 'hover:!bg-[#565656]'],
+    designer: ['!bg-designer', '!text-background', 'hover:!bg-[#565656]'],
+    delete: ['!bg-[#F5F5F5]', '!text-primary', 'hover:!bg-[#FFCCCB]']
   }
 
   return (
     <Button
-      className={`h-12 ${size ? sizes[size] : '!w-full'} ${disabled ? '!bg-[#D3D3D3]' : color ? colors[color][0] : '!bg-primary'} !rounded-[5px] ${color ? colors[color][1] : '!text-background'}  hover:!bg-[#565656] !normal-case !font-light !text-base`}
+      className={`h-12 ${size ? sizes[size] : '!w-full'} ${disabled ? '!bg-[#D3D3D3]' : color ? colors[color][0] : '!bg-primary'} !rounded-[5px] ${color ? colors[color][1] : '!text-background'}  ${colors[color][2]} !normal-case !font-light !text-base`}
       type={type}
       disabled={disabled}
       startIcon={icon}

@@ -22,7 +22,6 @@ func RegisterSlicerHandlers(e *echo.Group, configuration schema.EstimateConfig, 
 		}
 
 		var priceEstimates []schema.EstimateBreakdown
-
 		var totalVolume float32
 
 		for _, file := range body.Slices {

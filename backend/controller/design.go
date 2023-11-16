@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -35,6 +36,13 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		// Extract the list of files:
 		files := form.File["files"]
 
+		// Extract the list of dimensions:
+		dimensions := form.Value["dimensions"]
+
+		if len(dimensions) != len(files) {
+			return c.JSON(utilities.CreateErrorResponse(400, "Length of dimensions array and file array do not match!"))
+		}
+
 		if len(files) == 0 {
 			return c.JSON(utilities.CreateErrorResponse(400, "No files have been provided!"))
 		}
@@ -57,9 +65,15 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		}
 
 		// Upload each file:
-		for _, file := range files {
+		for index, file := range files {
+			// Retrieve file dimensions:
+			dimensionString := dimensions[index]
+
+			var dimensions schema.Dimensions
+			json.Unmarshal([]byte(dimensionString), &dimensions)
+
 			// Add STL file to DB:
-			uploadErr, design := design.UploadSTLFile(file, bucket)
+			uploadErr, design := design.UploadSTLFile(file, bucket, dimensions)
 			if uploadErr != nil {
 				return c.JSON(utilities.CreateErrorResponse(uploadErr.Code, uploadErr.Message))
 			}

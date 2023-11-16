@@ -1,5 +1,4 @@
 import React, { forwardRef } from "react";
-import Footer from "../Footer/Footer";
 import Navbar from "../Navbar/Navbar";
 import { useApiError } from "../../hooks/use-api-error";
 import { Slide, Snackbar } from "@mui/material";
@@ -58,7 +57,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </Snackbar>
       <Navbar />
       {children}
-      <Footer />
     </div>
   );
 }

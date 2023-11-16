@@ -15,16 +15,18 @@ export default function BottomNavOptions({
     enabled
 }: BottomNavProps) {
     return (
-        <Box className='flex flex-row justify-center gap-x-6 mt-10 mb-10'>
+        <Box className='flex flex-row justify-center gap-x-6 mt-6 mb-8'>
             {step !== 7 ?
                 <>
                     <StyledButton
+                        color={'primary'}
                         size={'md'}
                         onClick={cancel}
                     >
                         Cancel
                     </StyledButton>
                     <StyledButton
+                        color={'primary'}
                         size={'md'}
                         onClick={nextPage}
                         disabled={!enabled}
@@ -34,6 +36,7 @@ export default function BottomNavOptions({
                 </>
                 :
                     <StyledButton
+                        color={'primary'}
                         size={'lg'}
                         onClick={nextPage}
                     >

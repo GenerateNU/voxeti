@@ -32,6 +32,7 @@ type GoogleResponse struct {
 
 type SliceData struct {
 	File              string  `json:"file"`
+	Quantity					int			`json:"quantity"`
 	Flavor            string  `json:"flavor"`
 	TimeS             int     `json:"time"`
 	FilamentUsed      float32 `json:"filamentused"`
@@ -52,18 +53,20 @@ type PriceEstimation struct {
 }
 
 type EstimateBreakdown struct {
-	File             string  `json:"file"`
-	BaseCost         float32 `json:"baseCost"`
-	TimeCost         float32 `json:"timeCost"`
-	FilamentCost     float32 `json:"filamentCost"`
-	ShippingCost     float32 `json:"shippingCost"`
-	ProducerSubtotal float32 `json:"producerSubTotal"`
-	ProducerFee      float32 `json:"producerFee"`
-	ProducerTotal    float32 `json:"producerTotal"`
-	TaxCost          float32 `json:"taxCost"`
-	StripeCost       float32 `json:"stripeCost"`
-	VoxetiCost       float32 `json:"voxetiCost"`
-	Total            float32 `json:"total"`
+	File             				string  `json:"file"`
+	BaseCost         				float32 `json:"baseCost"`
+	TimeCost         				float32 `json:"timeCost"`
+	FilamentCost     				float32 `json:"filamentCost"`
+	ShippingCost     				float32 `json:"shippingCost"`
+	ProducerSubtotal 				float32 `json:"producerSubTotal"`
+	QuantityAppliedSubtotal float32 `json:"quantityAppliedSubtotal"`
+	ProducerFee      				float32 `json:"producerFee"`
+	ProducerTotal    				float32 `json:"producerTotal"`
+	QuantityAppliedTotal    float32 `json:"quantityAppliedTotal"`
+	TaxCost          				float32 `json:"taxCost"`
+	StripeCost       				float32 `json:"stripeCost"`
+	VoxetiCost       				float32 `json:"voxetiCost"`
+	Total            				float32 `json:"total"`
 }
 
 type Shipping struct {

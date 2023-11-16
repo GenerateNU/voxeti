@@ -37,15 +37,15 @@ export default function PriceEstimateBox({
             ${totalBasePrice.toFixed(2)}
           </div>
 				</Box>
-				{prices.length > 1 && <Divider className="w-[100%]" />}
-				{prices.length > 1 && (
-          <Box className="w-full pl-4 mt-2">
+				{(prices.length > 1 || prices[0]?.quantity > 1) && <Divider className="w-[100%] !mt-3" />}
+				{(prices.length > 1 || prices[0]?.quantity > 1) &&  (
+          <Box className="w-full pl-4 mt-3 md:!max-h-[100px] overflow-scroll">
             {
               prices.map((priceObj: PriceObject, index: number) => {
                 return (
-                  <div className={`flex flex-row justify-between w-full text-[#777777] text-sm ${index > 0 ?? "mt-2"} mb-0`}>
-                    <div className="text-[#444444]">{priceObj.file}</div>
-                    <div>${priceObj.total.toFixed(2)}</div>
+                  <div className={`flex flex-row justify-between w-full text-[#777777] text-md ${index > 0 ?? "mt-2"} mb-0`}>
+                    <div className="text-[#444444]">{priceObj.quantity} x {priceObj.file}</div>
+                    <div>${prices.length === 1 ? (priceObj.total / priceObj.quantity).toFixed(2) : priceObj.total.toFixed(2)}</div>
                   </div>
                 )
               })

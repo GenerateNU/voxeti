@@ -18,16 +18,18 @@ export interface User {
 // A Voxeti print Job
 export interface Job {
   id?: string;
+  createdAt: Date,
   designerId: string;
   producerId?: string;
   designId: string[];
+  quantity: number[];
   status: JobStatus;
   price: number;
   shipping: number;
   taxes: number;
   color: string;
   filament: FilamentType;
-  quality: number;
+  layerHeight: number;
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding

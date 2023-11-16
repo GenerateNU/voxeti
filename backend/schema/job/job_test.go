@@ -29,7 +29,6 @@ func TestGetJobById(t *testing.T) {
 			Status: schema.Pending,
 			Price:  123,
 			Color:  "purple",
-			Scale:  89,
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -164,8 +163,6 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 		// Convert mockJob to primitive.M
 		mockJobMap, errMarshal := bson.Marshal(mockJob)
@@ -199,8 +196,6 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 		// Convert mockJob to primitive.M
 		mockJobMap, marshalerr := bson.Marshal(mockJob)
@@ -318,7 +313,6 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
-			Scale:      89,
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -358,7 +352,6 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
-			Scale:      89,
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D

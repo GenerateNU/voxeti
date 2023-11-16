@@ -7,6 +7,6 @@ export interface StyledButtonProps {
   icon?: string;
   disabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
-  color?: 'primary' | 'seconday';
+  color: 'primary' | 'seconday' | 'producer'| 'designer' | 'delete';
   onClick?: () => void;
 }

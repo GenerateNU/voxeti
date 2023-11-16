@@ -6,27 +6,22 @@ import {
     FormGroup,
     Radio,
     RadioGroup,
-    Grid,
     Select,
-    OutlinedInput,
-    MenuItem
+    MenuItem,
+    Grow,
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { AddCircle, RemoveCircle } from '@mui/icons-material';
-import BottomNavOptions from '../BottomNavOptions';
 import { Setters, States } from '../upload.types';
+import CircleIcon from '@mui/icons-material/Circle';
+
 export interface FiltersStepProps {
     states: States,
     setters: Setters,
-    setNextStep: () => void,
-    cancelStep: () => void
 }
 
 export default function FiltersStep({
     states,
     setters,
-    setNextStep,
-    cancelStep
 }: FiltersStepProps) {
     const colors = ["White", "Black"];
     const delivery = ["Shipping", "Pick up"];
@@ -60,63 +55,36 @@ export default function FiltersStep({
 
     return (
         <Container>
-            <div className='text-xl font-semibold mb-6'>
+            <div className='text-2xl font-semibold mb-6'>
                 Filters
             </div>
-            <FormGroup className='flex flex-col gap-y-6 w-[100%]'>
-                <Box className='border-2 rounded-md w-full p-4 border-[#F1F1F1]'>
-                    <div className='text-md font-semibold mb-2'>
-                        Filament Type
-                    </div>
-                    <Select
-                        value={states.filament}
-                        className='w-full'
-                        onChange={handleChangeFilament}
-                        input={<OutlinedInput label="Name" />}
-                        label="filament"
-                        MenuProps={MenuProps}>
-                            {
-                                types.map((filamentType) => {
-                                    return (
-                                        <MenuItem
-                                            key={filamentType}
-                                            value={filamentType}
+            <FormGroup className='flex flex-col gap-y-4 w-[100%]'>
+                <Box className='rounded-md w-full p-6 pl-8 pr-8 border border-[#E8E8E8]'>
+                        <div className='text-lg font-semibold mb-4'>
+                            Filament Type
+                        </div>
+                        <Select
+                            value={states.filament}
+                            className='w-full'
+                            onChange={handleChangeFilament}
+                            MenuProps={MenuProps}>
+                                {
+                                    types.map((filamentType) => {
+                                        return (
+                                            <MenuItem
+                                                key={filamentType}
+                                                value={filamentType}
                                             >
-                                            {filamentType}
-                                        </MenuItem>
-                                    )
-                                })
-                            }
-                    </Select>
-                </Box>
-                <Box className='border-2 rounded-md w-full p-4 border-[#F1F1F1]'>
-                    <div className='text-md font-semibold mb-2'>
-                        Print Quality
-                    </div>
-                    <Select
-                        value={states.quality}
-                        className='w-full'
-                        onChange={handleChangeQuality}
-                        input={<OutlinedInput label="Name" />}
-                        label="quality"
-                        MenuProps={MenuProps}>
-                            {
-                                qualities.map((qualityType) => {
-                                    return (
-                                        <MenuItem
-                                            key={qualityType.label}
-                                            value={qualityType.height}
-                                            >
-                                            {qualityType.label}
-                                        </MenuItem>
-                                    )
-                                })
-                            }
-                    </Select>
+                                                {filamentType}
+                                            </MenuItem>
+                                        )
+                                    })
+                                }
+                        </Select>
                 </Box>
                 <Box className='w-full flex flex-row flex-wrap justify-between align-middle'>
-                    <Box className='border-2 rounded-md w-full md:w-[49%] p-4 border-[#F1F1F1]'>
-                        <div className='text-md font-semibold'>
+                    <Box className='rounded-md w-full md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]'>
+                        <div className='text-lg font-semibold mb-3'>
                             Colors
                         </div>
                         <RadioGroup
@@ -127,7 +95,12 @@ export default function FiltersStep({
                                         return (
                                             <FormControlLabel
                                                 value={color}
-                                                control={<Radio color="secondary" />}
+                                                control={
+                                                    <Radio 
+                                                        className='!text-[#000000]' 
+                                                        checkedIcon={<Grow in={true} appear={true}><CircleIcon></CircleIcon></Grow>}
+                                                    />
+                                                }
                                                 label={color}
                                                 onClick={() => setters.color(color)}
                                             />
@@ -136,8 +109,8 @@ export default function FiltersStep({
                                 }
                         </RadioGroup>
                     </Box>
-                    <Box className='border-2 rounded-md w-full mt-6 md:mt-0 md:w-[49%] p-4 border-[#F1F1F1]'>
-                        <div className='text-md font-semibold'>
+                    <Box className='rounded-md w-full mt-6 md:mt-0 md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]'>
+                        <div className='text-lg font-semibold mb-3'>
                             Delivery
                         </div>
                         <FormGroup
@@ -146,7 +119,12 @@ export default function FiltersStep({
                                     delivery.map((delivery: string) => {
                                         return (
                                             <FormControlLabel
-                                                control={<Checkbox checked={delivery == states.delivery} />}
+                                                control={
+                                                    <Checkbox 
+                                                        checked={delivery == states.delivery}
+                                                        className='!text-[#000000]'
+                                                    />
+                                                }
                                                 label={delivery}
                                                 onClick={() => {
                                                     setters.delivery(delivery)
@@ -160,50 +138,59 @@ export default function FiltersStep({
                     </Box>
                 </Box>
                 <Box className='w-full flex flex-row flex-wrap justify-between align-middle'>
-                    <Box className='border-2 rounded-md w-full md:w-[49%] p-4 border-[#F1F1F1]'>
-                        <div className='text-md font-semibold mb-3'>
-                            Quanity
+                    <Box className='rounded-md w-full md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]'>
+                        <div className='text-lg font-semibold mb-4'>
+                            Print Quality
                         </div>
-                        <div className='flex flex-row gap-x-6'>
-                            <RemoveCircle
-                                className={`${states.quantity > 1 ? "text-[#000000]" : "text-[#F0F0F0]"}`}
-                                onClick={() => {
-                                    if (states.quantity > 1) {
-                                        setters.quantity(states.quantity - 1)
-                                    }
-                                }}
-                            />
-                            {states.quantity} {states.quantity > 1 ? "pieces" : "piece"}
-                            <AddCircle onClick={() => setters.quantity(states.quantity + 1)}/>
-                        </div>
+                        <Select
+                            value={states.quality}
+                            className='w-full'
+                            onChange={handleChangeQuality}
+                            MenuProps={MenuProps}>
+                                {
+                                    qualities.map((qualityType) => {
+                                        return (
+                                            <MenuItem
+                                                key={qualityType.label}
+                                                value={qualityType.height}
+                                                >
+                                                {qualityType.label}
+                                            </MenuItem>
+                                        )
+                                    })
+                                }
+                        </Select>
                     </Box>
-                    <Box className='border-2 rounded-md w-full mt-6 md:mt-0 md:w-[49%] p-4 border-[#F1F1F1]'>
-                        <div className='text-md font-semibold'>
+                    <Box className='!flex !flex-col rounded-md w-full mt-6 md:mt-0 md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]'>
+                        <div className='text-lg font-semibold mb-3'>
                             Expiration Date
                         </div>
-                        <FormGroup defaultValue={states.delivery}>
-                            <Grid container spacing={2}
-                                className='flex flex-row'>
-                                    {
-                                        expirations.map((expiration: string) => {
-                                            return (
-                                                <Grid item xs={4}
-                                                    className='flex flex-row  items-center'
-                                                    onClick={() => setters.expirationDate(expiration)}>
-                                                    <Checkbox checked={expiration == states.expirationDate} />
-                                                    <div>{expiration}</div>
-                                                </Grid>
-                                            )
-                                        })
-                                    }
-                            </Grid>
+                        <FormGroup
+                            defaultValue={states.delivery}
+                            className='!flex !flex-row mt-auto mb-auto'
+                        >
+                                {
+                                    expirations.map((expiration: string) => {
+                                        return (
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox 
+                                                        checked={expiration == states.expirationDate}
+                                                        className='!text-[#000000]'
+                                                    />
+                                                }
+                                                label={expiration}
+                                                onClick={() => {
+                                                    setters.expirationDate(expiration)
+                                                }}
+                                            />
+                                        )
+                                    })
+                                }
                         </FormGroup>
                     </Box>
                 </Box>
             </FormGroup>
-
-            <BottomNavOptions cancel={cancelStep} nextPage={setNextStep} enabled={states.filament != "" && states.quality != ''}/>
-
         </Container>
     )
 }

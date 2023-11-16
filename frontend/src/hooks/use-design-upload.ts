@@ -1,8 +1,8 @@
 import { designApi } from "../api/api";
-import { Design, Error } from "../main.types";
+import { Design, Dimensions, Error } from "../main.types";
 import { BackendError } from "./hooks.types";
 
-export default function useDesignUpload(files : File[]) {
+export default function useDesignUpload(files : File[], dimensions : Dimensions[]) {
   const [uploadDesigns] = designApi.useUploadDesignMutation();
   const formData = new FormData();
 
@@ -10,6 +10,10 @@ export default function useDesignUpload(files : File[]) {
     // Add each file to the form:
     files.forEach((file) => {
       formData.append('files', file);
+    })
+
+    dimensions.forEach((dimension) => {
+      formData.append('dimensions', JSON.stringify(dimension))
     })
 
     try {
