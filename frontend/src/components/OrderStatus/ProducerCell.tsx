@@ -3,7 +3,7 @@ import { userApi } from "../../api/api";
 import { Avatar } from "@mui/material";
 
 export default function ProducerCell(props: { job: Job }) {
-  const { data: data } = userApi.useGetUserQuery(props.job.producerId);
+  const { data: data } = userApi.useGetUserQuery(props.job.producerId as string);
 
   return (
     <div className="flex items-center text-lg">

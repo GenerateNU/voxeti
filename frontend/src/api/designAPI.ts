@@ -17,7 +17,7 @@ export const createDesignApi = (baseUrl: string) =>
           formData: true
         }),
       }),
-      getDesign: builder.mutation<Design, string>({
+      getDesign: builder.query<Design, string>({
         query: (designId) => ({
           method: "GET",
           url: `/${designId}`,
