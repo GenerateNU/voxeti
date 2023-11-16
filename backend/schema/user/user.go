@@ -473,3 +473,32 @@ func HashPassword(password string) (*string, *schema.ErrorResponse) {
 
 	return &hashedPassword, nil
 }
+
+// get available filament types from user's available filament
+func GetAvailableFilamentTypes(user *schema.User) []string {
+	filamentTypes := []string{}
+	for _, filament := range user.AvailableFilament {
+		filamentTypes = append(filamentTypes, string(filament.Type))
+	}
+	return filamentTypes
+}
+
+// get supported filament types from user's printers
+func GetSupportedFilamentTypes(user *schema.User) []string {
+	filamentTypes := []string{}
+	for _, printer := range user.Printers {
+		for _, filament := range printer.SupportedFilament {
+			filamentTypes = append(filamentTypes, string(filament))
+		}
+	}
+	return filamentTypes
+}
+
+// get available colors from user's available filament
+func GetAvailableColors(user *schema.User) []string {
+	colors := []string{}
+	for _, filament := range user.AvailableFilament {
+		colors = append(colors, filament.Color)
+	}
+	return colors
+}

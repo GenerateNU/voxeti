@@ -6,6 +6,7 @@ import (
 	"voxeti/backend/utilities"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -93,6 +94,27 @@ func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailServi
 	return patchedJob, patchErr
 }
 
+// get recommended jobs
+func GetRecommendedJobs(page int, limit int, id *primitive.ObjectID, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
+
+	producer, err := user.GetUserById(id, dbClient)
+	if err != nil {
+		return nil, err
+	}
+
+	// get recommended jobs
+	recommendedJobs, err := getRecommendedJobsDb(producer, dbClient)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// paginate recommended jobs
+	recommendedJobs = paginateJobs(page, limit, recommendedJobs)
+
+	return recommendedJobs, nil
+}
+
 // given a job, constructs an email for the job's designer that indicates the job's status has been updated
 func constructUpdateJobStatusEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Email, *schema.ErrorResponse) {
 	designer, designerErr := user.GetUserById(&job.DesignerId, dbClient)
@@ -121,4 +143,26 @@ func constructJobCreationEmail(job *schema.Job, dbClient *mongo.Client) (*schema
 		Subject:   "Job " + job.Id.Hex() + " Created",
 		Body:      "Job " + job.Id.Hex() + " has been created with status: " + string(job.Status),
 	}, nil
+}
+
+// paginate jobs by page and limit
+func paginateJobs(page int, limit int, jobs *[]schema.Job) *[]schema.Job {
+	// get start and end indices for pagination
+	start := (page - 1) * limit
+	end := page * limit
+
+	// if start is greater than length of jobs, return empty array
+	if start > len(*jobs) {
+		return &[]schema.Job{}
+	}
+
+	// if end is greater than length of jobs, set end to length of jobs
+	if end > len(*jobs) {
+		end = len(*jobs)
+	}
+
+	// return paginated jobs
+	derefJobs := *jobs
+	paginatedJobs := derefJobs[start:end]
+	return &paginatedJobs
 }

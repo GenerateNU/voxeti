@@ -28,16 +28,17 @@ type User struct {
 
 // A Voxeti print Job
 type Job struct {
-	Id         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	DesignerId primitive.ObjectID `bson:"designerId,omitempty" json:"designerId"`
-	ProducerId primitive.ObjectID `bson:"producerId,omitempty" json:"producerId"`
-	DesignId   primitive.ObjectID `bson:"designId,omitempty" json:"designId"`
-	Status     JobStatus          `bson:"status,omitempty" json:"status"`
-	Price      uint               `bson:"price,omitempty" json:"price"`
-	Color      string             `bson:"color,omitempty" json:"color"`
-	Filament   FilamentType       `bson:"filament,omitempty" json:"filament"`
-	Dimensions Dimensions         `bson:"dimensions,omitempty" json:"dimensions"`
-	Scale      uint               `bson:"scale,omitempty" json:"scale"`
+	Id              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	DesignerId      primitive.ObjectID `bson:"designerId,omitempty" json:"designerId"`
+	ProducerId      primitive.ObjectID `bson:"producerId,omitempty" json:"producerId"`
+	DesignId        primitive.ObjectID `bson:"designId,omitempty" json:"designId"`
+	Status          JobStatus          `bson:"status,omitempty" json:"status"`
+	Price           uint               `bson:"price,omitempty" json:"price"`
+	Color           string             `bson:"color,omitempty" json:"color"`
+	Filament        FilamentType       `bson:"filament,omitempty" json:"filament"`
+	Dimensions      Dimensions         `bson:"dimensions,omitempty" json:"dimensions"`
+	Scale           uint               `bson:"scale,omitempty" json:"scale"`
+	ShippingAddress Address            `bson:"shippingAddress,omitempty" json:"shippingAddress"`
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding

@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pterm/pterm"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -107,4 +108,32 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		return c.JSON(http.StatusOK, patchedJob)
 	})
 
+	// get all recommended jobs given a user id
+	api.GET("/recommendations/:id", func(c echo.Context) error {
+
+		page := c.QueryParam("page")
+		limit := c.QueryParam("limit")
+
+		if page == "" || limit == "" {
+			return c.JSON(utilities.CreateErrorResponse(400, "Missing page or limit"))
+		}
+
+		pageInt, pageErr := strconv.Atoi(page)
+		limitInt, limitErr := strconv.Atoi(limit)
+
+		if pageErr != nil || limitErr != nil || pageInt < 1 || limitInt < 0 {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page or limit"))
+		}
+
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id"))
+		}
+
+		recommendedJobs, errorResponse := job.GetRecommendedJobs(pageInt, limitInt, &id, dbClient)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
+		}
+		return c.JSON(http.StatusOK, recommendedJobs)
+	})
 }
