@@ -96,8 +96,8 @@ export default function FiltersStep({
                                             <FormControlLabel
                                                 value={color}
                                                 control={
-                                                    <Radio 
-                                                        className='!text-[#000000]' 
+                                                    <Radio
+                                                        className='!text-[#000000]'
                                                         checkedIcon={<Grow in={true} appear={true}><CircleIcon></CircleIcon></Grow>}
                                                     />
                                                 }
@@ -120,7 +120,7 @@ export default function FiltersStep({
                                         return (
                                             <FormControlLabel
                                                 control={
-                                                    <Checkbox 
+                                                    <Checkbox
                                                         checked={delivery == states.delivery}
                                                         className='!text-[#000000]'
                                                     />
@@ -174,7 +174,7 @@ export default function FiltersStep({
                                         return (
                                             <FormControlLabel
                                                 control={
-                                                    <Checkbox 
+                                                    <Checkbox
                                                         checked={expiration == states.expirationDate}
                                                         className='!text-[#000000]'
                                                     />

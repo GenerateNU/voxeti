@@ -103,7 +103,7 @@ export default function QuantityStep({
                     Currently viewing {states.uploadedFiles[currentFile].name}
                 </div>
                 <div className='flex flex-row mt-5 sm:mt-0 items-center gap-x-3 bg-background shadow-md rounded-full'>
-                    <Fab 
+                    <Fab
                         size={'medium'}
                         className='!bg-transparent !shadow-none'
                         onClick={() => incrementQuantity(-1)}
@@ -113,7 +113,7 @@ export default function QuantityStep({
                     <div className='w-5 text-center'>
                         {currentQuantitiy}
                     </div>
-                    <Fab 
+                    <Fab
                         size={'medium'}
                         className='!bg-transparent !shadow-none'
                         onClick={() => incrementQuantity(1)}

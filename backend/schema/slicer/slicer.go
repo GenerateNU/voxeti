@@ -66,20 +66,20 @@ func EstimatePrice(filamentType schema.FilamentType, shipping bool, sliceData sc
 	total := tempTotal + taxCost
 
 	estimate := schema.EstimateBreakdown{
-		File:             				sliceData.File,
-		BaseCost:         				float32(math.Round(float64(config.BaseCost)*100) / 100),
-		TimeCost:         				float32(math.Round(float64(timeCost)*100) / 100),
-		FilamentCost:    				  float32(math.Round(float64(filamentCost)*100) / 100),
-		ShippingCost:     				float32(math.Round(float64(shippingCost)*100) / 100),
-		ProducerSubtotal: 				float32(math.Round(float64(producerSubtotal)*100) / 100),
-		QuantityAppliedSubtotal:  float32(math.Round(float64(quantityAppliedSubtotal)*100) / 100),
-		ProducerFee:      				float32(math.Round(float64(producerFee)*100) / 100),
-		ProducerTotal:    				float32(math.Round(float64(producerTotal)*100) / 100),
-		QuantityAppliedTotal:  		float32(math.Round(float64(quantityAppliedTotal)*100) / 100),
-		TaxCost:         				  float32(math.Round(float64(taxCost)*100) / 100),
-		StripeCost:       				float32(math.Round(float64(stripeCost)*100) / 100),
-		VoxetiCost:       				float32(math.Round(float64(voxetiCost)*100) / 100),
-		Total:            				float32(math.Round(float64(total)*100) / 100),
+		File:                    sliceData.File,
+		BaseCost:                float32(math.Round(float64(config.BaseCost)*100) / 100),
+		TimeCost:                float32(math.Round(float64(timeCost)*100) / 100),
+		FilamentCost:            float32(math.Round(float64(filamentCost)*100) / 100),
+		ShippingCost:            float32(math.Round(float64(shippingCost)*100) / 100),
+		ProducerSubtotal:        float32(math.Round(float64(producerSubtotal)*100) / 100),
+		QuantityAppliedSubtotal: float32(math.Round(float64(quantityAppliedSubtotal)*100) / 100),
+		ProducerFee:             float32(math.Round(float64(producerFee)*100) / 100),
+		ProducerTotal:           float32(math.Round(float64(producerTotal)*100) / 100),
+		QuantityAppliedTotal:    float32(math.Round(float64(quantityAppliedTotal)*100) / 100),
+		TaxCost:                 float32(math.Round(float64(taxCost)*100) / 100),
+		StripeCost:              float32(math.Round(float64(stripeCost)*100) / 100),
+		VoxetiCost:              float32(math.Round(float64(voxetiCost)*100) / 100),
+		Total:                   float32(math.Round(float64(total)*100) / 100),
 	}
 
 	return estimate, volume, nil

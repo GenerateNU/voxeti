@@ -216,13 +216,13 @@ export function UploadDesign() {
 	return (
 		<div className="container mx-auto mt-10 grow h-[100%]">
 			<div className="z-0 min-h-[84vh] flex flex-col">
-				<VoxetiStepper 
+				<VoxetiStepper
 					currentStep={currentStep}
 				/>
-				<UploadFlow 
-					states={states} 
+				<UploadFlow
+					states={states}
 					setters={setters}/>
-				<BottomNavOptions 
+				<BottomNavOptions
 					cancel={cancelStep}
 					nextPage={isFinalStep ? finalStep : isSubmitStep ? formSubmit : nextStep}
 					enabled={buttonsEnabled.get(currentStep.toString()) as boolean}

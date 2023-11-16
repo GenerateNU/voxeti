@@ -29,26 +29,26 @@ type User struct {
 // A Voxeti print Job
 type Job struct {
 	Id          primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
-	CreatedAt		primitive.DateTime   `bson:"createdAt,omitempty" json:"createdAt"`
+	CreatedAt   primitive.DateTime   `bson:"createdAt,omitempty" json:"createdAt"`
 	DesignerId  primitive.ObjectID   `bson:"designerId,omitempty" json:"designerId"`
 	ProducerId  primitive.ObjectID   `bson:"producerId,omitempty" json:"producerId"`
 	DesignId    []primitive.ObjectID `bson:"designId,omitempty" json:"designId"`
-	Quantity 		[]int32							 `bson:"quantity,omitempty" json:"quantity"`
+	Quantity    []int32              `bson:"quantity,omitempty" json:"quantity"`
 	Status      JobStatus            `bson:"status,omitempty" json:"status"`
 	Price       float64              `bson:"price,omitempty" json:"price"`
 	Shipping    float64              `bson:"shipping,omitempty" json:"shipping"`
 	Taxes       float64              `bson:"taxes,omitempty" json:"taxes"`
 	Color       string               `bson:"color,omitempty" json:"color"`
 	Filament    FilamentType         `bson:"filament,omitempty" json:"filament"`
-	LayerHeight float64							 `bson:"layerHeight,omitempty" json:"layerHeight"`
+	LayerHeight float64              `bson:"layerHeight,omitempty" json:"layerHeight"`
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
 type Design struct {
-	Id     		 primitive.ObjectID `bson:"_id" json:"id"`
-	Name   		 string             `bson:"name" json:"name"`
-	Length 		 int64              `bson:"length" json:"length"`
-	Dimensions Dimensions			`bson:"dimensions" json:"dimensions"`
+	Id         primitive.ObjectID `bson:"_id" json:"id"`
+	Name       string             `bson:"name" json:"name"`
+	Length     int64              `bson:"length" json:"length"`
+	Dimensions Dimensions         `bson:"dimensions" json:"dimensions"`
 }
 
 // 2. Supporting schema
