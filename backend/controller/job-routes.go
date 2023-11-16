@@ -17,6 +17,7 @@ import (
 
 func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/jobs")
+	emailService := utilities.EmailService{}
 
 	api.GET("/:id", func(c echo.Context) error {
 		jobId := c.Param("id")
@@ -30,7 +31,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 	})
 
 	api.GET("", func(c echo.Context) error {
-		limit := 2 // represents the number of results we want per page
+		limit := 10 // represents the number of results we want per page
 		designerId := c.QueryParam("designer")
 		producerId := c.QueryParam("producer")
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
@@ -68,7 +69,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		if err := c.Bind(newJob); err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
-		jobCreated, errorResponse := job.CreateJob(*newJob, dbClient)
+		jobCreated, errorResponse := job.CreateJob(*newJob, dbClient, &emailService)
 
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
@@ -84,7 +85,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		if err := c.Bind(job_body_param); err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
-		retrievedJob, errorResponse := job.UpdateJob(jobId, *job_body_param, dbClient)
+		retrievedJob, errorResponse := job.UpdateJob(jobId, *job_body_param, dbClient, &emailService)
 
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
@@ -99,7 +100,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		if err := c.Bind(&patchData); err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid patch data"))
 		}
-		patchedJob, errorResponse := job.PatchJob(jobIdStr, patchData, dbClient)
+		patchedJob, errorResponse := job.PatchJob(jobIdStr, patchData, dbClient, &emailService)
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
