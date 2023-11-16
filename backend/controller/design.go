@@ -70,7 +70,10 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 			dimensionString := dimensions[index]
 
 			var dimensions schema.Dimensions
-			json.Unmarshal([]byte(dimensionString), &dimensions)
+			err := json.Unmarshal([]byte(dimensionString), &dimensions)
+			if err != nil {
+				return c.JSON(utilities.CreateErrorResponse(400, "Unable to unmarshall json data from string form!"))
+			}
 
 			// Add STL file to DB:
 			uploadErr, design := design.UploadSTLFile(file, bucket, dimensions)
