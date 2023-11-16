@@ -6,11 +6,6 @@ export type UserCredentials = {
   password: string;
 };
 
-// Id Response:
-export type IdResponse = {
-  id: string;
-};
-
 // Google SSO Response:
 export type ProviderUser = {
   user: string;

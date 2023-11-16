@@ -13,7 +13,7 @@ import (
 
 // Find a specified job by its ID
 func getJobByIdDb(jobId string, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
-	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	objectId, err := primitive.ObjectIDFromHex(jobId)
 	if err != nil {
 		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
@@ -35,7 +35,7 @@ func getJobByIdDb(jobId string, dbClient *mongo.Client) (schema.Job, *schema.Err
 // Find a specified job by either a producer or designer ID
 func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
 	// load jobs collection
-	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	// Extract Object IDs
 	designerObjId, _ := primitive.ObjectIDFromHex(designerId)
 	producerObjId, _ := primitive.ObjectIDFromHex(producerId)
@@ -93,7 +93,7 @@ func deleteJobDb(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
 		return &schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
 	}
 	// load collection
-	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	// delete job and check that the job was deleted
 	deleteResult, err := jobCollection.DeleteOne(context.Background(), bson.M{"_id": jobIdObject})
 	if err != nil {
@@ -109,7 +109,7 @@ func deleteJobDb(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
 // Creates a job
 func createJobDb(newJob schema.Job, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
 	// insert the job into the database
-	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	result, err := jobCollection.InsertOne(context.Background(), newJob)
 	if err != nil {
 		return schema.Job{}, &schema.ErrorResponse{Code: 500, Message: "Unable to create job"}
@@ -125,8 +125,9 @@ func updateJobDb(jobId string, job schema.Job, dbClient *mongo.Client) (schema.J
 	if err != nil {
 		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
 	}
+	job.Id = jobIdObject
 	// create a new job with the given data
-	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	// replace the old job with the new job
 	_, err = jobCollection.ReplaceOne(context.Background(), bson.M{"_id": jobIdObject}, job)
 	if err != nil {
@@ -143,7 +144,7 @@ func patchJobDb(jobIdStr string, patchData bson.M, dbClient *mongo.Client) (sche
 		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Invalid JobID"}
 	}
 	// Update Job in Database
-	jobCollection := dbClient.Database(schema.DatabaseName).Collection("job")
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, bson.M{"$set": patchData})
 	if err != nil {
 		return schema.Job{}, &schema.ErrorResponse{Code: 500, Message: "Unable to update job"}

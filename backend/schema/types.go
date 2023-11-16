@@ -84,3 +84,10 @@ type EstimateConfig struct {
 	StripeFee    float32
 	VoxetiFee    float32
 }
+
+type Email struct {
+	Recipient string `json:"recipient"`
+	Name      string `json:"name"`
+	Subject   string `json:"subject"`
+	Body      string `json:"body"`
+}

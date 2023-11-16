@@ -43,5 +43,11 @@ export const createJobApi = (baseUrl: string) =>
           url: `/${id}`,
         }),
       }),
+      getDesignerJobs: builder.query<Job[],{ designerId: string; page: string }>({
+        query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
+      }),
+      getProducerJobs: builder.query<Job[],{ producerId: string; page: string }>({
+        query: ({ producerId, page }) => `?producer=${producerId}&page=${page}`,
+      }),
     }),
   });

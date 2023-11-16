@@ -5,6 +5,7 @@ import Index from "./pages/Index.tsx";
 import QuestionForm from "./pages/Registration.tsx";
 import { UploadDesign } from "./pages/UploadDesign.tsx";
 import { Login } from "./pages/Login.tsx";
+import Jobs from "./pages/Jobs.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -36,6 +37,12 @@ const loginRoute = new Route({
   component: Login,
 });
 
+const jobsRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/jobs",
+  component: Jobs,
+});
+
 const registrationRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "/register",
@@ -55,6 +62,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   registrationRoute,
   uploadDesignRoute,
+  jobsRoute,
 ]);
 
 const router = new Router({ routeTree });
