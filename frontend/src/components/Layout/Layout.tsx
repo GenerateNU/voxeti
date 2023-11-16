@@ -1,5 +1,4 @@
 import React, { forwardRef } from "react";
-import Navbar from "../Navbar/Navbar";
 import { useApiError } from "../../hooks/use-api-error";
 import { Slide, Snackbar } from "@mui/material";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -55,7 +54,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {error}
         </Alert>
       </Snackbar>
-      {/* <Navbar /> */}
       {children}
     </div>
   );
