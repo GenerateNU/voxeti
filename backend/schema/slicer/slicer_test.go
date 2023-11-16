@@ -131,7 +131,7 @@ func TestShippingEstimation(t *testing.T) {
 func TestEstimation(t *testing.T) {
 	sliceData := schema.SliceData{
 		Flavor:            "Marlin",
-		Quantity: 				 1,
+		Quantity:          1,
 		TimeS:             6093,
 		FilamentUsed:      2.326,
 		LayerHeight:       0.2,
@@ -160,8 +160,6 @@ func TestEstimation(t *testing.T) {
 		Total:            22.47,
 	}
 
-	
-
 	if estimate.Total != expected.Total {
 		t.Logf("%+v\n", expected)
 		t.Logf("%+v\n", estimate)
@@ -179,7 +177,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BottomWithFinger.stl PLA", schema.PLA,
 			schema.SliceData{
 				Flavor:            "Marlin",
-				Quantity: 				 1,
+				Quantity:          1,
 				TimeS:             6093,
 				FilamentUsed:      2.326,
 				LayerHeight:       0.2,
@@ -206,7 +204,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BottomWithFinger.stl ABS", schema.ABS,
 			schema.SliceData{
 				Flavor:            "Marlin",
-				Quantity: 				 1,
+				Quantity:          1,
 				TimeS:             6093,
 				FilamentUsed:      2.326,
 				LayerHeight:       0.2,
@@ -233,7 +231,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BottomWithFinger.stl TPE", schema.TPE,
 			schema.SliceData{
 				Flavor:            "Marlin",
-				Quantity: 				 1,
+				Quantity:          1,
 				TimeS:             6093,
 				FilamentUsed:      2.326,
 				LayerHeight:       0.2,
@@ -260,7 +258,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BladeInvertedSpearOfHeaven.stl", schema.PLA,
 			schema.SliceData{
 				Flavor:            "Marlin",
-				Quantity: 				 1,
+				Quantity:          1,
 				TimeS:             2106,
 				FilamentUsed:      0.735,
 				LayerHeight:       0.2,
