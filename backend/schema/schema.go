@@ -35,9 +35,9 @@ type Job struct {
 	DesignId    []primitive.ObjectID `bson:"designId,omitempty" json:"designId"`
 	Quantity    []int32              `bson:"quantity,omitempty" json:"quantity"`
 	Status      JobStatus            `bson:"status,omitempty" json:"status"`
-	Price       float64              `bson:"price,omitempty" json:"price"`
-	Shipping    float64              `bson:"shipping,omitempty" json:"shipping"`
-	Taxes       float64              `bson:"taxes,omitempty" json:"taxes"`
+	Price       int              		 `bson:"price,omitempty" json:"price"`
+	Shipping    int              		 `bson:"shipping,omitempty" json:"shipping"`
+	Taxes       int             		 `bson:"taxes,omitempty" json:"taxes"`
 	Color       string               `bson:"color,omitempty" json:"color"`
 	Filament    FilamentType         `bson:"filament,omitempty" json:"filament"`
 	LayerHeight float64              `bson:"layerHeight,omitempty" json:"layerHeight"`
