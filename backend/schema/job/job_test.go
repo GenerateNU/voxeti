@@ -152,7 +152,6 @@ func TestCreateJob(t *testing.T) {
 	mt.Run("Given Valid Job Object, Should Successfully Create Job", func(mt *mtest.T) {
 		mockEmailService := MockEmailService{}
 
-
 		job := &schema.Job{
 			DesignerId: designerId,
 			ProducerId: producerId,
@@ -268,7 +267,7 @@ func TestPatchJob(t *testing.T) {
 	designerId := primitive.NewObjectID()
 	producerId := primitive.NewObjectID()
 	var designId []primitive.ObjectID
-	designId = append(designId, primitive.NewObjectID());
+	designId = append(designId, primitive.NewObjectID())
 	mockEmailService := MockEmailService{}
 
 	// insert the mock job document into the mock MongoDB database

@@ -37,7 +37,7 @@ const QuestionForm = () => {
   );
 
   const temp:string = watch("userType");
-  
+
   useEffect( () => {
     if (temp === "producer") {
       setQuestions(producerQuestions);
@@ -110,7 +110,7 @@ const QuestionForm = () => {
             {currentSection?.sectionTitle}
           </h2>
           {currentSection?.questionGroups.map((group, index) => (
-            <div key={"group_" + index} 
+            <div key={"group_" + index}
             className="flex flex-wrap lg:flex-nowrap justify-center">
               {group.questions?.map((question) => {
                 switch (question.format) {
