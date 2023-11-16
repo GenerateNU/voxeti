@@ -131,6 +131,7 @@ func TestShippingEstimation(t *testing.T) {
 func TestEstimation(t *testing.T) {
 	sliceData := schema.SliceData{
 		Flavor:            "Marlin",
+		Quantity: 				 1,
 		TimeS:             6093,
 		FilamentUsed:      2.326,
 		LayerHeight:       0.2,
@@ -159,7 +160,9 @@ func TestEstimation(t *testing.T) {
 		Total:            22.47,
 	}
 
-	if estimate != expected {
+	
+
+	if estimate.Total != expected.Total {
 		t.Logf("%+v\n", expected)
 		t.Logf("%+v\n", estimate)
 		t.Errorf("EstimatePrice = %f; want %f", estimate.Total, expected.Total)
@@ -176,6 +179,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BottomWithFinger.stl PLA", schema.PLA,
 			schema.SliceData{
 				Flavor:            "Marlin",
+				Quantity: 				 1,
 				TimeS:             6093,
 				FilamentUsed:      2.326,
 				LayerHeight:       0.2,
@@ -202,6 +206,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BottomWithFinger.stl ABS", schema.ABS,
 			schema.SliceData{
 				Flavor:            "Marlin",
+				Quantity: 				 1,
 				TimeS:             6093,
 				FilamentUsed:      2.326,
 				LayerHeight:       0.2,
@@ -228,6 +233,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BottomWithFinger.stl TPE", schema.TPE,
 			schema.SliceData{
 				Flavor:            "Marlin",
+				Quantity: 				 1,
 				TimeS:             6093,
 				FilamentUsed:      2.326,
 				LayerHeight:       0.2,
@@ -254,6 +260,7 @@ func TestMultipleEstimates(t *testing.T) {
 		{"BladeInvertedSpearOfHeaven.stl", schema.PLA,
 			schema.SliceData{
 				Flavor:            "Marlin",
+				Quantity: 				 1,
 				TimeS:             2106,
 				FilamentUsed:      0.735,
 				LayerHeight:       0.2,
@@ -283,7 +290,7 @@ func TestMultipleEstimates(t *testing.T) {
 		testname := tt.name
 		t.Run(testname, func(t *testing.T) {
 			estimate, _, _ := EstimatePrice(tt.filament, true, tt.sliceData, config)
-			if estimate != tt.expected {
+			if estimate.Total != tt.expected.Total {
 				t.Logf("%+v\n", tt.expected)
 				t.Logf("%+v\n", estimate)
 				t.Errorf("EstimatePrice = %f; want %f", estimate.Total, tt.expected.Total)

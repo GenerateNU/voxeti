@@ -55,7 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {error}
         </Alert>
       </Snackbar>
-      <Navbar />
+      {/* <Navbar /> */}
       {children}
     </div>
   );
