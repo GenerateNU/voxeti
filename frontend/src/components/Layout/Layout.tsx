@@ -10,7 +10,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       className="min-h-screen flex flex-col bg-background text-body-text"
     >
       <NavBar />
-      {children}
+      <div className="mt-24">
+        {children}
+      </div>
       <Footer />
     </div>
   );

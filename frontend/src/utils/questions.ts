@@ -295,7 +295,7 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-3 !grid-rows-2 !gap-4',
+              gridPattern: '!flex flex-row flex-wrap content-center justify-center gap-x-4 gap-y-4 w-[50vw]',
               options: [
                 {
                   choiceLabel: "Bambu Lab P1S",
@@ -341,7 +341,7 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-3 !grid-rows-2 !gap-4',
+              gridPattern: '!flex flex-row flex-wrap content-center justify-center gap-x-4 gap-y-4 w-[50vw]',
               options: [
                 {
                   choiceLabel: "Plastic",
@@ -456,7 +456,7 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-3 !grid-rows-2 !gap-4',
+              gridPattern: '!flex flex-row flex-wrap content-center justify-center gap-x-4 gap-y-4 w-[50vw]',
               options: [
                 {
                   choiceLabel: "Technology",

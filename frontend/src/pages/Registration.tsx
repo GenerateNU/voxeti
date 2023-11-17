@@ -101,7 +101,7 @@ const QuestionForm = () => {
   const RenderQuestions = () => {
     return (
       <Auth authRoute={false} key={"Auth"}>
-        <div className="flex flex-col justify-center lg:min-w-[450px] space-y-2">
+        <div className="flex flex-col justify-center lg:min-w-[450px] space-y-2 mt-4">
           <h2
             className={`text-xl text-center font-semibold mb-6 ${
               currentSectionIndex !== 0 && "mt-10"

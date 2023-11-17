@@ -24,10 +24,10 @@ export default function SelectQuestion({
                                 type="button"
                                 key={question.key + "_" + o.choiceLabel + "_" + o.choiceValue}
                                 variant="contained"
-                                className={`h-12 w-full 
-                                ${ (value == o.choiceValue) ? (o.selectedColor ? o.selectedColor : `!bg-[#ababab]`) : `!bg-[#fefefe]` }
+                                className={`h-12 w-full !hover:bg-[#999999] border-2 border-[#888888]
+                                ${ (value == o.choiceValue) ? (o.selectedColor ? o.selectedColor : `!bg-[#f0f0f0]`) : `!bg-[#fefefe]` }
                                 !rounded-[5px] hover:!bg-[#bcbcbc] !normal-case !font-light !text-lg !flex !flex-col 
-                                ${!(o.choiceSubtitle) ? "!items-center" : "!items-start"} !p-8`}
+                                ${!(o.choiceSubtitle) ? "!items-center" : "!items-start"} !p-14`}
                                 onClick={() => onChange(o.choiceValue)}
                             >
                                 <h1 className={'!text-[#000000] font-medium'}>{o.choiceLabel}</h1>

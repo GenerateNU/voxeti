@@ -9,7 +9,7 @@ export default function NavBar() {
   const [hidden, setHidden] = useState(true);
 
   return (
-    <div>
+    <div className="">
       <nav className='w-screen h-24 shadow-md p-6 md:pl-24 md:pr-24 flex flex-row items-center fixed z-10 bg-background'>
         <a
           className='text-2xl font-semibold mr-auto'
