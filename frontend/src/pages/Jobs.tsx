@@ -9,7 +9,7 @@ import {
 import { authApi, jobApi } from "../api/api";
 import { useStateDispatch, useStateSelector } from "../hooks/use-redux";
 import { Job } from "../main.types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ProducerCell from "../components/OrderStatus/ProducerCell";
 import StatusCell from "../components/OrderStatus/StatusCell";
 import FileCell from "../components/OrderStatus/FileCell";
