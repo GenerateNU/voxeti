@@ -31,16 +31,16 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	authMiddleware := func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			nonAuthRoutes := map[string]string{
-				"/api/users": "POST",
-				"/api/auth/login": "POST",
+				"/api/users":                "POST",
+				"/api/auth/login":           "POST",
 				"/api/auth/google-provider": "POST",
 			}
-			
+
 			// Check if the current request is an auth route:
 			nonAuthMethod, ok := nonAuthRoutes[c.Path()]
 			if !ok || nonAuthMethod != c.Request().Method {
 				// Authenticate session if it is an auth route:
-				userId, errResponse := auth.AuthenticateSession(c, store); 
+				userId, errResponse := auth.AuthenticateSession(c, store)
 				if errResponse != nil {
 					auth.InvalidateUserSession(c, store)
 					return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message))
@@ -50,14 +50,14 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 
 				// Check if the user associated with the session exists:
 				_, err := user.GetUserById(&userIdObj, dbClient)
-				if (err != nil) {
+				if err != nil {
 					auth.InvalidateUserSession(c, store)
 					return c.JSON(utilities.CreateErrorResponse(401, "Unauthorized Request, user does not exist!"))
 				}
 
 				// Add the requesting user to context:
 				c.Set("user", userId)
-			} 
+			}
 
 			err := next(c)
 			return err
@@ -73,7 +73,6 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 		AllowHeaders:     []string{"Content-Type", "Csrftoken"},
 	}))
 	api.Use(authMiddleware)
-
 
 	// Register extra route handlers
 	RegisterAuthHandlers(api, store, dbClient, logger)

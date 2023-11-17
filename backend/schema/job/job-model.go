@@ -21,7 +21,7 @@ func GetJobsByDesignerOrProducerId(designerId primitive.ObjectID, producerId pri
 }
 
 // Delete a job
-func DeleteJob(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {	
+func DeleteJob(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
 	return deleteJobDb(jobId, dbClient)
 }
 
