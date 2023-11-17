@@ -6,6 +6,7 @@ import (
 	"voxeti/backend/utilities"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -15,12 +16,12 @@ func GetJobById(jobId string, dbClient *mongo.Client) (schema.Job, *schema.Error
 }
 
 // Find a specified job by either a producer or designer ID
-func GetJobsByDesignerOrProducerId(designerId string, producerId string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
+func GetJobsByDesignerOrProducerId(designerId primitive.ObjectID, producerId primitive.ObjectID, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
 	return getJobsByDesignerOrProducerIdDb(designerId, producerId, limit, skip, dbClient)
 }
 
 // Delete a job
-func DeleteJob(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
+func DeleteJob(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {	
 	return deleteJobDb(jobId, dbClient)
 }
 

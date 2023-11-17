@@ -3,12 +3,16 @@ package controller
 import (
 	"net/http"
 	"os"
+	"voxeti/backend/schema/auth"
+	"voxeti/backend/schema/user"
+	"voxeti/backend/utilities"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pterm/pterm"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -23,14 +27,53 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 		HttpOnly: true,
 	}
 
+	// Used to wrap all endpoints in authentication middleware:
+	authMiddleware := func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			nonAuthRoutes := map[string]string{
+				"/api/users": "POST",
+				"/api/auth/login": "POST",
+				"/api/auth/google-provider": "POST",
+			}
+			
+			// Check if the current request is an auth route:
+			nonAuthMethod, ok := nonAuthRoutes[c.Path()]
+			if !ok || nonAuthMethod != c.Request().Method {
+				// Authenticate session if it is an auth route:
+				userId, errResponse := auth.AuthenticateSession(c, store); 
+				if errResponse != nil {
+					auth.InvalidateUserSession(c, store)
+					return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message))
+				}
+
+				userIdObj, _ := primitive.ObjectIDFromHex(*userId)
+
+				// Check if the user associated with the session exists:
+				_, err := user.GetUserById(&userIdObj, dbClient)
+				if (err != nil) {
+					auth.InvalidateUserSession(c, store)
+					return c.JSON(utilities.CreateErrorResponse(401, "Unauthorized Request, user does not exist!"))
+				}
+
+				// Add the requesting user to context:
+				c.Set("user", userId)
+			} 
+
+			err := next(c)
+			return err
+		}
+	}
+
 	// Initialize backend middleware:
 	api.Use(session.Middleware(store))
 	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowCredentials: true,
 		AllowOrigins:     []string{"http://localhost:4000"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
-		AllowHeaders:     []string{"Content-Type"},
+		AllowHeaders:     []string{"Content-Type", "Csrftoken"},
 	}))
+	api.Use(authMiddleware)
+
 
 	// Register extra route handlers
 	RegisterAuthHandlers(api, store, dbClient, logger)

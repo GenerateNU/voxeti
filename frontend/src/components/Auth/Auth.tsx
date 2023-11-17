@@ -11,10 +11,9 @@ export default function Auth({ children, authRoute }: AuthProps) {
     if (authRoute) {
       !userId && router.navigate({ to: "/login" });
     }
-    // ADD BACK ONCE WE KNOW BASE PROTECTED ROUTE:
-    // else {
-    //   userId && router.navigate({ to: '/protected' })
-    // }
+    else {
+      userId && router.navigate({ to: '/jobs' })
+    }
   }, [authRoute, userId]);
 
   return <>{children}</>;

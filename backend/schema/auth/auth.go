@@ -101,33 +101,35 @@ func InvalidateUserSession(c echo.Context, store *sessions.CookieStore) *schema.
 	return nil
 }
 
-func AuthenticateSession(c echo.Context, store *sessions.CookieStore) *schema.ErrorResponse {
+func AuthenticateSession(c echo.Context, store *sessions.CookieStore) (*string, *schema.ErrorResponse) {
 	errResponse := &schema.ErrorResponse{}
-	var requestBody map[string]interface{}
+	var csrfToken string
+	method := c.Request().Method
 
-	if err := c.Bind(&requestBody); err != nil {
-		errResponse.Code = 400
-		errResponse.Message = "Failed to unmarshal request body!"
-		return errResponse
-	}
-
-	csrfToken, ok := requestBody["csrfToken"].(string)
-	if !ok {
-		errResponse.Code = 401
-		errResponse.Message = "Unauthorized Request"
-		return errResponse
+	// Only need a CSRF Token on non-GET requests:
+	if method != "GET" {
+		token, ok := c.Request().Header["Csrftoken"]
+		if !ok || len(token) != 1 {
+			errResponse.Code = 401
+			errResponse.Message = "Unauthorized Request"
+			return nil, errResponse
+		}
+		csrfToken = token[0]
 	}
 
 	// Retrieve the session:
 	session, _ := store.Get(c.Request(), "voxeti-session")
 
 	// Check if the session is new or expired:
-	if session.IsNew || session.Options.MaxAge < 0 || session.Values["csrfToken"] != csrfToken {
+	if session.IsNew || session.Options.MaxAge < 0 || (method != "GET" && session.Values["csrfToken"] != csrfToken) {
 		errResponse.Code = 401
 		errResponse.Message = "Unauthorized Request"
-		return errResponse
+		return nil, errResponse
 	}
-	return nil
+
+	userId := session.Values["userId"].(string)
+
+	return &userId, nil
 }
 
 func GoogleSSOAuthentication(c echo.Context, store *sessions.CookieStore, accessToken schema.GoogleAccessToken, dbClient *mongo.Client) (*schema.LoginResponse, *schema.ErrorResponse) {

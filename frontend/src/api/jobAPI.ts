@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Job } from "../main.types";
+import { RootState } from "../store/store";
 
 // Job API:
 export const createJobApi = (baseUrl: string) =>
@@ -8,6 +9,13 @@ export const createJobApi = (baseUrl: string) =>
     baseQuery: fetchBaseQuery({
       baseUrl: `${baseUrl}/jobs`,
       credentials: "include",
+      prepareHeaders: (headers, { getState }) => {
+        const token = (getState() as RootState).user.csrfToken
+        if (token) {
+          headers.set("Csrftoken", token)
+        }
+        return headers
+      }
     }),
     endpoints: (builder) => ({
       createJob: builder.mutation<Job, Job>({
@@ -27,10 +35,7 @@ export const createJobApi = (baseUrl: string) =>
       getJob: builder.query<Job, string>({
         query: (id) => `/${id}`,
       }),
-      getDesignerJobs: builder.query<
-        Job[],
-        { designerId: string; page: string }
-      >({
+      getDesignerJobs: builder.query<Job[], { designerId: string; page: string }>({
         query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
       }),
       getProducerJobs: builder.query<
