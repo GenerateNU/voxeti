@@ -35,12 +35,6 @@ export default function Jobs() {
     setJobs(data)
   }
 
-  useEffect(() => {
-    if (data) {
-      setJobs(data);
-    }
-  }, [data]);
-
   return (
     <Auth authRoute={true}>
       <div className="flex flex-col justify-center items-center w-[50%] mx-auto">
