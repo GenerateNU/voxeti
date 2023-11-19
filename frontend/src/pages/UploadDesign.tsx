@@ -140,9 +140,10 @@ export function UploadDesign() {
 		createJob(job)
 				.unwrap()
 				.then(() => {
-						setters.currentStep(states.currentStep += 1);
+					setters.currentStep(states.currentStep += 1);
 				})
 				.catch(() => {
+					setters.currentStep(states.currentStep -= 1);
 					addError("An error occurred while creating your job. Please try again.");
 					setOpen(true);
 				})
@@ -214,7 +215,7 @@ export function UploadDesign() {
 	console.log(currentStep);
 
 	return (
-		<div className="container mx-auto mt-10 grow h-[100%]">
+		<div className="container mx-auto mt-16 grow h-[100%]">
 			<div className="z-0 min-h-[84vh] flex flex-col">
 				<VoxetiStepper
 					currentStep={currentStep}
