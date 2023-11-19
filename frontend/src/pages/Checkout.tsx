@@ -5,7 +5,8 @@ const ProductDisplay = () => {
         const response = await fetch("http://localhost:3000/api/payment/checkout-session", {
             method: "POST",
         });
-        console.log(JSON.stringify(response));
+        const session: string = await response.json();
+        window.location.href = session;
 
         // const session = await response.json();
         // // const result = await stripe.redirectToCheckout({
@@ -18,7 +19,7 @@ const ProductDisplay = () => {
         // // }
     }
     return (
-        <section className="flex justify-center items-center bg-[#ffffff] font-sans h-screen m-0 antialiased text-gray-900">
+        <div className="flex justify-center items-center bg-[#ffffff] font-sans h-screen m-0 antialiased text-gray-900">
             <div className="bg-white flex flex-col w-[400px] h-[112px] rounded-md justify-between">
                 <div className="flex">
                     <img
@@ -27,7 +28,7 @@ const ProductDisplay = () => {
                         className="rounded-md m-2.5 w-14 h-14"
                     />
                     <div className="flex flex-col justify-center">
-                        <h3 className="font-medium text-sm leading-5 tracking-tighter text-[#242d60] m-0">Stubborn Attachments</h3>
+                        <h3 className="font-medium text-sm leading-5 tracking-tighter text-[#242d60] m-0">Printing Job</h3>
                         <h5 className="font-medium text-sm leading-5 tracking-tighter text-[#242d60] m-0 opacity-50">$20.00</h5>
                     </div>
                 </div>
@@ -35,14 +36,17 @@ const ProductDisplay = () => {
                     Checkout
                 </button>
             </div>
-        </section>
+        </div>
     )
 };
 
 const Message = (props: { message: string }) => (
-    <section>
-        <p className="font-medium text-sm leading-5 tracking-tighter text-[#242d60] h-full w-full px-5 flex items-center justify-center box-border">{props.message}</p>
-    </section>
+    <div className="flex items-center justify-center h-screen">
+        {/* <p className="font-medium text-sm leading-5 tracking-tighter text-[#242d60] h-full w-full px-5 flex items-center justify-center box-border">{props.message}</p> */}
+        <h1 className="font-medium text-sm leading-5 tracking-tighter text-[#242d60] h-full w-full px-5 flex items-center justify-center box-border">
+            {props.message}
+        </h1>
+    </div>
 );
 
 export default function Checkout() {
@@ -63,9 +67,9 @@ export default function Checkout() {
         }
     }, []);
 
-    return message ? (
-        <Message message={message} />
-    ) : (
-        <ProductDisplay />
-    );
+    return (
+        <div>
+            {message ? <Message message={message} /> : <ProductDisplay />}
+        </div>
+    )
 }
