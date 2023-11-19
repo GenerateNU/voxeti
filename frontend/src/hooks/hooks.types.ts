@@ -8,6 +8,8 @@ import {
   MutationDefinition,
 } from "@reduxjs/toolkit/query";
 import { UserSliceState } from "../store/store.types";
+import { Error } from "../main.types";
+import { ReactNode } from "react";
 
 export interface UseGoogleProps {
   googleSSO: MutationTrigger<
@@ -38,3 +40,24 @@ export type GoogleSSOResponse = Omit<
   access_token?: string;
   scope?: string;
 };
+
+export type BackendErrorData = {
+  error: Error,
+}
+
+export type BackendError = {
+  status: number,
+  data: BackendErrorData,
+}
+
+export type ErrorContext = {
+  error: string,
+  open: boolean,
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  addError: (message : string) => void,
+  removeError: () => void,
+}
+
+export type ApiErrorContextProps = {
+  children: ReactNode,
+}

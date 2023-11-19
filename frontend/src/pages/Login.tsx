@@ -183,7 +183,7 @@ export function Login() {
                 {loginError}
               </h1>
             )}
-            <StyledButton title={"Sign In"} color={"primary"} type="submit">
+            <StyledButton type="submit" color='primary'>
               Sign In
             </StyledButton>
           </form>

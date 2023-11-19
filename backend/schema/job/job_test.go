@@ -51,7 +51,6 @@ func TestGetJobById(t *testing.T) {
 			Status: schema.Pending,
 			Price:  123,
 			Color:  "purple",
-			Scale:  89,
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -142,7 +141,8 @@ func TestCreateJob(t *testing.T) {
 	assert := assert.New(t)
 	designerId := primitive.NewObjectID()
 	producerId := primitive.NewObjectID()
-	designId := primitive.NewObjectID()
+	var designId []primitive.ObjectID
+	designId = append(designId, primitive.NewObjectID())
 
 	// insert the mock job document into the mock MongoDB database
 	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
@@ -160,8 +160,6 @@ func TestCreateJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 
 		user := schema.User{
@@ -245,8 +243,6 @@ func TestCreateJob(t *testing.T) {
 		assert.Equal(createdJob.Price, job.Price)
 		assert.Equal(createdJob.Color, job.Color)
 		assert.Equal(createdJob.Filament, job.Filament)
-		assert.Equal(createdJob.Dimensions, job.Dimensions)
-		assert.Equal(createdJob.Scale, job.Scale)
 		// status was updated, send email
 		assert.Equal(1, mockEmailService.numCallsSendNotification)
 	})
@@ -270,7 +266,8 @@ func TestPatchJob(t *testing.T) {
 	id := primitive.NewObjectID()
 	designerId := primitive.NewObjectID()
 	producerId := primitive.NewObjectID()
-	designId := primitive.NewObjectID()
+	var designId []primitive.ObjectID
+	designId = append(designId, primitive.NewObjectID())
 	mockEmailService := MockEmailService{}
 
 	// insert the mock job document into the mock MongoDB database
@@ -280,16 +277,14 @@ func TestPatchJob(t *testing.T) {
 
 	mt.Run("Throws Error When Given Invalid JobID", func(mt *mtest.T) {
 		mockJob := &schema.Job{
-			Id:         primitive.NewObjectID(),
-			DesignerId: primitive.NewObjectID(),
-			ProducerId: primitive.NewObjectID(),
-			DesignId:   primitive.NewObjectID(),
+			Id:         id,
+			DesignerId: designerId,
+			ProducerId: producerId,
+			DesignId:   designId,
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 		// Convert mockJob to primitive.M
 		mockJobMap, errMarshal := bson.Marshal(mockJob)
@@ -312,17 +307,18 @@ func TestPatchJob(t *testing.T) {
 	})
 
 	mt.Run("Successfully Updates and Returns Job", func(mt *mtest.T) {
+		var designId []primitive.ObjectID
+		designId = append(designId, primitive.NewObjectID())
+
 		mockJob := &schema.Job{
-			Id:         id,
-			DesignerId: designerId,
-			ProducerId: producerId,
+			Id:         primitive.NewObjectID(),
+			DesignerId: primitive.NewObjectID(),
+			ProducerId: primitive.NewObjectID(),
 			DesignId:   designId,
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 		// Convert mockJob to primitive.M
 		mockJobMap, marshalerr := bson.Marshal(mockJob)
@@ -376,8 +372,6 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 		patchedJob := &schema.Job{
 			Id:         id,
@@ -388,8 +382,6 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 
 		user := schema.User{
@@ -519,7 +511,9 @@ func TestUpdateJob(t *testing.T) {
 	id := primitive.NewObjectID()
 	designerId := primitive.NewObjectID()
 	producerId := primitive.NewObjectID()
-	designId := primitive.NewObjectID()
+	var designId []primitive.ObjectID
+	designId = append(designId, primitive.NewObjectID())
+
 	mockEmailService := MockEmailService{}
 
 	// Mock MongoDB setup
@@ -606,8 +600,6 @@ func TestUpdateJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 		patchedJob := &schema.Job{
 			Id:         id,
@@ -618,8 +610,6 @@ func TestUpdateJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
-			Dimensions: schema.Dimensions{Height: 12, Width: 10, Depth: 2},
-			Scale:      89,
 		}
 
 		user := schema.User{
@@ -764,7 +754,6 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
-			Scale:      89,
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -804,7 +793,6 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
-			Scale:      89,
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
