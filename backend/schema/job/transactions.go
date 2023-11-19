@@ -48,6 +48,8 @@ func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, limit
 		filter = bson.D{{Key: "designerId", Value: designerObjId}}
 	} else if designerId == "" && producerId != "" {
 		filter = bson.D{{Key: "producerId", Value: producerObjId}}
+	} else {
+		filter = bson.D{}
 	}
 
 	var jobs []schema.Job
