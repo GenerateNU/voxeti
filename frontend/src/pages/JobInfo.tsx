@@ -35,7 +35,7 @@ const theme = createTheme({
   },
 });
 
-let jobInfo = [
+const jobInfo = [
   [
     { field: "File", value: "3Dfile.stl" },
     { field: "Quantity", value: "1 piece" },
@@ -50,9 +50,8 @@ let jobInfo = [
   [{ field: "Price", value: "$502.25" }],
 ];
 
-let designerName = "Emily Hendrick";
-
-let jobStatus = "Pending";
+const designerName = "Emily Hendrick";
+const jobStatus = "Pending";
 
 export default function JobInfo() {
   const params = useParams();
