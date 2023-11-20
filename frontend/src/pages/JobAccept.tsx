@@ -89,7 +89,7 @@ export default function JobAccept() {
               {rows.map((row) => (
                 <TableRow
                   component={Link}
-                  href={`/job-accept/${row.jobid}/`}
+                  href={`/job-accept/${row.jobid}`}
                   underline="none"
                   className="hover:bg-producer"
                   key={row.jobid}
