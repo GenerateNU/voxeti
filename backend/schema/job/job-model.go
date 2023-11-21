@@ -1,6 +1,8 @@
 package job
 
 import (
+	"slices"
+
 	"voxeti/backend/schema"
 	"voxeti/backend/schema/user"
 	"voxeti/backend/utilities"
@@ -312,19 +314,18 @@ func filterJobs(filters *[]bson.M, dbClient *mongo.Client) (*[]schema.Job, *sche
 	return &jobs, nil
 }
 
-func declareSorters() *[]func(*[]schema.Job) *[]schema.Job {
+func declareSorters() *[]func(schema.Job, schema.Job) int {
 	return nil
 }
 
-func sortJobs(jobs *[]schema.Job, sorters *[]func(*[]schema.Job) *[]schema.Job, dbClient *mongo.Client) *[]schema.Job {
+func sortJobs(jobs *[]schema.Job, sorters *[]func(schema.Job, schema.Job) int, dbClient *mongo.Client) *[]schema.Job {
 
 	if sorters == nil {
 		return jobs
 	}
 
 	for _, sorter := range *sorters {
-		sortedJobs := sorter(jobs)
-		jobs = sortedJobs
+		slices.SortFunc(*jobs, sorter)
 	}
 
 	return jobs
