@@ -112,7 +112,7 @@ func GetRecommendedJobs(page int, limit int, id *primitive.ObjectID, dbClient *m
 	}
 
 	sorters := declareSorters()
-	sortedJobs := sortJobs(filteredJobs, sorters, dbClient)
+	sortedJobs := sortJobs(filteredJobs, sorters)
 
 	// paginate recommended jobs
 	sortedJobs = paginateJobs(page, limit, sortedJobs)
@@ -318,7 +318,7 @@ func declareSorters() *[]func(schema.Job, schema.Job) int {
 	return nil
 }
 
-func sortJobs(jobs *[]schema.Job, sorters *[]func(schema.Job, schema.Job) int, dbClient *mongo.Client) *[]schema.Job {
+func sortJobs(jobs *[]schema.Job, sorters *[]func(schema.Job, schema.Job) int) *[]schema.Job {
 
 	if sorters == nil {
 		return jobs
