@@ -6,7 +6,7 @@ export default function SignInWrapper({
   children,
 }: SignInWrapperProps) {
   return (
-    <Grid container className="grow flex mt-16 min-h-[667px]">
+    <Grid container className="grow flex min-h-[667px]">
       <Grid lg={6} className="flex grow justify-center items-center">
         {children}
       </Grid>

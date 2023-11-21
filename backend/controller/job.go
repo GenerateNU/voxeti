@@ -37,10 +37,6 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		producerId := c.QueryParam("producer")
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
 		skip := limit * page_num
-		// fmt.Println(skip);
-		// fmt.Println(page_num);
-		// fmt.Println(designerId);
-		// fmt.Println(producerId);
 
 		if page_num < 0 {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page number"))
@@ -68,6 +64,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		// create new Job with given data
 		newJob := new(schema.Job)
 		if err := c.Bind(newJob); err != nil {
+			logger.Error(err.Error())
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
 		jobCreated, errorResponse := job.CreateJob(*newJob, dbClient, &emailService)

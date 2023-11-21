@@ -13,9 +13,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
 
-func UploadSTLFile(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.ErrorResponse, *schema.Design) {
+func UploadSTLFile(file *multipart.FileHeader, bucket *gridfs.Bucket, dimensions schema.Dimensions) (*schema.ErrorResponse, *schema.Design) {
 	// Upload STL file with GridFS:
-	errorResponse, design := UploadDesign(file, bucket)
+	errorResponse, design := UploadDesign(file, bucket, dimensions)
 	if errorResponse != nil {
 		return errorResponse, nil
 	}

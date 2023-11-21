@@ -406,15 +406,15 @@ func validateUserFields(user *schema.User, patch bool) string {
 							}
 						}
 					}
-					if dimensions.FieldByName("Height").Uint() == 0 {
+					if dimensions.FieldByName("Height").Float() == 0 {
 						errors += "height is missing, "
 					}
 
-					if dimensions.FieldByName("Width").Uint() == 0 {
+					if dimensions.FieldByName("Width").Float() == 0 {
 						errors += "width is missing, "
 					}
 
-					if dimensions.FieldByName("Depth").Uint() == 0 {
+					if dimensions.FieldByName("Depth").Float() == 0 {
 						errors += "depth is missing, "
 					}
 				}
