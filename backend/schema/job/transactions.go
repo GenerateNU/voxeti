@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"voxeti/backend/schema"
-	"voxeti/backend/schema/user"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -159,228 +158,27 @@ func patchJobDb(jobIdStr string, patchData bson.M, dbClient *mongo.Client) (sche
 	return updatedJob, nil
 }
 
-// get recommended jobs given producer id
-func getRecommendedJobsDb(producer *schema.User, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
+func getJobsByFilterDb(filter *primitive.M, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 
-	availableFilamentTypes := user.GetAvailableFilamentTypes(producer)
-	supportedFilamentTypes := user.GetSupportedFilamentTypes(producer)
-	availableColors := user.GetAvailableColors(producer)
-	var METERS_PER_MILE = 1609.34
-
-	filter1 := bson.M{
-		"$and": []bson.M{
-			{
-				"shippingAddress.location": bson.M{
-					"$nearSphere": bson.M{
-						"$geometry":    producer.Addresses[0].Location,
-						"$maxDistance": 100 * METERS_PER_MILE,
-					},
-				},
-			},
-			{
-				"filament": bson.M{"$in": supportedFilamentTypes},
-			},
-			{
-				"filament": bson.M{"$in": availableFilamentTypes},
-			},
-			{
-				"color": bson.M{"$in": availableColors},
-			},
-		},
-	}
-
-	filter2 := bson.M{
-		"$and": []bson.M{
-			{
-				"shippingAddress.location": bson.M{
-					"$nearSphere": bson.M{
-						"$geometry":    producer.Addresses[0].Location,
-						"$maxDistance": 100 * METERS_PER_MILE,
-					},
-				},
-			},
-			{
-				"filament": bson.M{"$in": supportedFilamentTypes},
-			},
-			{
-				"filament": bson.M{"$in": availableFilamentTypes},
-			},
-		},
-		"$nor": []bson.M{
-			{
-				"color": bson.M{"$in": availableColors},
-			},
-		},
-	}
-
-	filter3 := bson.M{
-		"$and": []bson.M{
-			{
-				"shippingAddress.location": bson.M{
-					"$nearSphere": bson.M{
-						"$geometry":    producer.Addresses[0].Location,
-						"$maxDistance": 100 * METERS_PER_MILE,
-					},
-				},
-			},
-			{
-				"filament": bson.M{"$in": supportedFilamentTypes},
-			},
-			{
-				"color": bson.M{"$in": availableColors},
-			},
-		},
-		"$nor": []bson.M{
-			{
-				"filament": bson.M{"$in": availableFilamentTypes},
-			},
-		},
-	}
-
-	filter4 := bson.M{
-		"$and": []bson.M{
-			{
-				"shippingAddress.location": bson.M{
-					"$nearSphere": bson.M{
-						"$geometry":    producer.Addresses[0].Location,
-						"$maxDistance": 100 * METERS_PER_MILE,
-					},
-				},
-			},
-			{
-				"filament": bson.M{"$in": supportedFilamentTypes},
-			},
-		},
-		"$nor": []bson.M{
-			{
-				"filament": bson.M{"$in": availableFilamentTypes},
-			},
-			{
-				"color": bson.M{"$in": availableColors},
-			},
-		},
-	}
-
-	filter5 := bson.M{
-		"$and": []bson.M{
-			{
-				"shippingAddress.location": bson.M{
-					"$nearSphere": bson.M{
-						"$geometry":    producer.Addresses[0].Location,
-						"$maxDistance": 100 * METERS_PER_MILE,
-					},
-				},
-			},
-		},
-		"$nor": []bson.M{
-			{
-				"filament": bson.M{"$in": supportedFilamentTypes},
-			},
-			{
-				"filament": bson.M{"$in": availableFilamentTypes},
-			},
-			{
-				"color": bson.M{"$in": availableColors},
-			},
-		},
-	}
-
-	// get jobs with filter1 and add to jobs
-	cursor1, err := jobCollection.Find(context.Background(), filter1)
+	// get jobs with filter and add to jobs
+	cursor, err := jobCollection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
 	}
-	defer cursor1.Close(context.Background())
 
-	// Iterate over the cursor and append each user to the slice
+	// Iterate over the cursor and append each job to the slice
 	var jobs []schema.Job
-	for cursor1.Next(context.Background()) {
+	for cursor.Next(context.Background()) {
 		var job schema.Job
-		if err := cursor1.Decode(&job); err != nil {
-			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding user!"}
-		}
-		jobs = append(jobs, job)
-	}
-
-	// get jobs with filter2 and add to jobs
-	cursor2, err := jobCollection.Find(context.Background(), filter2)
-	if err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
-	}
-	defer cursor2.Close(context.Background())
-
-	// Iterate over the cursor and append each user to the slice
-	for cursor2.Next(context.Background()) {
-		var job schema.Job
-		if err := cursor2.Decode(&job); err != nil {
-			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding user!"}
-		}
-		jobs = append(jobs, job)
-	}
-
-	// get jobs with filter3 and add to jobs
-	cursor3, err := jobCollection.Find(context.Background(), filter3)
-	if err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
-	}
-	defer cursor3.Close(context.Background())
-
-	// Iterate over the cursor and append each user to the slice
-	for cursor3.Next(context.Background()) {
-		var job schema.Job
-		if err := cursor3.Decode(&job); err != nil {
-			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding user!"}
-		}
-		jobs = append(jobs, job)
-	}
-
-	// get jobs with filter4 and add to jobs
-	cursor4, err := jobCollection.Find(context.Background(), filter4)
-	if err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
-	}
-	defer cursor4.Close(context.Background())
-
-	// Iterate over the cursor and append each user to the slice
-	for cursor4.Next(context.Background()) {
-		var job schema.Job
-		if err := cursor4.Decode(&job); err != nil {
-			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding user!"}
-		}
-		jobs = append(jobs, job)
-	}
-
-	// get jobs with filter5 and add to jobs
-	cursor5, err := jobCollection.Find(context.Background(), filter5)
-	if err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
-	}
-	defer cursor5.Close(context.Background())
-
-	// Iterate over the cursor and append each user to the slice
-	for cursor5.Next(context.Background()) {
-		var job schema.Job
-		if err := cursor5.Decode(&job); err != nil {
-			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding user!"}
+		if err := cursor.Decode(&job); err != nil {
+			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
 		}
 		jobs = append(jobs, job)
 	}
 
 	// If there was an error iterating over the cursor, return an error
-	if err := cursor1.Err(); err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
-	}
-	if err := cursor2.Err(); err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
-	}
-	if err := cursor3.Err(); err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
-	}
-	if err := cursor4.Err(); err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
-	}
-	if err := cursor5.Err(); err != nil {
+	if err := cursor.Err(); err != nil {
 		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
 	}
 

@@ -102,17 +102,20 @@ func GetRecommendedJobs(page int, limit int, id *primitive.ObjectID, dbClient *m
 		return nil, err
 	}
 
-	// get recommended jobs
-	recommendedJobs, err := getRecommendedJobsDb(producer, dbClient)
+	filters := declareFilters(producer)
+	filteredJobs, err := filterJobs(filters, dbClient)
 
 	if err != nil {
 		return nil, err
 	}
 
-	// paginate recommended jobs
-	recommendedJobs = paginateJobs(page, limit, recommendedJobs)
+	sorters := declareSorters()
+	sortedJobs := sortJobs(filteredJobs, sorters, dbClient)
 
-	return recommendedJobs, nil
+	// paginate recommended jobs
+	sortedJobs = paginateJobs(page, limit, sortedJobs)
+
+	return sortedJobs, nil
 }
 
 // given a job, constructs an email for the job's designer that indicates the job's status has been updated
@@ -165,4 +168,164 @@ func paginateJobs(page int, limit int, jobs *[]schema.Job) *[]schema.Job {
 	derefJobs := *jobs
 	paginatedJobs := derefJobs[start:end]
 	return &paginatedJobs
+}
+
+func declareFilters(producer *schema.User) *[]bson.M {
+
+	availableFilamentTypes := user.GetAvailableFilamentTypes(producer)
+	supportedFilamentTypes := user.GetSupportedFilamentTypes(producer)
+	availableColors := user.GetAvailableColors(producer)
+	var METERS_PER_MILE = 1609.34
+
+	filter1 := bson.M{
+		"$and": []bson.M{
+			{
+				"shippingAddress.location": bson.M{
+					"$nearSphere": bson.M{
+						"$geometry":    producer.Addresses[0].Location,
+						"$maxDistance": 100 * METERS_PER_MILE,
+					},
+				},
+			},
+			{
+				"filament": bson.M{"$in": supportedFilamentTypes},
+			},
+			{
+				"filament": bson.M{"$in": availableFilamentTypes},
+			},
+			{
+				"color": bson.M{"$in": availableColors},
+			},
+		},
+	}
+
+	filter2 := bson.M{
+		"$and": []bson.M{
+			{
+				"shippingAddress.location": bson.M{
+					"$nearSphere": bson.M{
+						"$geometry":    producer.Addresses[0].Location,
+						"$maxDistance": 100 * METERS_PER_MILE,
+					},
+				},
+			},
+			{
+				"filament": bson.M{"$in": supportedFilamentTypes},
+			},
+			{
+				"filament": bson.M{"$in": availableFilamentTypes},
+			},
+		},
+		"$nor": []bson.M{
+			{
+				"color": bson.M{"$in": availableColors},
+			},
+		},
+	}
+
+	filter3 := bson.M{
+		"$and": []bson.M{
+			{
+				"shippingAddress.location": bson.M{
+					"$nearSphere": bson.M{
+						"$geometry":    producer.Addresses[0].Location,
+						"$maxDistance": 100 * METERS_PER_MILE,
+					},
+				},
+			},
+			{
+				"filament": bson.M{"$in": supportedFilamentTypes},
+			},
+			{
+				"color": bson.M{"$in": availableColors},
+			},
+		},
+		"$nor": []bson.M{
+			{
+				"filament": bson.M{"$in": availableFilamentTypes},
+			},
+		},
+	}
+
+	filter4 := bson.M{
+		"$and": []bson.M{
+			{
+				"shippingAddress.location": bson.M{
+					"$nearSphere": bson.M{
+						"$geometry":    producer.Addresses[0].Location,
+						"$maxDistance": 100 * METERS_PER_MILE,
+					},
+				},
+			},
+			{
+				"filament": bson.M{"$in": supportedFilamentTypes},
+			},
+		},
+		"$nor": []bson.M{
+			{
+				"filament": bson.M{"$in": availableFilamentTypes},
+			},
+			{
+				"color": bson.M{"$in": availableColors},
+			},
+		},
+	}
+
+	filter5 := bson.M{
+		"$and": []bson.M{
+			{
+				"shippingAddress.location": bson.M{
+					"$nearSphere": bson.M{
+						"$geometry":    producer.Addresses[0].Location,
+						"$maxDistance": 100 * METERS_PER_MILE,
+					},
+				},
+			},
+		},
+		"$nor": []bson.M{
+			{
+				"filament": bson.M{"$in": supportedFilamentTypes},
+			},
+			{
+				"filament": bson.M{"$in": availableFilamentTypes},
+			},
+			{
+				"color": bson.M{"$in": availableColors},
+			},
+		},
+	}
+
+	return &[]bson.M{filter1, filter2, filter3, filter4, filter5}
+}
+
+func filterJobs(filters *[]bson.M, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
+	// for each filter, call transactions and append to jobs
+	var jobs []schema.Job
+	for _, filter := range *filters {
+		filteredJobs, err := getJobsByFilterDb(&filter, dbClient)
+		if err != nil {
+			return nil, err
+		}
+		jobs = append(jobs, *filteredJobs...)
+	}
+
+	return &jobs, nil
+}
+
+func declareSorters() *[]func(*[]schema.Job) *[]schema.Job {
+	return nil
+}
+
+func sortJobs(jobs *[]schema.Job, sorters *[]func(*[]schema.Job) *[]schema.Job, dbClient *mongo.Client) *[]schema.Job {
+
+	if sorters == nil {
+		return jobs
+	}
+
+	for _, sorter := range *sorters {
+		sortedJobs := sorter(jobs)
+		jobs = sortedJobs
+	}
+
+	return jobs
 }
