@@ -1149,4 +1149,146 @@ func TestGetRecommendedJobs(t *testing.T) {
 		assert.Nil(err)
 		assert.Equal([]schema.Job{expectedJob1, expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2}, *recommendedJobs)
 	})
+
+	mt.Run("Success - 5 jobs page 2", func(mt *mtest.T) {
+		user := schema.User{
+			Id:             producerId,
+			FirstName:      "Kevin",
+			LastName:       "Durant",
+			Email:          "kd35@gmail.com",
+			Password:       "iamkevindurant",
+			SocialProvider: "NONE",
+			Addresses: []schema.Address{
+				{
+					Name:    "Home",
+					Line1:   "35 Oklahoma St",
+					Line2:   "Apt 1",
+					ZipCode: "12345",
+					City:    "Phoenix",
+					State:   "AZ",
+					Country: "USA",
+					Location: geojson.Geometry{
+						Type:        "Point",
+						Coordinates: orb.Point{1, 1},
+					},
+				},
+			},
+			PhoneNumber: &schema.PhoneNumber{
+				CountryCode: "1",
+				Number:      "1234567890",
+			},
+			Experience: 1,
+			Printers: []schema.Printer{
+				{
+					SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+					Dimensions: schema.Dimensions{
+						Height: 10,
+						Width:  10,
+						Depth:  10,
+					},
+				},
+			},
+			AvailableFilament: []schema.Filament{
+				{
+					Type:         "PLA",
+					Color:        "Red",
+					PricePerUnit: 10,
+				},
+				{
+					Type:         "ABS",
+					Color:        "Blue",
+					PricePerUnit: 10,
+				},
+			},
+		}
+
+		// Create expected job to be returned
+		expectedJob1 := schema.Job{
+			Id:         job1Id,
+			DesignerId: job1DesignerId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		expectedJob2 := schema.Job{
+			Id:         job2Id,
+			DesignerId: job2DesignerId,
+			Status:     schema.Pending,
+			Price:      123,
+			Color:      "purple",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		userBSON, _ := bson.Marshal(user)
+		jobBSON1, _ := bson.Marshal(expectedJob1)
+		jobBSON2, _ := bson.Marshal(expectedJob2)
+		var userBsonD bson.D
+		var jobBsonData1 bson.D
+		var jobBsonData2 bson.D
+		if err := bson.Unmarshal(userBSON, &userBsonD); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON1, &jobBsonData1); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON2, &jobBsonData2); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+
+		// Mock MongoDB Database Response
+
+		userRes := mtest.CreateCursorResponse(
+			1,
+			"data.users",
+			mtest.FirstBatch,
+			userBsonD)
+
+		userResEnd := mtest.CreateCursorResponse(
+			0,
+			"data.users",
+			mtest.NextBatch)
+
+		res := mtest.CreateCursorResponse(
+			1,
+			"data.jobs",
+			mtest.FirstBatch,
+			jobBsonData1,
+			jobBsonData2)
+		// no more jobs to return, indicates the first batch is the only batch with job data
+		end := mtest.CreateCursorResponse(
+			0,
+			"data.jobs",
+			mtest.NextBatch)
+		mt.AddMockResponses(userRes, userResEnd, res, end, res, end, res, end, res, end, res, end)
+
+		// Assertions
+		recommendedJobs, err := GetRecommendedJobs(2, 5, &producerId, mt.Client)
+
+		assert.Nil(err)
+		assert.Equal([]schema.Job{expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2}, *recommendedJobs)
+	})
 }

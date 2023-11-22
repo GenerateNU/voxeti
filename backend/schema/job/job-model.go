@@ -315,6 +315,24 @@ func filterJobs(filters *[]bson.M, dbClient *mongo.Client) (*[]schema.Job, *sche
 }
 
 func declareSorters() *[]func(schema.Job, schema.Job) int {
+
+	// EXAMPLE
+	// // sort jobs by decreasing object id
+	// sorter1 := func(job1 schema.Job, job2 schema.Job) int {
+	// 	if job1.Id.Hex() > job2.Id.Hex() {
+	// 		return -1
+	// 	} else if job1.Id.Hex() < job2.Id.Hex() {
+	// 		return 1
+	// 	} else {
+	// 		return 0
+	// 	}
+	// }
+
+	// // return sorters
+	// return &[]func(schema.Job, schema.Job) int{sorter1}
+
+	// ----------------------------
+
 	return nil
 }
 
