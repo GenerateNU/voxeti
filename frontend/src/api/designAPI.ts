@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Design } from "../main.types";
+import { RootState } from "../store/store";
 
 export const createDesignApi = (baseUrl: string) =>
   createApi({
@@ -7,6 +8,13 @@ export const createDesignApi = (baseUrl: string) =>
     baseQuery: fetchBaseQuery({
       baseUrl: `${baseUrl}/designs`,
       credentials: "include",
+      prepareHeaders: (headers, { getState }) => {
+        const token = (getState() as RootState).user.csrfToken
+        if (token) {
+          headers.set("Csrftoken", token)
+        }
+        return headers
+      }
     }),
     endpoints: (builder) => ({
       uploadDesign: builder.mutation<Design[], FormData>({
