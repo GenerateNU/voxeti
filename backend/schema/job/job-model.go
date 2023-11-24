@@ -181,6 +181,7 @@ func paginateJobs(page int, limit int, jobs *[]schema.Job) *[]schema.Job {
 	return &paginatedJobs
 }
 
+// enum for all filter types
 type RecommendationFilter string
 
 const (
@@ -202,6 +203,7 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 		case Distance:
 			f := bson.M{
 				"shippingAddress.location": bson.M{
+					// nearSphere sorts by distance, so no need to have distance sorter
 					"$nearSphere": bson.M{
 						"$geometry":    producer.Addresses[0].Location,
 						"$maxDistance": 100 * METERS_PER_MILE,
@@ -243,6 +245,7 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 	return filteredJobs, nil
 }
 
+// enum for all sorting types
 type RecommendationSorter string
 
 const (
