@@ -13,35 +13,9 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
-
-function createData(
-  designer: string,
-  filenames: { name: string; quantity: number }[],
-  price: number,
-  jobid: string
-) {
-  return { designer, filenames, price, jobid };
-}
-
-const rows = [
-  createData(
-    "Emily Hendrick",
-    [
-      { name: "smol_slime.stl", quantity: 1 },
-      { name: "bottomwithfinger.stl", quantity: 1 },
-    ],
-    6.0,
-    "1"
-  ),
-  createData(
-    "Patrick Dempsey",
-    [{ name: "bottomwithfinger.stl", quantity: 1 }],
-    9.0,
-    "2"
-  ),
-  createData("Nate Sawant", [{ name: "benchy.stl", quantity: 1 }], 16.0, "3"),
-  createData("Bob Ross", [{ name: "eiffel_tower.stl", quantity: 1 }], 3.7, "4"),
-];
+import { designApi, jobApi, userApi } from "../api/api";
+import { useStateSelector } from "../hooks/use-redux";
+import { Job } from "../main.types";
 
 export default function JobAccept() {
   const [jobFilter, setJobFilter] = React.useState("Pending");
@@ -49,7 +23,20 @@ export default function JobAccept() {
   const handleChange = (event: SelectChangeEvent) => {
     setJobFilter(event.target.value as string);
   };
+  const [rows, setRows] = React.useState<Job[]>([]);
 
+  const { user } = useStateSelector((state) => state.user);
+
+  const { data: data } = jobApi.useGetProducerJobsQuery({
+    producerId: user.id,
+    page: "0",
+  });
+
+  React.useEffect(() => {
+    if (data) {
+      setRows(data);
+    }
+  }, [data]);
   return (
     <div className="py-32 w-full h-screen flex flex-col items-center justify-center">
       <div className=" px-4 w-full sm:w-3/5">
@@ -89,10 +76,10 @@ export default function JobAccept() {
               {rows.map((row) => (
                 <TableRow
                   component={Link}
-                  href={`/job-accept/${row.jobid}`}
+                  href={`/job-accept/${row.id}`}
                   underline="none"
                   className="hover:bg-producer"
-                  key={row.jobid}
+                  key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
@@ -102,12 +89,32 @@ export default function JobAccept() {
                         alt="Remy Sharp"
                         src="/static/images/avatar/1.jpg"
                       />
-                      <div className=" px-3">{row.designer}</div>
+                      <div className="px-3">
+                        {row &&
+                          (() => {
+                            const { data: designer } = userApi.useGetUserQuery(row.designerId);
+                            if (designer) {
+                              return (
+                                designer.firstName + " " + designer.lastName
+                              );
+                            }
+                            return "Designer Not Found"; 
+                          })()}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell align="right">
-                    {row.filenames
-                      .map((file) => `${file.name} (${file.quantity}x)`)
+                    {row.designId
+                      .map(async (designId) => {
+                        const { data: designInfo } =
+                          designApi.useGetDesignQuery(designId);
+
+                        if (designInfo) {
+                          return `${designInfo.name}`;
+                        }
+
+                        return "Design Not Found"; 
+                      })
                       .join(", ")}
                   </TableCell>
                   <TableCell align="right">${row.price.toFixed(2)}</TableCell>
