@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 	"voxeti/backend/schema/auth"
+	"voxeti/backend/schema/slicer"
 	"voxeti/backend/schema/user"
 	"voxeti/backend/utilities"
-	"voxeti/backend/schema/slicer"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
