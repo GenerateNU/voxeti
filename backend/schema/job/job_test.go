@@ -51,6 +51,19 @@ func TestGetJobById(t *testing.T) {
 			Status: schema.Pending,
 			Price:  123,
 			Color:  "purple",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -61,13 +74,13 @@ func TestGetJobById(t *testing.T) {
 		// Mock MongoDB Database Response
 		res := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData)
 		// no more jobs to return, indicates the first batch is the only batch with job data
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 		mt.AddMockResponses(res, end)
 
@@ -81,7 +94,7 @@ func TestGetJobById(t *testing.T) {
 		// Mock MongoDB Database Response, no jobs were found
 		res := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch)
 		mt.AddMockResponses(res)
 
@@ -160,6 +173,19 @@ func TestCreateJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 
 		user := schema.User{
@@ -228,7 +254,7 @@ func TestCreateJob(t *testing.T) {
 
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 
 		mt.AddMockResponses(mtest.CreateSuccessResponse(), userRes, end)
@@ -285,6 +311,19 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		// Convert mockJob to primitive.M
 		mockJobMap, errMarshal := bson.Marshal(mockJob)
@@ -319,6 +358,19 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		// Convert mockJob to primitive.M
 		mockJobMap, marshalerr := bson.Marshal(mockJob)
@@ -345,12 +397,12 @@ func TestPatchJob(t *testing.T) {
 		// Mock FindOne Response
 		res := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData)
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 		mt.AddMockResponses(res, end, updateRes, res, end)
 
@@ -372,6 +424,19 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		patchedJob := &schema.Job{
 			Id:         id,
@@ -382,6 +447,19 @@ func TestPatchJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 
 		user := schema.User{
@@ -476,12 +554,12 @@ func TestPatchJob(t *testing.T) {
 		// Represents the Previous Job
 		res := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData)
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 		// mock UpdateOne response
 		updateRes := bson.D{
@@ -491,7 +569,7 @@ func TestPatchJob(t *testing.T) {
 		// represents the newly patched job
 		patchedRes := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			patchedJobBsonData)
 
@@ -529,6 +607,19 @@ func TestUpdateJob(t *testing.T) {
 			Id:     jobID,
 			Status: schema.Pending,
 			Price:  200,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		updatedJob := existingJob
 		updatedJob.Price = 250 // Change in the job's data
@@ -549,12 +640,12 @@ func TestUpdateJob(t *testing.T) {
 		// Mock FindOne Response
 		res := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData)
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 
 		// Mock database responses
@@ -600,6 +691,19 @@ func TestUpdateJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		patchedJob := &schema.Job{
 			Id:         id,
@@ -610,6 +714,19 @@ func TestUpdateJob(t *testing.T) {
 			Price:      123,
 			Color:      "purple",
 			Filament:   schema.PLA,
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 
 		user := schema.User{
@@ -704,12 +821,12 @@ func TestUpdateJob(t *testing.T) {
 		// Represents the Previous Job
 		res := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData)
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 		// mock UpdateOne response
 		updateRes := bson.D{
@@ -719,7 +836,7 @@ func TestUpdateJob(t *testing.T) {
 		// represents the newly patched job
 		patchedRes := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			patchedJobBsonData)
 
@@ -754,6 +871,19 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -764,13 +894,13 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		// Mock MongoDB Database Response
 		res := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData)
 		// no more jobs to return, indicates the first batch is the only batch with job data
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 		mt.AddMockResponses(res, end)
 
@@ -793,6 +923,19 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 			Status:     schema.Pending,
 			Price:      123,
 			Color:      "purple",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -803,13 +946,13 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		// Mock MongoDB Database Response
 		res := mtest.CreateCursorResponse(
 			1,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData)
 		// no more jobs to return, indicates the first batch is the only batch with job data
 		end := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.NextBatch)
 		mt.AddMockResponses(res, end)
 
@@ -824,7 +967,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		// Mock MongoDB Database Response, no jobs were found
 		res := mtest.CreateCursorResponse(
 			0,
-			"data.job",
+			"data.jobs",
 			mtest.FirstBatch)
 		mt.AddMockResponses(res)
 
@@ -848,5 +991,370 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		}
 		assert.Equal(err.Code, 404)
 		assert.Equal(err.Message, "Job does not exist!")
+	})
+}
+
+func TestGetRecommendedJobs(t *testing.T) {
+	assert := assert.New(t)
+
+	// insert the mock job document into the mock MongoDB database
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
+
+	producerId := primitive.NewObjectID()
+	job1Id := primitive.NewObjectID()
+	job1DesignerId := primitive.NewObjectID()
+	job2Id := primitive.NewObjectID()
+	job2DesignerId := primitive.NewObjectID()
+	job3Id := primitive.NewObjectID()
+	job3DesignerId := primitive.NewObjectID()
+
+	mt.Run("Success - sort by price", func(mt *mtest.T) {
+		user := schema.User{
+			Id:             producerId,
+			FirstName:      "Kevin",
+			LastName:       "Durant",
+			Email:          "kd35@gmail.com",
+			Password:       "iamkevindurant",
+			SocialProvider: "NONE",
+			Addresses: []schema.Address{
+				{
+					Name:    "Home",
+					Line1:   "35 Oklahoma St",
+					Line2:   "Apt 1",
+					ZipCode: "12345",
+					City:    "Phoenix",
+					State:   "AZ",
+					Country: "USA",
+					Location: geojson.Geometry{
+						Type:        "Point",
+						Coordinates: orb.Point{1, 1},
+					},
+				},
+			},
+			PhoneNumber: &schema.PhoneNumber{
+				CountryCode: "1",
+				Number:      "1234567890",
+			},
+			Experience: 1,
+			Printers: []schema.Printer{
+				{
+					SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+					Dimensions: schema.Dimensions{
+						Height: 10,
+						Width:  10,
+						Depth:  10,
+					},
+				},
+			},
+			AvailableFilament: []schema.Filament{
+				{
+					Type:         "PLA",
+					Color:        "Red",
+					PricePerUnit: 10,
+				},
+				{
+					Type:         "ABS",
+					Color:        "Blue",
+					PricePerUnit: 10,
+				},
+			},
+		}
+
+		// Create expected job to be returned
+		expectedJob1 := schema.Job{
+			Id:         job1Id,
+			DesignerId: job1DesignerId,
+			Status:     schema.Pending,
+			Price:      1,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		expectedJob2 := schema.Job{
+			Id:         job2Id,
+			DesignerId: job2DesignerId,
+			Status:     schema.Pending,
+			Price:      2,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		expectedJob3 := schema.Job{
+			Id:         job3Id,
+			DesignerId: job3DesignerId,
+			Status:     schema.Pending,
+			Price:      3,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		userBSON, _ := bson.Marshal(user)
+		jobBSON1, _ := bson.Marshal(expectedJob1)
+		jobBSON2, _ := bson.Marshal(expectedJob2)
+		jobBSON3, _ := bson.Marshal(expectedJob3)
+		var userBsonD bson.D
+		var jobBsonData1 bson.D
+		var jobBsonData2 bson.D
+		var jobBsonData3 bson.D
+		if err := bson.Unmarshal(userBSON, &userBsonD); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON1, &jobBsonData1); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON2, &jobBsonData2); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON3, &jobBsonData3); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+
+		// Mock MongoDB Database Response
+
+		userRes := mtest.CreateCursorResponse(
+			1,
+			"data.users",
+			mtest.FirstBatch,
+			userBsonD)
+
+		userEnd := mtest.CreateCursorResponse(
+			0,
+			"data.users",
+			mtest.NextBatch)
+
+		jobsRes := mtest.CreateCursorResponse(
+			1,
+			"data.jobs",
+			mtest.FirstBatch,
+			jobBsonData1,
+			jobBsonData2,
+			jobBsonData3)
+		// no more jobs to return, indicates the first batch is the only batch with job data
+		jobsEnd := mtest.CreateCursorResponse(
+			0,
+			"data.jobs",
+			mtest.NextBatch)
+		mt.AddMockResponses(userRes, userEnd, jobsRes, jobsEnd)
+
+		// Assertions
+		recommendedJobs, err := GetRecommendedJobs(1, 10, "DISTANCE,SUPPORTEDFILAMENTTYPES,AVAILABLEFILAMENTTYPES,AVAILABLECOLORS", "PRICE", &producerId, mt.Client)
+
+		assert.Nil(err)
+		derefJobs := *recommendedJobs
+		// Check that the jobs are sorted by price
+		for i := 0; i < len(derefJobs)-1; i++ {
+			assert.True(derefJobs[i].Price <= derefJobs[i+1].Price)
+		}
+	})
+
+	mt.Run("Success - page 3 limit 1", func(mt *mtest.T) {
+		user := schema.User{
+			Id:             producerId,
+			FirstName:      "Kevin",
+			LastName:       "Durant",
+			Email:          "kd35@gmail.com",
+			Password:       "iamkevindurant",
+			SocialProvider: "NONE",
+			Addresses: []schema.Address{
+				{
+					Name:    "Home",
+					Line1:   "35 Oklahoma St",
+					Line2:   "Apt 1",
+					ZipCode: "12345",
+					City:    "Phoenix",
+					State:   "AZ",
+					Country: "USA",
+					Location: geojson.Geometry{
+						Type:        "Point",
+						Coordinates: orb.Point{1, 1},
+					},
+				},
+			},
+			PhoneNumber: &schema.PhoneNumber{
+				CountryCode: "1",
+				Number:      "1234567890",
+			},
+			Experience: 1,
+			Printers: []schema.Printer{
+				{
+					SupportedFilament: []schema.FilamentType{"PLA", "ABS"},
+					Dimensions: schema.Dimensions{
+						Height: 10,
+						Width:  10,
+						Depth:  10,
+					},
+				},
+			},
+			AvailableFilament: []schema.Filament{
+				{
+					Type:         "PLA",
+					Color:        "Red",
+					PricePerUnit: 10,
+				},
+				{
+					Type:         "ABS",
+					Color:        "Blue",
+					PricePerUnit: 10,
+				},
+			},
+		}
+
+		// Create expected job to be returned
+		expectedJob1 := schema.Job{
+			Id:         job1Id,
+			DesignerId: job1DesignerId,
+			Status:     schema.Pending,
+			Price:      1,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		expectedJob2 := schema.Job{
+			Id:         job2Id,
+			DesignerId: job2DesignerId,
+			Status:     schema.Pending,
+			Price:      2,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		expectedJob3 := schema.Job{
+			Id:         job3Id,
+			DesignerId: job3DesignerId,
+			Status:     schema.Pending,
+			Price:      3,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		userBSON, _ := bson.Marshal(user)
+		jobBSON1, _ := bson.Marshal(expectedJob1)
+		jobBSON2, _ := bson.Marshal(expectedJob2)
+		jobBSON3, _ := bson.Marshal(expectedJob3)
+		var userBsonD bson.D
+		var jobBsonData1 bson.D
+		var jobBsonData2 bson.D
+		var jobBsonData3 bson.D
+		if err := bson.Unmarshal(userBSON, &userBsonD); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON1, &jobBsonData1); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON2, &jobBsonData2); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON3, &jobBsonData3); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+
+		// Mock MongoDB Database Response
+
+		userRes := mtest.CreateCursorResponse(
+			1,
+			"data.users",
+			mtest.FirstBatch,
+			userBsonD)
+
+		userEnd := mtest.CreateCursorResponse(
+			0,
+			"data.users",
+			mtest.NextBatch)
+
+		jobsRes := mtest.CreateCursorResponse(
+			1,
+			"data.jobs",
+			mtest.FirstBatch,
+			jobBsonData1,
+			jobBsonData2,
+			jobBsonData3)
+		// no more jobs to return, indicates the first batch is the only batch with job data
+		jobsEnd := mtest.CreateCursorResponse(
+			0,
+			"data.jobs",
+			mtest.NextBatch)
+		mt.AddMockResponses(userRes, userEnd, jobsRes, jobsEnd)
+
+		// Assertions
+		recommendedJobs, err := GetRecommendedJobs(3, 1, "DISTANCE,SUPPORTEDFILAMENTTYPES,AVAILABLEFILAMENTTYPES,AVAILABLECOLORS", "PRICE", &producerId, mt.Client)
+
+		assert.Nil(err)
+		// check that there is only 1 job
+		assert.Equal(1, len(*recommendedJobs))
+
 	})
 }
