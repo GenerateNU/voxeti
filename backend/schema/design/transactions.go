@@ -9,9 +9,10 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func UploadDesign(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.ErrorResponse, *schema.Design) {
+func UploadDesign(file *multipart.FileHeader, bucket *gridfs.Bucket, dimensions schema.Dimensions) (*schema.ErrorResponse, *schema.Design) {
 	errResponse := &schema.ErrorResponse{}
 	design := &schema.Design{}
 
@@ -24,7 +25,11 @@ func UploadDesign(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.Er
 	}
 
 	// Upload the file with metadata:
-	objectID, err := bucket.UploadFromStream(file.Filename, io.Reader(src))
+	metadata := map[string]interface{}{
+		"dimensions": dimensions,
+	}
+
+	objectID, err := bucket.UploadFromStream(file.Filename, io.Reader(src), &options.UploadOptions{Metadata: metadata})
 	if err != nil {
 		errResponse.Code = 500
 		errResponse.Message = "Failed to upload design!"
@@ -33,6 +38,7 @@ func UploadDesign(file *multipart.FileHeader, bucket *gridfs.Bucket) (*schema.Er
 	design.Id = objectID
 	design.Name = fmt.Sprintf("voxeti-%s.stl", objectID.Hex())
 	design.Length = file.Size
+	design.Dimensions = dimensions
 
 	return nil, design
 }

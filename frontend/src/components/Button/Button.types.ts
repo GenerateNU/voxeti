@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 
 export interface StyledButtonProps {
-  title: string;
   children: ReactNode;
   href?: string;
   type?: "submit";
   icon?: string;
   disabled?: boolean;
-  color: "primary" | "producer" | "designer";
+  size?: 'sm' | 'md' | 'lg';
+  color: 'primary' | 'seconday' | 'producer'| 'designer' | 'delete';
   onClick?: () => void;
 }

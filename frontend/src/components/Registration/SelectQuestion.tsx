@@ -10,7 +10,7 @@ export default function SelectQuestion({
     control: Control
 }) {
     return (
-        <Controller 
+        <Controller
             key={question.key + "Controller"}
             control={control}
             name={question.key}
@@ -18,15 +18,15 @@ export default function SelectQuestion({
             render={({ field: { onChange, value } }) => {
                 if(question.options != undefined){
                     return (
-                    <div key={question.key + "Div"} className={question.gridPattern ? question.gridPattern : 'flex flex-row justify-center lg:min-w-[450px] space-x-2'}> 
+                    <div key={question.key + "Div"} className={question.gridPattern ? question.gridPattern : 'flex flex-row justify-center lg:min-w-[450px] space-x-2'}>
                         {question.options.map( (o) => (
                             <Button
                                 type="button"
                                 key={question.key + "_" + o.choiceLabel + "_" + o.choiceValue}
                                 variant="contained"
-                                className={`h-12 w-full 
+                                className={`h-12 w-full
                                 ${ (value == o.choiceValue) ? (o.selectedColor ? o.selectedColor : `!bg-[#ababab]`) : `!bg-[#fefefe]` }
-                                !rounded-[5px] hover:!bg-[#bcbcbc] !normal-case !font-light !text-lg !flex !flex-col 
+                                !rounded-[5px] hover:!bg-[#bcbcbc] !normal-case !font-light !text-lg !flex !flex-col
                                 ${!(o.choiceSubtitle) ? "!items-center" : "!items-start"} !p-8`}
                                 onClick={() => onChange(o.choiceValue)}
                             >
@@ -41,7 +41,7 @@ export default function SelectQuestion({
                         <></>
                     );
                 }
-                
+
             }}
         />
     );

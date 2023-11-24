@@ -81,6 +81,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		// create new Job with given data
 		newJob := new(schema.Job)
 		if err := c.Bind(newJob); err != nil {
+			logger.Error(err.Error())
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
 
