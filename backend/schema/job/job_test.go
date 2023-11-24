@@ -1007,8 +1007,10 @@ func TestGetRecommendedJobs(t *testing.T) {
 	job1DesignerId := primitive.NewObjectID()
 	job2Id := primitive.NewObjectID()
 	job2DesignerId := primitive.NewObjectID()
+	job3Id := primitive.NewObjectID()
+	job3DesignerId := primitive.NewObjectID()
 
-	mt.Run("Success", func(mt *mtest.T) {
+	mt.Run("Success - sort by price", func(mt *mtest.T) {
 		user := schema.User{
 			Id:             producerId,
 			FirstName:      "Kevin",
@@ -1065,7 +1067,8 @@ func TestGetRecommendedJobs(t *testing.T) {
 			Id:         job1Id,
 			DesignerId: job1DesignerId,
 			Status:     schema.Pending,
-			Price:      123,
+			Price:      1,
+			Filament:   schema.PLA,
 			Color:      "Red",
 			ShippingAddress: schema.Address{
 				Name:    "Home",
@@ -1085,8 +1088,30 @@ func TestGetRecommendedJobs(t *testing.T) {
 			Id:         job2Id,
 			DesignerId: job2DesignerId,
 			Status:     schema.Pending,
-			Price:      123,
-			Color:      "purple",
+			Price:      2,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		expectedJob3 := schema.Job{
+			Id:         job3Id,
+			DesignerId: job3DesignerId,
+			Status:     schema.Pending,
+			Price:      3,
+			Filament:   schema.PLA,
+			Color:      "Red",
 			ShippingAddress: schema.Address{
 				Name:    "Home",
 				Line1:   "35 Oklahoma St",
@@ -1104,9 +1129,11 @@ func TestGetRecommendedJobs(t *testing.T) {
 		userBSON, _ := bson.Marshal(user)
 		jobBSON1, _ := bson.Marshal(expectedJob1)
 		jobBSON2, _ := bson.Marshal(expectedJob2)
+		jobBSON3, _ := bson.Marshal(expectedJob3)
 		var userBsonD bson.D
 		var jobBsonData1 bson.D
 		var jobBsonData2 bson.D
+		var jobBsonData3 bson.D
 		if err := bson.Unmarshal(userBSON, &userBsonD); err != nil {
 			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
 		}
@@ -1114,6 +1141,9 @@ func TestGetRecommendedJobs(t *testing.T) {
 			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
 		}
 		if err := bson.Unmarshal(jobBSON2, &jobBsonData2); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON3, &jobBsonData3); err != nil {
 			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
 		}
 
@@ -1125,32 +1155,37 @@ func TestGetRecommendedJobs(t *testing.T) {
 			mtest.FirstBatch,
 			userBsonD)
 
-		userResEnd := mtest.CreateCursorResponse(
+		userEnd := mtest.CreateCursorResponse(
 			0,
 			"data.users",
 			mtest.NextBatch)
 
-		res := mtest.CreateCursorResponse(
+		jobsRes := mtest.CreateCursorResponse(
 			1,
 			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData1,
-			jobBsonData2)
+			jobBsonData2,
+			jobBsonData3)
 		// no more jobs to return, indicates the first batch is the only batch with job data
-		end := mtest.CreateCursorResponse(
+		jobsEnd := mtest.CreateCursorResponse(
 			0,
 			"data.jobs",
 			mtest.NextBatch)
-		mt.AddMockResponses(userRes, userResEnd, res, end, res, end, res, end, res, end, res, end)
+		mt.AddMockResponses(userRes, userEnd, jobsRes, jobsEnd)
 
 		// Assertions
-		recommendedJobs, err := GetRecommendedJobs(1, 10, &producerId, mt.Client)
+		recommendedJobs, err := GetRecommendedJobs(1, 10, "DISTANCE,SUPPORTEDFILAMENTTYPES,AVAILABLEFILAMENTTYPES,AVAILABLECOLORS", "PRICE", &producerId, mt.Client)
 
 		assert.Nil(err)
-		assert.Equal([]schema.Job{expectedJob1, expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2}, *recommendedJobs)
+		derefJobs := *recommendedJobs
+		// Check that the jobs are sorted by price
+		for i := 0; i < len(derefJobs)-1; i++ {
+			assert.True(derefJobs[i].Price <= derefJobs[i+1].Price)
+		}
 	})
 
-	mt.Run("Success - 5 jobs page 2", func(mt *mtest.T) {
+	mt.Run("Success - page 3 limit 1", func(mt *mtest.T) {
 		user := schema.User{
 			Id:             producerId,
 			FirstName:      "Kevin",
@@ -1207,7 +1242,8 @@ func TestGetRecommendedJobs(t *testing.T) {
 			Id:         job1Id,
 			DesignerId: job1DesignerId,
 			Status:     schema.Pending,
-			Price:      123,
+			Price:      1,
+			Filament:   schema.PLA,
 			Color:      "Red",
 			ShippingAddress: schema.Address{
 				Name:    "Home",
@@ -1227,8 +1263,30 @@ func TestGetRecommendedJobs(t *testing.T) {
 			Id:         job2Id,
 			DesignerId: job2DesignerId,
 			Status:     schema.Pending,
-			Price:      123,
-			Color:      "purple",
+			Price:      2,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+		expectedJob3 := schema.Job{
+			Id:         job3Id,
+			DesignerId: job3DesignerId,
+			Status:     schema.Pending,
+			Price:      3,
+			Filament:   schema.PLA,
+			Color:      "Red",
 			ShippingAddress: schema.Address{
 				Name:    "Home",
 				Line1:   "35 Oklahoma St",
@@ -1246,9 +1304,11 @@ func TestGetRecommendedJobs(t *testing.T) {
 		userBSON, _ := bson.Marshal(user)
 		jobBSON1, _ := bson.Marshal(expectedJob1)
 		jobBSON2, _ := bson.Marshal(expectedJob2)
+		jobBSON3, _ := bson.Marshal(expectedJob3)
 		var userBsonD bson.D
 		var jobBsonData1 bson.D
 		var jobBsonData2 bson.D
+		var jobBsonData3 bson.D
 		if err := bson.Unmarshal(userBSON, &userBsonD); err != nil {
 			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
 		}
@@ -1256,6 +1316,9 @@ func TestGetRecommendedJobs(t *testing.T) {
 			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
 		}
 		if err := bson.Unmarshal(jobBSON2, &jobBsonData2); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+		if err := bson.Unmarshal(jobBSON3, &jobBsonData3); err != nil {
 			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
 		}
 
@@ -1267,28 +1330,31 @@ func TestGetRecommendedJobs(t *testing.T) {
 			mtest.FirstBatch,
 			userBsonD)
 
-		userResEnd := mtest.CreateCursorResponse(
+		userEnd := mtest.CreateCursorResponse(
 			0,
 			"data.users",
 			mtest.NextBatch)
 
-		res := mtest.CreateCursorResponse(
+		jobsRes := mtest.CreateCursorResponse(
 			1,
 			"data.jobs",
 			mtest.FirstBatch,
 			jobBsonData1,
-			jobBsonData2)
+			jobBsonData2,
+			jobBsonData3)
 		// no more jobs to return, indicates the first batch is the only batch with job data
-		end := mtest.CreateCursorResponse(
+		jobsEnd := mtest.CreateCursorResponse(
 			0,
 			"data.jobs",
 			mtest.NextBatch)
-		mt.AddMockResponses(userRes, userResEnd, res, end, res, end, res, end, res, end, res, end)
+		mt.AddMockResponses(userRes, userEnd, jobsRes, jobsEnd)
 
 		// Assertions
-		recommendedJobs, err := GetRecommendedJobs(2, 5, &producerId, mt.Client)
+		recommendedJobs, err := GetRecommendedJobs(3, 1, "DISTANCE,SUPPORTEDFILAMENTTYPES,AVAILABLEFILAMENTTYPES,AVAILABLECOLORS", "PRICE", &producerId, mt.Client)
 
 		assert.Nil(err)
-		assert.Equal([]schema.Job{expectedJob2, expectedJob1, expectedJob2, expectedJob1, expectedJob2}, *recommendedJobs)
+		// check that there is only 1 job
+		assert.Equal(1, len(*recommendedJobs))
+
 	})
 }

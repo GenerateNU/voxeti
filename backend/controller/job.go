@@ -110,6 +110,8 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 
 		page := c.QueryParam("page")
 		limit := c.QueryParam("limit")
+		filter := c.QueryParam("filter")
+		sort := c.QueryParam("sort")
 
 		if page == "" || limit == "" {
 			return c.JSON(utilities.CreateErrorResponse(400, "Missing page or limit"))
@@ -127,7 +129,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id"))
 		}
 
-		recommendedJobs, errorResponse := job.GetRecommendedJobs(pageInt, limitInt, &id, dbClient)
+		recommendedJobs, errorResponse := job.GetRecommendedJobs(pageInt, limitInt, filter, sort, &id, dbClient)
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
