@@ -6,7 +6,7 @@ import router from "../router.tsx";
 import { useStateDispatch } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
 import Auth from "../components/Auth/Auth.tsx";
-import {FormSection, allQuestions } from "../utils/questions.ts";
+import {FormSection, allQuestions } from "../utilities/questions.ts";
 import SelectQuestion from "../components/Registration/SelectQuestion.tsx";
 import MultiQuestion from "../components/Registration/MultiQuestion.tsx";
 import TextQuestion from "../components/Registration/TextQuestion.tsx";

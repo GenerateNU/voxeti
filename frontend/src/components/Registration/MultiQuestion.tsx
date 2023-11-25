@@ -1,5 +1,5 @@
 import { Control, Controller } from "react-hook-form";
-import { FormQuestion } from "../../utils/questions";
+import { FormQuestion } from "../../utilities/questions";
 import { Button } from "@mui/material";
 
 export default function MultiQuestion({

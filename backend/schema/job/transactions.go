@@ -39,11 +39,11 @@ func getJobsByDesignerOrProducerIdDb(designerId primitive.ObjectID, producerId p
 
 	// Create filter
 	var filter primitive.D
-	if designerId.Hex() != "" && producerId.Hex() != "" {
+	if !designerId.IsZero() && !producerId.IsZero() {
 		filter = bson.D{{Key: "designerId", Value: designerId}, {Key: "producerId", Value: producerId}}
-	} else if designerId.Hex() != "" && producerId.Hex() == "" {
+	} else if !designerId.IsZero() && producerId.IsZero() {
 		filter = bson.D{{Key: "designerId", Value: designerId}}
-	} else if designerId.Hex() == "" && producerId.Hex() != "" {
+	} else if designerId.IsZero() && !producerId.IsZero() {
 		filter = bson.D{{Key: "producerId", Value: designerId}}
 	}
 

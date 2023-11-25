@@ -37,10 +37,6 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
 		skip := limit * page_num
 
-		if designerId == "" && producerId == "" {
-			return c.JSON(utilities.CreateErrorResponse(404, "Please provide designer and/or producer query params!"))
-		}
-
 		// Convert Ids to correct type:
 		designerIdObj, _ := primitive.ObjectIDFromHex(designerId)
 		producerIdObj, _ := primitive.ObjectIDFromHex(producerId)
