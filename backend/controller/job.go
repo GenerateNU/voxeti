@@ -36,7 +36,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		producerId := c.QueryParam("producer")
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
 		skip := limit * page_num
-
+    
 		// Convert Ids to correct type:
 		designerIdObj, _ := primitive.ObjectIDFromHex(designerId)
 		producerIdObj, _ := primitive.ObjectIDFromHex(producerId)
@@ -121,4 +121,34 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		return c.JSON(http.StatusOK, patchedJob)
 	})
 
+	// get all recommended jobs given a user id
+	api.GET("/recommendations/:id", func(c echo.Context) error {
+
+		page := c.QueryParam("page")
+		limit := c.QueryParam("limit")
+		filter := c.QueryParam("filter")
+		sort := c.QueryParam("sort")
+
+		if page == "" || limit == "" {
+			return c.JSON(utilities.CreateErrorResponse(400, "Missing page or limit"))
+		}
+
+		pageInt, pageErr := strconv.Atoi(page)
+		limitInt, limitErr := strconv.Atoi(limit)
+
+		if pageErr != nil || limitErr != nil || pageInt < 1 || limitInt < 0 {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page or limit"))
+		}
+
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id"))
+		}
+
+		recommendedJobs, errorResponse := job.GetRecommendedJobs(pageInt, limitInt, filter, sort, &id, dbClient)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
+		}
+		return c.JSON(http.StatusOK, recommendedJobs)
+	})
 }

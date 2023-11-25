@@ -154,3 +154,30 @@ func patchJobDb(jobIdStr string, patchData bson.M, dbClient *mongo.Client) (sche
 	}
 	return updatedJob, nil
 }
+
+func getJobsByFilterDb(filter *primitive.M, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+
+	// get jobs with filter and add to jobs
+	cursor, err := jobCollection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
+	}
+
+	// Iterate over the cursor and append each job to the slice
+	var jobs []schema.Job
+	for cursor.Next(context.Background()) {
+		var job schema.Job
+		if err := cursor.Decode(&job); err != nil {
+			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
+		}
+		jobs = append(jobs, job)
+	}
+
+	// If there was an error iterating over the cursor, return an error
+	if err := cursor.Err(); err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	}
+
+	return &jobs, nil
+}
