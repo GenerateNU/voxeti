@@ -26,7 +26,7 @@ export function Login() {
 
   // Error State:
   const [emailError, setEmailError] = useState(false);
-  const { addError, setOpen } = useApiError(); 
+  const { addError, setOpen } = useApiError();
 
   // Auth API:
   const [login, { isLoading: isLoginLoading }] = authApi.useLoginMutation();
@@ -178,7 +178,7 @@ export function Login() {
               </Grid>
             </Grid>
             <StyledButton type="submit" color='primary'>
-              {isLoginLoading ? 
+              {isLoginLoading ?
                 <CircularProgress size={25} sx={{ color:'white' }} />
                 : "Sign In"
               }

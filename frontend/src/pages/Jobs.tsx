@@ -20,7 +20,7 @@ import { resetUser } from "../store/userSlice";
 export default function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const { user } = useStateSelector((state) => state.user);
-  const dispatch = useStateDispatch();  
+  const dispatch = useStateDispatch();
 
   const { data: data, error } = jobApi.useGetDesignerJobsQuery({
     designerId: user.id,

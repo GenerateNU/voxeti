@@ -145,11 +145,11 @@ export function UploadDesign() {
 					setters.currentStep(states.currentStep += 1);
 				})
 				.catch((error) => {
-					ErrorHandler({ 
-						dispatch, 
-						addError, 
-						setOpen, 
-						error, 
+					ErrorHandler({
+						dispatch,
+						addError,
+						setOpen,
+						error,
 						customMessage: "An error occurred while creating your job. Please try again."
 					})
 					setters.currentStep(states.currentStep -= 1);
