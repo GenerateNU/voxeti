@@ -92,7 +92,7 @@ const QuestionForm = () => {
           .unwrap()
           .then((res) => {
             dispatch(setUser(res));
-            router.navigate({ to: "/" }); 
+            router.navigate({ to: "/" });
           })
           .catch((err) => {
             console.log(err);
@@ -102,7 +102,7 @@ const QuestionForm = () => {
             .unwrap()
             .then((res) => {
               dispatch(setUser(res));
-              router.navigate({ to: "/" }); 
+              router.navigate({ to: "/" });
             })
             .catch((err) => {
               console.log(err);
@@ -277,10 +277,10 @@ const QuestionForm = () => {
             currentSectionIndex === 0 && "lg:w-2/5 items-center"
           }`}
         >
-            <form 
-              key={"formOverhead"} 
-              onSubmit={handleSubmit(onSubmit)} 
-              onKeyDown={handleKeyPress} 
+            <form
+              key={"formOverhead"}
+              onSubmit={handleSubmit(onSubmit)}
+              onKeyDown={handleKeyPress}
               className='h-full flex flex-col justify-center relative p-5 md:p-0 mt-20 lg:mt-0'
             >
               {RenderQuestions()}

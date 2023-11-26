@@ -117,7 +117,7 @@ export const allQuestions: MultiForm = {
               prompt: "First Name",
               format: "text",
               key: "firstName",
-              rules: { 
+              rules: {
                 required: { value: true, message: "First name is required!" }
               },
               type: "text",
@@ -160,7 +160,7 @@ export const allQuestions: MultiForm = {
               prompt: "City",
               format: "text",
               key: "address.city",
-              rules: {  
+              rules: {
                 required: { value: true, message: "City is required!" }
               },
               type: "text",
@@ -169,7 +169,7 @@ export const allQuestions: MultiForm = {
               prompt: "State",
               format: "text",
               key: "address.state",
-              rules: {  
+              rules: {
                 required: { value: true, message: "State is required!" }
               },
               type: "text",

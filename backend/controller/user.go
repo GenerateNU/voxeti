@@ -32,8 +32,7 @@ func RegisterUserHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.L
 			return c.JSON(err.Code, err)
 		}
 
-		// authenticate new user: 
-		
+		// authenticate new user:
 
 		// return new user
 		return c.JSON(http.StatusOK, *newUser)
