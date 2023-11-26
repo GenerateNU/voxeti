@@ -1,9 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { NewSSOUser, UserSliceState } from "./store.types";
+import { UserSliceState } from "./store.types";
 
 // Base user state:
 const initialState: UserSliceState = {
   csrfToken: "",
+  ssoAccessToken: "",
   user: {
     id: "",
     firstName: "",
@@ -31,6 +32,7 @@ export const userSlice = createSlice({
     setUser: (state, action: PayloadAction<UserSliceState>) => {
       // Set the csrfToken:
       state.csrfToken = action.payload.csrfToken;
+
       // Set the user:
       state.user = action.payload.user;
     },
@@ -38,15 +40,14 @@ export const userSlice = createSlice({
     // 2. Reset user state on logout or session revocation:
     resetUser: () => initialState,
 
-    // 3. Set email and social provider on SSO user creation:
-    setSSONewUser: (state, action: PayloadAction<NewSSOUser>) => {
-      state.user.email = action.payload.email;
-      state.user.socialProvider = action.payload.socialProvider;
-    },
+    // 3. Set an SSO access token for user creation:
+    setSSOAccessToken: (state, action: PayloadAction<string>) => {
+      state.ssoAccessToken = action.payload
+    }
   },
 });
 
 // Export reducers for use:
-export const { setUser, resetUser, setSSONewUser } = userSlice.actions;
+export const { setUser, resetUser, setSSOAccessToken } = userSlice.actions;
 
 export default userSlice.reducer;

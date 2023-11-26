@@ -21,7 +21,7 @@ export default function StyledButton({
   const colors = {
     // Background Color, Text Color, Background Hover Color
     primary: ['!bg-primary', '!text-background', 'hover:!bg-[#565656]'],
-    seconday: ['!bg-[#F5F5F5]', '!text-primary', 'hover:!bg-[#565656]'],
+    seconday: ['!bg-[#F5F5F5]', '!text-primary', 'hover:!bg-[#D3D3D3]'],
     producer: ['!bg-producer', '!text-background', 'hover:!bg-[#565656]'],
     designer: ['!bg-designer', '!text-background', 'hover:!bg-[#565656]'],
     delete: ['!bg-[#F5F5F5]', '!text-primary', 'hover:!bg-[#FFCCCB]']

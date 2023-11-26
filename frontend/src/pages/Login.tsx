@@ -3,18 +3,19 @@ import SocialProviderPending from "../components/SocialProviderPopUp/SocialProvi
 import SocialProvider from "../components/SocialProvider/SocialProvider";
 import useGoogle from "../hooks/use-google";
 import { authApi } from "../api/api";
-import { setSSONewUser, setUser } from "../store/userSlice";
+import { setSSOAccessToken, setUser } from "../store/userSlice";
 import { useStateDispatch } from "../hooks/use-redux";
 import Auth from "../components/Auth/Auth";
 import { UserSliceState } from "../store/store.types";
 import { UserCredentials } from "../api/api.types";
 // import router from "../router";
 import { useForm } from "react-hook-form";
-import { validateEmail } from "../utils/strings";
+import { validateEmail } from "../utilities/Primitives/strings";
 import { Grid, TextField, Typography, Link } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import SignInImage from "../assets/signIn/SignInImage.png";
 import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
+import router from "../router";
 
 export function Login() {
   // SSO Auth State:
@@ -44,12 +45,8 @@ export function Login() {
   useEffect(() => {
     if (providerUser) {
       if (providerUser.user.id === NEW_USER_ID) {
-        dispatch(
-          setSSONewUser({
-            email: providerUser.user.email,
-            socialProvider: providerUser.user.socialProvider,
-          }),
-        );
+        dispatch(setSSOAccessToken(providerUser.ssoAccessToken))
+        router.navigate({ to: '/register', search: { user: providerUser.user.email, provider: providerUser.user.socialProvider } })
       } else {
         dispatch(setUser(providerUser));
       }

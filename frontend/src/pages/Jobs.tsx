@@ -6,8 +6,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { authApi, jobApi } from "../api/api";
-import { useStateDispatch, useStateSelector } from "../hooks/use-redux";
+import { jobApi } from "../api/api";
+import { useStateSelector } from "../hooks/use-redux";
 import { Job } from "../main.types";
 import { useState } from "react";
 import ProducerCell from "../components/OrderStatus/ProducerCell";
@@ -15,17 +15,10 @@ import StatusCell from "../components/OrderStatus/StatusCell";
 import FileCell from "../components/OrderStatus/FileCell";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Auth from "../components/Auth/Auth";
-import { resetUser } from "../store/userSlice";
 
 export default function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const { user } = useStateSelector((state) => state.user);
-  const dispatch = useStateDispatch()
-
-  const { isError } = authApi.useAuthenticateQuery({})
-  if (isError) {
-    dispatch(resetUser())
-  }
 
   const { data: data } = jobApi.useGetDesignerJobsQuery({
     designerId: user.id,

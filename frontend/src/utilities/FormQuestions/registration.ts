@@ -1,3 +1,5 @@
+import { countries } from "./DropdownItems/countries";
+import { countryCodes } from "./DropdownItems/countryDialCodes";
 
 // Question being asked
 export type FormQuestion = {
@@ -7,12 +9,16 @@ export type FormQuestion = {
   rules?: object;
   type?: string;
   defaultOption?: string;
+  defaultValue?:string;
   gridPattern?: string;
+  disabled?: boolean;
+  menuItems?: Array<object>;
   options?: {
     choiceLabel: string;
     selectedColor?: string;
     choiceValue: string | number;
     choiceSubtitle?: string;
+    hoverColor?:string;
     default?: boolean;
   }[];
 };
@@ -50,14 +56,16 @@ export const allQuestions: MultiForm = {
               rules: { required: true },
               options: [
                 {
-                  choiceLabel: "I'm a Producer",
+                  choiceLabel: "I'm a producer",
                   choiceValue: "producer",
-                  selectedColor: `!bg-producer`
+                  selectedColor: `!bg-producer`,
+                  hoverColor: 'hover:!bg-producer'
                 },
                 {
-                  choiceLabel: "I'm a Designer",
+                  choiceLabel: "I'm a designer",
                   choiceValue: "designer",
                   selectedColor: `!bg-designer`,
+                  hoverColor: 'hover:!bg-designer',
                   default: true,
                 },
               ],
@@ -109,9 +117,8 @@ export const allQuestions: MultiForm = {
               prompt: "First Name",
               format: "text",
               key: "firstName",
-              rules: {
-                required: true,
-                minLength: { value: 2, message: "min length is 2" },
+              rules: { 
+                required: { value: true, message: "First name is required!" }
               },
               type: "text",
             },
@@ -120,8 +127,7 @@ export const allQuestions: MultiForm = {
               format: "text",
               key: "lastName",
               rules: {
-                required: true,
-                minLength: { value: 2, message: "min length is 2" },
+                required: { value: true, message: "Last name is required!" }
               },
               type: "text",
             },
@@ -130,21 +136,11 @@ export const allQuestions: MultiForm = {
         {
           questions: [
             {
-              prompt: "Bio",
-              format: "text",
-              key: "bio",
-            },
-          ],
-        },
-        {
-          questions: [
-            {
-              prompt: "Address Line 1",
+              prompt: "Address",
               format: "text",
               key: "address.line1",
               rules: {
-                required: true,
-                minLength: { value: 2, message: "min length is 2" },
+                required: { value: true, message: "Address is required!" }
               },
             },
           ],
@@ -152,42 +148,9 @@ export const allQuestions: MultiForm = {
         {
           questions: [
             {
-              prompt: "Address Line 2",
+              prompt: "Apartment, suite, etc. (Optional)",
               format: "text",
               key: "address.line2",
-            },
-          ],
-        },
-        {
-          questions: [
-            {
-              prompt: "Country Code",
-              format: "text",
-              key: "phoneNumber.countryCode",
-              rules: {
-                required: true,
-                pattern: {
-                  value: /^[0-9]*$/,
-                  message: "numbers only please",
-                },
-                minLength: { value: 1, message: "Min length of 1" },
-              },
-              type: "text",
-            },
-            {
-              prompt: "Phone Number",
-              format: "text",
-              key: "phoneNumber.number",
-              rules: {
-                required: true,
-                pattern: {
-                  value: /^[0-9]*$/,
-                  message: "numbers only please",
-                },
-                minLength: { value: 10, message: "Must be 10 digits" },
-                maxLength: { value: 10, message: "Must be 10 digits" },
-              },
-              type: "number",
             },
           ],
         },
@@ -197,14 +160,18 @@ export const allQuestions: MultiForm = {
               prompt: "City",
               format: "text",
               key: "address.city",
-              rules: { required: true },
+              rules: {  
+                required: { value: true, message: "City is required!" }
+              },
               type: "text",
             },
             {
               prompt: "State",
               format: "text",
               key: "address.state",
-              rules: { required: true },
+              rules: {  
+                required: { value: true, message: "State is required!" }
+              },
               type: "text",
             },
             {
@@ -212,10 +179,12 @@ export const allQuestions: MultiForm = {
               format: "text",
               key: "address.zipCode",
               rules: {
-                required: true,
+                required: { value: true, message: "Zip code is required!" },
+                minLength: { value: 5, message: "Invalid zip code" },
+                maxLength: { value: 5, message: "Invalid zip code" },
                 pattern: {
                   value: /^[0-9]*$/,
-                  message: "numbers only please",
+                  message: "Invalid zip code",
                 },
               },
             },
@@ -225,17 +194,38 @@ export const allQuestions: MultiForm = {
           questions: [
             {
               prompt: "Country",
-              format: "text",
+              format: "dropdown",
               key: "address.country",
               rules: { required: true },
+              menuItems: countries,
+              type: "text",
+            },
+          ],
+        },
+        {
+          questions: [
+            {
+              prompt: "Code",
+              format: "dropdown",
+              key: "phoneNumber.countryCode",
+              rules: { required: true },
+              menuItems: countryCodes,
               type: "text",
             },
             {
-              prompt: "Address Name",
+              prompt: "Phone Number",
               format: "text",
-              key: "address.name",
-              rules: { required: true },
-              type: "text",
+              key: "phoneNumber.number",
+              rules: {
+                required: { value: true, message: "Phone number is required!" },
+                pattern: {
+                  value: /^[0-9]*$/,
+                  message: "numbers only please",
+                },
+                minLength: { value: 10, message: "Must be 10 digits" },
+                maxLength: { value: 10, message: "Must be 10 digits" },
+              },
+              type: "number",
             },
           ],
         },
@@ -255,7 +245,7 @@ export const allQuestions: MultiForm = {
                 required: true,
               },
               defaultOption: "1",
-              gridPattern: '!grid !grid-cols-1 !grid-rows-3 !gap-4',
+              gridPattern: '!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-3 !gap-6',
               options: [
                 {
                   choiceLabel: "Beginner",
@@ -295,7 +285,7 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-3 !grid-rows-2 !gap-4',
+              gridPattern: '!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6',
               options: [
                 {
                   choiceLabel: "Bambu Lab P1S",
@@ -341,7 +331,7 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-3 !grid-rows-2 !gap-4',
+              gridPattern: '!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6',
               options: [
                 {
                   choiceLabel: "Plastic",
@@ -384,7 +374,7 @@ export const allQuestions: MultiForm = {
                 required: true,
               },
               defaultOption: "shipping",
-              gridPattern: '!grid !grid-cols-1 !grid-rows-2 !gap-4',
+              gridPattern: '!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-2 !gap-6',
               options: [
                 {
                   choiceLabel: "Pickup",
@@ -420,7 +410,7 @@ export const allQuestions: MultiForm = {
                 required: true,
               },
               defaultOption: "small",
-              gridPattern: '!grid !grid-cols-1 !grid-rows-3 !gap-4',
+              gridPattern: '!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-3 !gap-6',
               options: [
                 {
                   choiceLabel: "Small",
@@ -456,7 +446,7 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-3 !grid-rows-2 !gap-4',
+              gridPattern: '!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6',
               options: [
                 {
                   choiceLabel: "Technology",
