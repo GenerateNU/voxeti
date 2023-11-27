@@ -1,6 +1,6 @@
 import { useParams } from "@tanstack/react-router";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { IconButton } from "@mui/material";
+import { Box, Container, IconButton } from "@mui/material";
 import { Link } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import * as React from "react";
@@ -8,8 +8,8 @@ import { jobApi } from "../api/api";
 import { Job } from "../main.types";
 import DesignInfo from "../components/JobAccept/DesignInfo";
 import DesignerName from "../components/JobAccept/DesignerInfo";
-import { Box, CircularProgress, Container } from "@mui/material";
 import { useApiError } from "../hooks/use-api-error";
+import Loading from "../components/JobAccept/Loading";
 
 export default function JobInfo() {
   const [jobDetails] = jobApi.useGetJobMutation();
@@ -85,17 +85,7 @@ export default function JobInfo() {
     }
   }, []);
 
-  if (pageStatus == "LOADING")
-    return (
-      <Container className="h-[60vh] min-h-[500px]">
-        <Box className="flex flex-col justify-center items-center align-middle h-full">
-          <CircularProgress />
-          <h1 className="text-lg font-semibold animate-pulse mt-5">
-            Loading...
-          </h1>
-        </Box>
-      </Container>
-    );
+  if (pageStatus == "LOADING") return <Loading />;
   if (pageStatus == "BAD")
     return (
       <Container className="h-[60vh] min-h-[500px]">

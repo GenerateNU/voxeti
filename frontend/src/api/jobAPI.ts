@@ -49,11 +49,25 @@ export const createJobApi = (baseUrl: string) =>
       >({
         query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
       }),
+      getDesignerJobsFiltered: builder.query<
+        Job[],
+        { designerId: string; status: string; page: string }
+      >({
+        query: ({ designerId, status, page }) =>
+          `?designer=${designerId}&status=${status}&page=${page}`,
+      }),
       getProducerJobs: builder.query<
         Job[],
         { producerId: string; page: string }
       >({
         query: ({ producerId, page }) => `?producer=${producerId}&page=${page}`,
+      }),
+      getProducerJobsFiltered: builder.query<
+        Job[],
+        { producerId: string; status: string; page: string }
+      >({
+        query: ({ producerId, status, page }) =>
+          `?producer=${producerId}&status=${status}&page=${page}`,
       }),
     }),
   });
