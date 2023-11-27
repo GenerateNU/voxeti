@@ -23,6 +23,7 @@
     "@tanstack/router-devtools": "0.0.1-beta.168",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "file-saver": "^2.0.5",
     "lucide-react": "^0.287.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20.8.6",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
