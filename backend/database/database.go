@@ -12,20 +12,20 @@ import (
 
 // Setup for when backend gets created
 func Setup(dbClient *mongo.Client, logger *pterm.Logger, resetDb bool) {
-	CreateUserCollection(dbClient, logger, resetDb)
-	CreateJobCollection(dbClient, logger, resetDb)
+	if resetDb {
+		CreateUserCollection(dbClient, logger)
+		CreateJobCollection(dbClient, logger)
+	}
 }
 
-func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger, resetDb bool) {
+func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 
 	// insert user into real db
 	database := dbClient.Database("data")
 
-	if resetDb {
-		dropErr := database.Collection("users").Drop(context.TODO())
-		if dropErr != nil {
-			logger.Fatal(dropErr.Error())
-		}
+	dropErr := database.Collection("users").Drop(context.TODO())
+	if dropErr != nil {
+		logger.Fatal(dropErr.Error())
 	}
 
 	// MongoDB schema validation
@@ -222,16 +222,14 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger, resetDb 
 	}
 }
 
-func CreateJobCollection(dbClient *mongo.Client, logger *pterm.Logger, resetDb bool) {
+func CreateJobCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 
 	// insert job into real db
 	database := dbClient.Database("data")
 
-	if resetDb {
-		dropErr := database.Collection("jobs").Drop(context.TODO())
-		if dropErr != nil {
-			logger.Fatal(dropErr.Error())
-		}
+	dropErr := database.Collection("jobs").Drop(context.TODO())
+	if dropErr != nil {
+		logger.Fatal(dropErr.Error())
 	}
 
 	opts := options.CreateCollection()

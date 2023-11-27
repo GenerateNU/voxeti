@@ -34,13 +34,14 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		limit := 10 // represents the number of results we want per page
 		designerId := c.QueryParam("designer")
 		producerId := c.QueryParam("producer")
+		status := c.QueryParam("status")
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
 		skip := limit * page_num
 
 		if page_num < 0 {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page number"))
 		}
-		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerId, producerId, int64(limit), int64(skip), dbClient)
+		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerId, producerId, status, int64(limit), int64(skip), dbClient)
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}

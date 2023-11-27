@@ -33,7 +33,7 @@ func getJobByIdDb(jobId string, dbClient *mongo.Client) (schema.Job, *schema.Err
 }
 
 // Find a specified job by either a producer or designer ID
-func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
+func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, status string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
 	// load jobs collection
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	// Extract Object IDs
@@ -41,13 +41,15 @@ func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, limit
 	producerObjId, _ := primitive.ObjectIDFromHex(producerId)
 
 	// Create filter
-	var filter primitive.D
-	if designerId != "" && producerId != "" {
-		filter = bson.D{{Key: "designerId", Value: designerObjId}, {Key: "producerId", Value: producerObjId}}
-	} else if designerId != "" && producerId == "" {
-		filter = bson.D{{Key: "designerId", Value: designerObjId}}
-	} else if designerId == "" && producerId != "" {
-		filter = bson.D{{Key: "producerId", Value: producerObjId}}
+	filter := primitive.D{}
+	if designerId != "" {
+		filter = append(filter, bson.E{Key: "designerId", Value: designerObjId})
+	}
+	if producerId != "" {
+		filter = append(filter, bson.E{Key: "producerId", Value: producerObjId})
+	}
+	if status != "" {
+		filter = append(filter, bson.E{Key: "status", Value: status})
 	}
 
 	var jobs []schema.Job

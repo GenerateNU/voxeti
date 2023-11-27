@@ -32,7 +32,7 @@ func main() {
 	// parse command line flags
 	backendPort := flag.Int("p", 3000, "the port to host the backend on")
 	dbUri := flag.String("db", "", "the MongoDB database URI to connect to")
-	resetDb := flag.Bool("reset", true, "decide to reset the database")
+	resetDb := flag.Bool("reset", false, "decide to reset the database")
 	flag.Parse()
 
 	// display splash screen
