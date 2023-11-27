@@ -65,7 +65,7 @@ export default function JobInfo() {
 
           setJobPrice(jobData.price);
 
-          var date = new Date(jobData.createdAt);
+          let date = new Date(jobData.createdAt);
           setOrderPlaced(new Date(date));
 
           date.setDate(date.getDate() + 3);

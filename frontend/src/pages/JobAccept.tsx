@@ -13,12 +13,12 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
-import { designApi, jobApi, userApi } from "../api/api";
+import { jobApi, userApi } from "../api/api";
 import { useStateSelector } from "../hooks/use-redux";
 import { Job } from "../main.types";
 
 export function JobFilesName(props: { designId: string }) {
-  const { data: data } = designApi.useGetDesignQuery(props.designId);
+  // const { data: data } = designApi.useGetDesignQuery(props.designId); Reinclude this once the design API works properly
 
   return <div>{props?.designId}</div>;
 }
