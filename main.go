@@ -32,6 +32,7 @@ func main() {
 	// parse command line flags
 	backendPort := flag.Int("p", 3000, "the port to host the backend on")
 	dbUri := flag.String("db", "", "the MongoDB database URI to connect to")
+	resetDb := flag.Bool("reset", true, "decide to reset the database")
 	flag.Parse()
 
 	// display splash screen
@@ -55,7 +56,7 @@ func main() {
 	}
 
 	// configure server
-	e, dbDisconnect := configureServer(*dbUri)
+	e, dbDisconnect := configureServer(*dbUri, *resetDb)
 	defer dbDisconnect()
 
 	// start echo server
@@ -84,7 +85,7 @@ func main() {
 	pterm.Info.Printfln("Frontend server: http://localhost:%d/ ...", *backendPort)
 }
 
-func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
+func configureServer(dbUri string, resetDb bool) (e *echo.Echo, dbDisconnect func()) {
 	// configure logger
 	spinnerSuccess, _ := pterm.DefaultSpinner.Start("Configuring logger...")
 	logLevel := pterm.LogLevelInfo
@@ -118,7 +119,7 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 
 	// create needed collections
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Creating MongoDB collections...")
-	database.Setup(dbClient, logger)
+	database.Setup(dbClient, logger, resetDb)
 	spinnerSuccess.Success("Created MongoDB collections")
 
 	// register frontend handlers
