@@ -14,13 +14,20 @@ export const createDesignApi = (baseUrl: string) =>
           body,
           method: "POST",
           url: "",
-          formData: true
+          formData: true,
         }),
       }),
       getDesign: builder.query<Design, string>({
         query: (designId) => ({
           method: "GET",
           url: `/${designId}`,
+        }),
+      }),
+      getFile: builder.query<Blob, string>({
+        query: (designId) => ({
+          method: "GET",
+          url: `/${designId}`,
+          responseHandler: (response) => response.blob(),
         }),
       }),
       deleteDesign: builder.mutation<void, string>({

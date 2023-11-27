@@ -10,7 +10,7 @@ export const createJobApi = (baseUrl: string) =>
       credentials: "include",
     }),
     endpoints: (builder) => ({
-      getJob: builder.mutation<Design[], FormData>({
+      getJob: builder.mutation<Job, string>({
         query: (jobId) => ({
           method: "GET",
           url: `/${jobId}`,
@@ -43,10 +43,16 @@ export const createJobApi = (baseUrl: string) =>
           url: `/${id}`,
         }),
       }),
-      getDesignerJobs: builder.query<Job[],{ designerId: string; page: string }>({
+      getDesignerJobs: builder.query<
+        Job[],
+        { designerId: string; page: string }
+      >({
         query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
       }),
-      getProducerJobs: builder.query<Job[],{ producerId: string; page: string }>({
+      getProducerJobs: builder.query<
+        Job[],
+        { producerId: string; page: string }
+      >({
         query: ({ producerId, page }) => `?producer=${producerId}&page=${page}`,
       }),
     }),
