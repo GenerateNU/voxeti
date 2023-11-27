@@ -9,10 +9,10 @@ export default function Auth({ children, authRoute }: AuthProps) {
 
   useEffect(() => {
     if (authRoute) {
-      !userId && router.navigate({ to: "/login" });
+      userId == "" && router.navigate({ to: "/login" });
     }
     else {
-      userId && router.navigate({ to: '/jobs' })
+      userId !== "" && router.navigate({ to: '/jobs' })
     }
   }, [authRoute, userId]);
 

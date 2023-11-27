@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { EstimateBreakdown, PriceEstimation, SlicerData } from "./api.types";
+import { RootState } from "../store/store";
 
 export const createSlicerApi = (baseUrl: string) =>
   createApi({
@@ -25,6 +26,14 @@ export const createPriceEstimationApi = (baseUrl: string) =>
     baseQuery: fetchBaseQuery({
       baseUrl: `${baseUrl}/slicer`,
       credentials: "include",
+      prepareHeaders: (headers, { getState }) => {
+        const token = (getState() as RootState).user.csrfToken
+        console.log(token);
+        if (token) {
+          headers.set("Csrftoken", token)
+        }
+        return headers
+      }
     }),
     endpoints: (builder) => ({
       estimatePrices: builder.mutation<EstimateBreakdown[], PriceEstimation>({
