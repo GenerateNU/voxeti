@@ -8,14 +8,15 @@ import { useStateDispatch } from "../hooks/use-redux";
 import Auth from "../components/Auth/Auth";
 import { UserSliceState } from "../store/store.types";
 import { UserCredentials } from "../api/api.types";
-// import router from "../router";
 import { useForm } from "react-hook-form";
-import { validateEmail } from "../utilities/Primitives/strings";
-import { Grid, TextField, Typography, Link } from "@mui/material";
+import router from "../router";
+import { validateEmail } from "../utilities/strings";
+import { Grid, TextField, Typography, Link, CircularProgress } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import SignInImage from "../assets/signIn/SignInImage.png";
 import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
-import router from "../router";
+import { ErrorHandler } from "../utilities/errors";
+import { useApiError } from "../hooks/use-api-error";
 
 export function Login() {
   // SSO Auth State:
@@ -26,12 +27,11 @@ export function Login() {
 
   // Error State:
   const [emailError, setEmailError] = useState(false);
-  const [loginError, setLoginError] = useState("");
+  const { addError, setOpen } = useApiError();
 
   // Auth API:
-  const [login] = authApi.useLoginMutation();
-  const [googleSSO, { isLoading: isGoogleLoading }] =
-    authApi.useGoogleSSOMutation();
+  const [login, { isLoading: isLoginLoading }] = authApi.useLoginMutation();
+  const [googleSSO, { isLoading: isGoogleLoading }] = authApi.useGoogleSSOMutation();
 
   // Hooks:
   const dispatch = useStateDispatch();
@@ -59,10 +59,9 @@ export function Login() {
       .unwrap()
       .then((res) => {
         dispatch(setUser(res));
-        // router.navigate({ to: "/protected" });
       })
-      .catch(({ data: { error } }) => {
-        setLoginError(error.message);
+      .catch((error) => {
+        ErrorHandler({ dispatch, addError, setOpen, error })
       });
   };
 
@@ -175,19 +174,18 @@ export function Login() {
                 </Link>
               </Grid>
             </Grid>
-            {loginError && (
-              <h1 className="pb-5 w-full text-center text-[#FF0000]">
-                {loginError}
-              </h1>
-            )}
             <StyledButton type="submit" color='primary'>
-              Sign In
+              {isLoginLoading ?
+                <CircularProgress size={25} sx={{ color:'white' }} />
+                : "Sign In"
+              }
             </StyledButton>
           </form>
           <div className="relative w-full flex justify-center mt-7 mb-7">
             <span className="before:content-normal before:block before:w-[45%] before:h-[2px] before:bg-inactivity before:absolute before:left-0 before:top-[50%] after:content-normal after:block after:w-[45%] after:h-[2px] after:bg-inactivity after:absolute after:right-0 after:top-[50%]">
               {" "}
-              or{" "}
+              or
+              {" "}
             </span>
           </div>
           <SocialProvider

@@ -1,7 +1,7 @@
 import { SocialProviderProps } from "./SocialProvider.types";
 import Button from "@mui/material/Button";
 import GoogleLogo from "../../assets/googleLogo.png";
-import LoadingIcon from "../../assets/loadingIcon.gif";
+import { CircularProgress } from "@mui/material";
 
 export default function SocialProvider({
   provider,
@@ -26,7 +26,7 @@ export default function SocialProvider({
       onClick={handleClick}
       startIcon={
         isLoading ? (
-          <img className="h-[30px] mr-2" src={LoadingIcon} />
+          <CircularProgress size={25} sx={{ marginRight:'8px' }} />
         ) : (
           <img className="h-[25px] mr-2" src={GoogleLogo} />
         )
