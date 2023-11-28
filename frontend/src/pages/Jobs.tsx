@@ -15,7 +15,6 @@ import StatusCell from "../components/OrderStatus/StatusCell";
 import FileCell from "../components/OrderStatus/FileCell";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Auth from "../components/Auth/Auth";
-import { resetUser } from "../store/userSlice";
 
 export default function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);

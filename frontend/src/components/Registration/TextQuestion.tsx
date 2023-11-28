@@ -1,5 +1,5 @@
 import { Control, Controller } from "react-hook-form";
-import { FormQuestion } from "../../utilities/questions";
+import { FormQuestion } from "../../utilities/FormQuestions/registration";
 import { TextField } from "@mui/material";
 
 export default function TextQuestion({
@@ -24,14 +24,14 @@ export default function TextQuestion({
                         helperText={
                             (control.getFieldState(question.key).error?.message as string)
                             ? control.getFieldState(question.key).error?.message
-                            : ""
+                            : " "
                         }
                         onChange={(e) => onChange(e.target.value)}
-                        className="!mb-2"
                         label={question.prompt}
                         variant="outlined"
-                        defaultValue={value}
+                        defaultValue={question.defaultValue ?? value}
                         fullWidth
+                        disabled={question.disabled}
                     />
                 );
             }}

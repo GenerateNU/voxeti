@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { useForm, FieldValues } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
-import { ExperienceLevel, User } from "../main.types.ts";
+import { ExperienceLevel, SSOQueryParams, User } from "../main.types.ts";
 import router from "../router.tsx";
-import { useStateDispatch } from "../hooks/use-redux.ts";
+import { useStateDispatch, useStateSelector } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
 import Auth from "../components/Auth/Auth.tsx";
-import {FormSection, allQuestions } from "../utilities/questions.ts";
+import {FormSection, allQuestions } from "../utilities/FormQuestions/registration.ts";
 import SelectQuestion from "../components/Registration/SelectQuestion.tsx";
 import MultiQuestion from "../components/Registration/MultiQuestion.tsx";
 import TextQuestion from "../components/Registration/TextQuestion.tsx";
+import StyledButton from "../components/Button/Button.tsx";
+import DropdownQuestion from "../components/Registration/DropdownQuestion.tsx";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
@@ -25,6 +27,11 @@ const QuestionForm = () => {
     formState: { errors, isValid, isDirty },
   } = useForm({ mode: "onChange" });
 
+  // Handle sso registration:
+  const { user : ssoEmail, provider } = router.state.location.search as SSOQueryParams
+  const { ssoAccessToken } = useStateSelector((state) => state.user);
+  const [googleSSO] = authApi.useGoogleSSOMutation();
+
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [createUser] = userApi.useCreateUserMutation();
   const [login] = authApi.useLoginMutation();
@@ -38,7 +45,7 @@ const QuestionForm = () => {
 
   const temp:string = watch("userType");
 
-  useEffect( () => {
+  useEffect(() => {
     if (temp === "producer") {
       setQuestions(producerQuestions);
       setTotalSections(producerQuestions.length);
@@ -56,8 +63,8 @@ const QuestionForm = () => {
       id: "",
       firstName: data.firstName,
       lastName: data.lastName,
-      email: data.email,
-      password: data.password,
+      email: ssoEmail ?? data.email,
+      password: data.password ?? "",
       addresses: [
         {
           line1: data.address.line1,
@@ -66,7 +73,7 @@ const QuestionForm = () => {
           state: data.address.state,
           zipCode: data.address.zipCode,
           country: data.address.country,
-          name: data.address.name,
+          name: "Primary",
         },
       ],
       phoneNumber: {
@@ -74,14 +81,14 @@ const QuestionForm = () => {
         number: data.phoneNumber.number,
       },
       experience: parseInt(data.experience, 10) as ExperienceLevel,
-      socialProvider: "NONE",
+      socialProvider: provider ?? "NONE",
     };
-    console.log(newUser);
 
     createUser(newUser)
       .unwrap()
       .then(() => {
-        login({ email: data.email, password: data.password })
+        if (newUser.socialProvider === 'NONE') {
+          login({ email: data.email, password: data.password })
           .unwrap()
           .then((res) => {
             dispatch(setUser(res));
@@ -90,6 +97,17 @@ const QuestionForm = () => {
           .catch((err) => {
             console.log(err);
           });
+        } else {
+          googleSSO(ssoAccessToken)
+            .unwrap()
+            .then((res) => {
+              dispatch(setUser(res));
+              router.navigate({ to: "/" });
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -100,26 +118,37 @@ const QuestionForm = () => {
 
   const RenderQuestions = () => {
     return (
-      <Auth authRoute={false} key={"Auth"}>
-        <div className="flex flex-col justify-center lg:min-w-[450px] space-y-2">
+        <div className={`flex flex-col justify-center lg:min-w-[${currentSectionIndex !== 0 ? '40vw' : '450px'}] space-y-2`}>
           <h2
-            className={`text-xl text-center font-semibold mb-6 ${
-              currentSectionIndex !== 0 && "mt-10"
+            className={`text-2xl md:text-3xl text-center font-semibold mb-12 ${
+              currentSectionIndex !== 0 && "mt-8"
             }`}
           >
             {currentSection?.sectionTitle}
           </h2>
           {currentSection?.questionGroups.map((group, index) => (
             <div key={"group_" + index}
-            className="flex flex-wrap lg:flex-nowrap justify-center">
+            className="flex flex-wrap lg:flex-nowrap justify-center gap-x-4">
               {group.questions?.map((question) => {
+                if (ssoEmail) {
+                  if (question.key === 'password') {
+                    return;
+                  } else if (question.key === 'email') {
+                    question.disabled = true;
+                    question.defaultValue = ssoEmail;
+                    question.rules = {};
+                  }
+                }
+
                 switch (question.format) {
                   case "selection":
-                    return (<SelectQuestion key={question.key  + "master"} question={question} control={control}/>);
+                    return (<SelectQuestion key={question.key  + "master"} question={question} control={control} userType={temp} />);
                   case "multiple":
-                    return (<MultiQuestion key={question.key  + "master"} question={question} control={control}/>);
+                    return (<MultiQuestion key={question.key  + "master"} question={question} control={control} userType={temp} />);
                   case "text":
                     return (<TextQuestion key={question.key  + "master"} question={question} control={control}/>);
+                  case "dropdown":
+                    return (<DropdownQuestion key={question.key + "master"} question={question} control={control} />)
                   default:
                     return (<>Something went wrong here</>)
                 }
@@ -127,7 +156,6 @@ const QuestionForm = () => {
             </div>
           ))}
         </div>
-      </Auth>
     );
   }
 
@@ -157,7 +185,7 @@ const QuestionForm = () => {
           return (
             <div
               key={"section" + index}
-              className={`w-3 h-[2px] bg-producer ${
+              className={`w-2 md:w-6 h-[3px] md:h-[2px] ${temp === 'producer' ? 'bg-producer' : 'bg-designer'} ${
                 currentSectionIndex === index ? "opacity-100" : "opacity-50"
               } rounded-full`}
             ></div>
@@ -170,54 +198,54 @@ const QuestionForm = () => {
   // Only show appropriate buttons based on section index
   const RenderButtons = () => {
     return (
-      <div className="m-2 mt-4 flex justify-center space-x-4" key="top">
+      <div className={`mt-4 flex ${currentSectionIndex !== 0 && 'justify-between lg:absolute lg:bottom-6 right-0 left-0 space-x-4'}`} key="top">
         {currentSectionIndex === 0 && (
           <div className="py-4 w-full" key="create">
-            <button
-              className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-full"
-              type="button"
-              disabled={!isValid || !isDirty}
+            <StyledButton
+              color="primary"
+              disabled={ssoEmail ? !temp : !isValid || !isDirty}
               onClick={handleNext}
             >
               Create Account
-            </button>
+            </StyledButton>
           </div>
         )}
         {currentSectionIndex > 0 && (
           <div className=" float-left py-4 self-start" key="previous">
-            <button
-              className=" bg-primary bg-opacity-5 text-primary rounded-lg p-3 w-24"
+            <StyledButton
+              size="sm"
+              color="seconday"
               type="button"
               onClick={handlePrevious}
             >
               Back
-            </button>
+            </StyledButton>
           </div>
         )}
         {currentSectionIndex > 0 && renderProgressBar()}
         {currentSectionIndex < totalSections - 1 && currentSectionIndex > 0 && (
           <div className=" float-right py-4" key="continue">
-            <button
-              key={"Continue_button"}
-              className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-24"
+            <StyledButton
+              size="sm"
               type="button"
+              color="primary"
               disabled={!isValid || !isDirty}
               onClick={handleNext}
             >
               Continue
-            </button>
+            </StyledButton>
           </div>
         )}
         {currentSectionIndex == totalSections - 1 && (
           <div className=" float-right py-4" key="enter">
-            <button
-              key={"Submit_button"}
-              className=" bg-primary disabled:bg-primary/50 text-background rounded-lg p-3 w-24"
+            <StyledButton
+              size="sm"
+              color="primary"
               type="submit"
               disabled={!isValid || !isDirty}
             >
               Submit
-            </button>
+            </StyledButton>
           </div>
         )}
       </div>
@@ -237,23 +265,30 @@ const QuestionForm = () => {
   };
 
   return (
-    <div key={"Master_div"} className="flex justify-center h-full items-center">
-      {currentSectionIndex === 0 && (
-        <div className=" hidden h-full w-3/5 lg:flex justify-center items-center">
-          <img src="src/assets/registration.png" className=" p-32" />
+    <Auth authRoute={false}>
+      <div key={"Master_div"} className="flex justify-center h-full items-center">
+        {currentSectionIndex === 0 && (
+          <div className="hidden h-full w-3/5 lg:flex justify-center items-center">
+            <img src="src/assets/registration.png" className="w-[60%]" />
+          </div>
+        )}
+        <div
+          className={`flex flex-col flex-grow justify-center items-center lg:h-[100vh] min-h-[700px] w-full ${
+            currentSectionIndex === 0 && "lg:w-2/5 items-center"
+          }`}
+        >
+            <form
+              key={"formOverhead"}
+              onSubmit={handleSubmit(onSubmit)}
+              onKeyDown={handleKeyPress}
+              className='h-full flex flex-col justify-center relative p-5 md:p-0 mt-20 lg:mt-0'
+            >
+              {RenderQuestions()}
+              {RenderButtons()}
+            </form>
         </div>
-      )}
-      <div
-        className={`flex flex-col justify-center items-center h-full w-full ${
-          currentSectionIndex === 0 && "lg:w-2/5 items-center"
-        }`}
-      >
-          <form key={"formOverhead"} onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyPress}>
-            {RenderQuestions()}
-            {RenderButtons()}
-          </form>
       </div>
-    </div>
+    </Auth>
   );
 };
 export default QuestionForm;

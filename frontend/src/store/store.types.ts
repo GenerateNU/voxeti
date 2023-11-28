@@ -1,11 +1,7 @@
-import { SocialProvider, User } from "../main.types";
+import { User } from "../main.types";
 
 export type UserSliceState = {
   csrfToken: string;
+  ssoAccessToken: string;
   user: User;
-};
-
-export type NewSSOUser = {
-  email: string;
-  socialProvider: SocialProvider;
 };
