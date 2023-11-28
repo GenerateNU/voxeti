@@ -1,8 +1,10 @@
 package job
 
 import (
+	"fmt"
 	"slices"
 	"strings"
+	"time"
 
 	"voxeti/backend/schema"
 	"voxeti/backend/schema/user"
@@ -99,6 +101,13 @@ func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailServi
 
 // get recommended jobs
 func GetRecommendedJobs(page int, limit int, filter string, sort string, id *primitive.ObjectID, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
+	// GIVE PRIORITY TO JOBS WHERE PRODUCER IS ALREADY A POTENTIAL PRODUCER
+	// THIS COULD RESULT IN OPTIMAL JOBS BEING PRIORITIZED LESS THAN JOBS WHERE PRODUCER IS ALREADY A POTENTIAL PRODUCER
+	// SHOULD POTENTIAL PRODUCER JOBS BE SORTED?
+	potentialProducerJobs, err := getPotentialProducerJobsDb(id, dbClient)
+	if err != nil {
+		return nil, err
+	}
 
 	filters, err := getRecommendationFilters(filter)
 	if err != nil {
@@ -126,7 +135,34 @@ func GetRecommendedJobs(page int, limit int, filter string, sort string, id *pri
 	// paginate recommended jobs
 	sortedJobs = paginateJobs(page, limit, sortedJobs)
 
-	return sortedJobs, nil
+	go func() {
+		err := updatePotentialProducers(id, sortedJobs, dbClient)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	// append sorted jobs to potential producer jobs
+	recommendedJobs := append(*potentialProducerJobs, *sortedJobs...)
+
+	return &recommendedJobs, nil
+}
+
+func DeclineJob(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
+	err := declineJobDb(jobId, producerId, dbClient)
+
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		err := checkMaxDeclinedProducers(jobId, dbClient)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	return nil
 }
 
 // given a job, constructs an email for the job's designer that indicates the job's status has been updated
@@ -195,9 +231,27 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 	availableFilamentTypes := user.GetAvailableFilamentTypes(producer)
 	supportedFilamentTypes := user.GetSupportedFilamentTypes(producer)
 	availableColors := user.GetAvailableColors(producer)
+	var MAX_POTENTIAL_PRODUCERS = 5
 	var METERS_PER_MILE = 1609.34
+	var PENDING = bson.M{"status": bson.M{"$eq": "PENDING"}}
+	var DECLINED_PRODUCERS = bson.M{"declinedProducers": bson.M{"$nin": []primitive.ObjectID{producer.Id}}}
+	var MAX_POTENTIAL_PRODUCERS_FILTER = bson.M{
+		"$expr": bson.M{
+			"$lt": bson.A{
+				bson.M{"$size": bson.M{"$ifNull": bson.A{"$potentialProducers", []interface{}{}}}},
+				MAX_POTENTIAL_PRODUCERS,
+			},
+		},
+	}
+	// THIS AVOIDS DUPLICATE JOBS
+	var NOT_POTENTIAL_PRODUCER = bson.M{"potentialProducers": bson.M{"$nin": []primitive.ObjectID{producer.Id}}}
 
-	var bsonFilters []bson.M
+	// USE THIS IF WE NO LONGER WANT TO GIVE PRIORITY TO JOBS WHERE PRODUCER IS ALREADY A POTENTIAL PRODUCER
+	// (WE WILL NO LONGER RETRIEVE POTENTIAL PRODUCER JOBS IMMEDIATELY, SO THEY SHOULD BE INCLUDED IN THE FILTER)
+	// var POTENTIAL_PRODUCER = bson.M{"potentialProducers": bson.M{"$in": []primitive.ObjectID{producer.Id}}}
+	// var MAX_POTENTIAL_PRODUCERS_OR_POTENTIAL_PRODUCER = bson.M{"$or": []bson.M{MAX_POTENTIAL_PRODUCERS_FILTER, POTENTIAL_PRODUCER}}
+	bsonFilters := []bson.M{PENDING, DECLINED_PRODUCERS, MAX_POTENTIAL_PRODUCERS_FILTER, NOT_POTENTIAL_PRODUCER}
+
 	for _, filter := range filters {
 		switch filter {
 		case Distance:
@@ -296,4 +350,60 @@ func getRecommendationSorter(sort string) (RecommendationSorter, *schema.ErrorRe
 	default:
 		return "", &schema.ErrorResponse{Code: 400, Message: "Invalid sort"}
 	}
+}
+
+// update potential producers for a given producer
+// remove producer from potential producers if it is still in there after specified time
+func updatePotentialProducers(producerId *primitive.ObjectID, jobs *[]schema.Job, dbClient *mongo.Client) *schema.ErrorResponse {
+
+	var MAX_TIME = 5 * time.Hour
+
+	for _, job := range *jobs {
+		if !slices.Contains(job.PotentialProducers, *producerId) {
+			err := addPotentialProducerDb(&job.Id, producerId, dbClient)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	time.Sleep(MAX_TIME)
+
+	for _, job := range *jobs {
+		// get job again from database to get updated potential producers
+		currentJob, err := getJobByIdDb(job.Id.Hex(), dbClient)
+		if err != nil {
+			return err
+		}
+
+		if slices.Contains(currentJob.PotentialProducers, *producerId) {
+			err := removePotentialProducerDb(&currentJob.Id, producerId, dbClient)
+			if err != nil {
+				return err
+			}
+			err = DeclineJob(currentJob.Id.Hex(), producerId, dbClient)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func checkMaxDeclinedProducers(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
+	var MAX_DECLINED_PRODUCERS = 5
+	job, err := getJobByIdDb(jobId, dbClient)
+	if err != nil {
+		return err
+	}
+
+	if len(job.DeclinedProducers) >= MAX_DECLINED_PRODUCERS {
+		err := deleteJobDb(jobId, dbClient)
+
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

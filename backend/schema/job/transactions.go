@@ -184,3 +184,70 @@ func getJobsByFilterDb(filter *primitive.M, dbClient *mongo.Client) (*[]schema.J
 
 	return &jobs, nil
 }
+
+func declineJobDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+	jobObjectId, err := primitive.ObjectIDFromHex(jobId)
+	if err != nil {
+		return &schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
+	}
+
+	// update job with declined producer
+	_, err = jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobObjectId}, bson.M{"$push": bson.M{"declinedProducers": producerId}})
+	if err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Unable to decline job"}
+	}
+
+	return nil
+}
+
+func addPotentialProducerDb(jobId *primitive.ObjectID, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+
+	// update job with potential producer
+	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, bson.M{"$push": bson.M{"potentialProducers": producerId}})
+	if err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Unable to add potential producer"}
+	}
+
+	return nil
+}
+
+func removePotentialProducerDb(jobId *primitive.ObjectID, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+
+	// remove producer from potential producers
+	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, bson.M{"$pull": bson.M{"potentialProducers": producerId}})
+	if err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Unable to remove potential producer"}
+	}
+
+	return nil
+}
+
+func getPotentialProducerJobsDb(producerId *primitive.ObjectID, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+
+	// get jobs where producerId is in potentialProducers array
+	cursor, err := jobCollection.Find(context.Background(), bson.M{"potentialProducers": bson.M{"$in": []primitive.ObjectID{*producerId}}})
+	if err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
+	}
+
+	// Iterate over the cursor and append each job to the slice
+	var jobs []schema.Job
+	for cursor.Next(context.Background()) {
+		var job schema.Job
+		if err := cursor.Decode(&job); err != nil {
+			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
+		}
+		jobs = append(jobs, job)
+	}
+
+	// If there was an error iterating over the cursor, return an error
+	if err := cursor.Err(); err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	}
+
+	return &jobs, nil
+}

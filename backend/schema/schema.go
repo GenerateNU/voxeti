@@ -28,20 +28,22 @@ type User struct {
 
 // A Voxeti print Job
 type Job struct {
-	Id              primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
-	CreatedAt       primitive.DateTime   `bson:"createdAt,omitempty" json:"createdAt"`
-	DesignerId      primitive.ObjectID   `bson:"designerId,omitempty" json:"designerId"`
-	ProducerId      primitive.ObjectID   `bson:"producerId,omitempty" json:"producerId"`
-	DesignId        []primitive.ObjectID `bson:"designId,omitempty" json:"designId"`
-	Quantity        []int32              `bson:"quantity,omitempty" json:"quantity"`
-	Status          JobStatus            `bson:"status,omitempty" json:"status"`
-	Price           int                  `bson:"price,omitempty" json:"price"`
-	Shipping        int                  `bson:"shipping,omitempty" json:"shipping"`
-	Taxes           int                  `bson:"taxes,omitempty" json:"taxes"`
-	Color           string               `bson:"color,omitempty" json:"color"`
-	Filament        FilamentType         `bson:"filament,omitempty" json:"filament"`
-	LayerHeight     float64              `bson:"layerHeight,omitempty" json:"layerHeight"`
-	ShippingAddress Address              `bson:"shippingAddress,omitempty" json:"shippingAddress"`
+	Id                 primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
+	CreatedAt          primitive.DateTime   `bson:"createdAt,omitempty" json:"createdAt"`
+	DesignerId         primitive.ObjectID   `bson:"designerId,omitempty" json:"designerId"`
+	ProducerId         primitive.ObjectID   `bson:"producerId,omitempty" json:"producerId"`
+	DesignId           []primitive.ObjectID `bson:"designId,omitempty" json:"designId"`
+	Quantity           []int32              `bson:"quantity,omitempty" json:"quantity"`
+	Status             JobStatus            `bson:"status,omitempty" json:"status"`
+	Price              int                  `bson:"price,omitempty" json:"price"`
+	Shipping           int                  `bson:"shipping,omitempty" json:"shipping"`
+	Taxes              int                  `bson:"taxes,omitempty" json:"taxes"`
+	Color              string               `bson:"color,omitempty" json:"color"`
+	Filament           FilamentType         `bson:"filament,omitempty" json:"filament"`
+	LayerHeight        float64              `bson:"layerHeight,omitempty" json:"layerHeight"`
+	ShippingAddress    Address              `bson:"shippingAddress,omitempty" json:"shippingAddress"`
+	DeclinedProducers  []primitive.ObjectID `bson:"declinedProducers,omitempty" json:"declinedProducers"`
+	PotentialProducers []primitive.ObjectID `bson:"potentialProducers,omitempty" json:"potentialProducers"`
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
