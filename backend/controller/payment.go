@@ -1,52 +1,59 @@
 package controller
 
 import (
-	"fmt"
-	"net/http"
-	"os"
-
-	"github.com/joho/godotenv"
+    "net/http"
+    "github.com/stripe/stripe-go/v76"
+    "github.com/stripe/stripe-go/v76/checkout/session"
 	"github.com/labstack/echo/v4"
-	"github.com/pterm/pterm"
-	"go.mongodb.org/mongo-driver/mongo"
-
-	"github.com/stripe/stripe-go/v76"
-	"github.com/stripe/stripe-go/v76/checkout/session"
+  	"github.com/labstack/echo/v4/middleware"
 )
 
-func RegisterPaymentHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
-	godotenv.Load(".env")
-	api := e.Group("/payment")
+func main() {
+  // This is a public sample test API key.
+  // Don’t submit any personally identifiable information in requests made with this key.
+  // Sign in to see your own test API key embedded in code samples.
+  stripe.Key = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
 
-	api.POST("/checkout-session", func(c echo.Context) error {
-		stripe.Key = os.Getenv("STRIPE_API_SECRET_KEY")
+  e := echo.New()
+  e.Use(middleware.Logger())
+  e.Use(middleware.Recover())
 
-		domain := "http://localhost:4000"
-		params := &stripe.CheckoutSessionParams{
-			LineItems: []*stripe.CheckoutSessionLineItemParams{
-				&stripe.CheckoutSessionLineItemParams{
-					PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
-						Currency: stripe.String("usd"),
-						ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
-							Name: stripe.String("Printing Fee"),
-						},
-						// price in cents
-						UnitAmount: stripe.Int64(1332),
-					},
-					Quantity: stripe.Int64(1),
-				},
-			},
-			Mode:       stripe.String(string(stripe.CheckoutSessionModePayment)),
-			SuccessURL: stripe.String(domain + "/checkout?success=true"),
-			CancelURL:  stripe.String(domain + "/checkout?canceled=true"),
-		}
+  e.POST("/create-checkout-session", createCheckoutSession)
 
-		s, err := session.New(params)
+  e.Logger.Fatal(e.Start("localhost:4242"))
+}
 
-		if err != nil {
-			fmt.Printf("session.New: %v", err)
-		}
-		return c.JSON(http.StatusOK, s.URL)
-		// return c.Redirect(http.StatusTemporaryRedirect, s.URL)
-	})
+type CheckoutData struct {
+  ClientSecret string `json:"client_secret"`
+}
+
+func createCheckoutSession(c echo.Context) (err error) {
+  params := &stripe.CheckoutSessionParams{
+    Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
+    UiMode: stripe.String("embedded"),
+    LineItems: []*stripe.CheckoutSessionLineItemParams{
+      &stripe.CheckoutSessionLineItemParams{
+        PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+          Currency: stripe.String("usd"),
+          ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+            Name: stripe.String("T-shirt"),
+          },
+          UnitAmount: stripe.Int64(2000),
+        },
+        Quantity: stripe.Int64(1),
+      },
+    },
+  }
+
+  s, _ := session.New(params)
+
+  if err != nil {
+    return err
+  }
+
+  data := CheckoutData{
+    ClientSecret: s.ClientSecret,
+  }
+
+  return c.JSON(http.StatusOK, data)
 }
