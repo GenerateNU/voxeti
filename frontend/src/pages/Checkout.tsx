@@ -60,10 +60,12 @@ export default function Checkout() {
     const [message, setMessage] = useState("");
 
     const [clientSecret, setClientSecret] = useState('');
+    const base = "http://localhost:3000/api/"
 
     useEffect(() => {
         // Create a Checkout Session as soon as the page loads
-        fetch("/create-checkout-session", {
+        console.log("Doing the embedded stripe work")
+        fetch(base + "payment/create-checkout-session", {
         method: "POST",
         })
         .then((res) => res.json())
@@ -89,7 +91,7 @@ export default function Checkout() {
 
     return (
         <div>
-            {message ? <Message message={message} /> : <ProductDisplay />}
+            {/*message ? <Message message={message} /> : <ProductDisplay /> */}
             <div id="checkout">
                 {clientSecret && (
                     <EmbeddedCheckoutProvider

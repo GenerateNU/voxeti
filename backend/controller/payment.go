@@ -3,7 +3,7 @@ package controller
 import (
     "net/http"
     "os"
-    
+
     "github.com/stripe/stripe-go/v76"
     "github.com/joho/godotenv"
     "go.mongodb.org/mongo-driver/mongo"
@@ -37,6 +37,7 @@ func createCheckoutSession(c echo.Context) (err error) {
   params := &stripe.CheckoutSessionParams{
     Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
     UIMode: stripe.String("embedded"),
+    RedirectOnCompletion: stripe.String("never"),
     LineItems: []*stripe.CheckoutSessionLineItemParams{
       &stripe.CheckoutSessionLineItemParams{
         PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
