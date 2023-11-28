@@ -37,15 +37,19 @@ func CreateJob(newJob schema.Job, dbClient *mongo.Client, emailService utilities
 		return job, err
 	}
 
-	email, constructErr := constructJobCreationEmail(&job, dbClient)
-	if constructErr != nil {
-		return job, constructErr
-	}
+	go func() {
+		email, constructErr := constructJobCreationEmail(&job, dbClient)
+		if constructErr != nil {
+			fmt.Println("Error constructing job creation email:", constructErr)
+			return
+		}
 
-	emailErr := emailService.SendNotification(email)
-	if emailErr != nil {
-		return job, emailErr
-	}
+		emailErr := emailService.SendNotification(email)
+		if emailErr != nil {
+			fmt.Println("Error sending notification:", emailErr)
+			return
+		}
+	}()
 
 	return job, nil
 }
@@ -60,17 +64,21 @@ func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client, emailServic
 		return updatedJob, updateErr
 	}
 
-	if previousJob.Status != updatedJob.Status {
-		email, constructErr := constructUpdateJobStatusEmail(&updatedJob, dbClient)
-		if constructErr != nil {
-			return updatedJob, constructErr
-		}
+	go func() {
+		if previousJob.Status != updatedJob.Status {
+			email, constructErr := constructUpdateJobStatusEmail(&updatedJob, dbClient)
+			if constructErr != nil {
+				fmt.Println("Error constructing update job status email:", constructErr)
+				return
+			}
 
-		emailErr := emailService.SendNotification(email)
-		if emailErr != nil {
-			return job, emailErr
+			emailErr := emailService.SendNotification(email)
+			if emailErr != nil {
+				fmt.Println("Error sending notification:", emailErr)
+				return
+			}
 		}
-	}
+	}()
 
 	return updatedJob, updateErr
 }
@@ -84,17 +92,21 @@ func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailServi
 		return patchedJob, patchErr
 	}
 
-	if previousJob.Status != patchedJob.Status {
-		email, constructErr := constructUpdateJobStatusEmail(&patchedJob, dbClient)
-		if constructErr != nil {
-			return patchedJob, constructErr
-		}
+	go func() {
+		if previousJob.Status != patchedJob.Status {
+			email, constructErr := constructUpdateJobStatusEmail(&patchedJob, dbClient)
+			if constructErr != nil {
+				fmt.Println("Error constructing update job status email:", constructErr)
+				return
+			}
 
-		emailErr := emailService.SendNotification(email)
-		if emailErr != nil {
-			return patchedJob, emailErr
+			emailErr := emailService.SendNotification(email)
+			if emailErr != nil {
+				fmt.Println("Error sending notification:", emailErr)
+				return
+			}
 		}
-	}
+	}()
 
 	return patchedJob, patchErr
 }
@@ -138,7 +150,8 @@ func GetRecommendedJobs(page int, limit int, filter string, sort string, id *pri
 	go func() {
 		err := updatePotentialProducers(id, sortedJobs, dbClient)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error updating potential producers:", err)
+			return
 		}
 	}()
 
@@ -158,7 +171,8 @@ func DeclineJob(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Cl
 	go func() {
 		err := checkMaxDeclinedProducers(jobId, dbClient)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error checking max declined producers:", err)
+			return
 		}
 	}()
 
