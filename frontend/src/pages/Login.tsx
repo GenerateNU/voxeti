@@ -10,13 +10,13 @@ import { UserSliceState } from "../store/store.types";
 import { UserCredentials } from "../api/api.types";
 import { useForm } from "react-hook-form";
 import router from "../router";
-import { validateEmail } from "../utilities/strings";
 import { Grid, TextField, Typography, Link, CircularProgress } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import SignInImage from "../assets/signIn/SignInImage.png";
 import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
 import { ErrorHandler } from "../utilities/errors";
 import { useApiError } from "../hooks/use-api-error";
+import { validateEmail } from "../utilities/Primitives/strings";
 
 export function Login() {
   // SSO Auth State:
