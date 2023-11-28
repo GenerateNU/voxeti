@@ -8,7 +8,7 @@ import (
   	"github.com/labstack/echo/v4/middleware"
 )
 
-func main() {
+func RegisterPaymentHandlers() {
   // This is a public sample test API key.
   // Don’t submit any personally identifiable information in requests made with this key.
   // Sign in to see your own test API key embedded in code samples.
@@ -30,7 +30,7 @@ type CheckoutData struct {
 func createCheckoutSession(c echo.Context) (err error) {
   params := &stripe.CheckoutSessionParams{
     Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-    UiMode: stripe.String("embedded"),
+    UIMode: stripe.String("embedded"),
     LineItems: []*stripe.CheckoutSessionLineItemParams{
       &stripe.CheckoutSessionLineItemParams{
         PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
