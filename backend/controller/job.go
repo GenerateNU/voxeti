@@ -17,12 +17,12 @@ import (
 
 func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
 	api := e.Group("/jobs")
+
 	emailService := utilities.EmailService{}
 
 	api.GET("/:id", func(c echo.Context) error {
 		jobId := c.Param("id")
 		retrievedJob, errorResponse := job.GetJobById(jobId, dbClient)
-
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
@@ -37,10 +37,14 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
 		skip := limit * page_num
 
+		// Convert Ids to correct type:
+		designerIdObj, _ := primitive.ObjectIDFromHex(designerId)
+		producerIdObj, _ := primitive.ObjectIDFromHex(producerId)
+
 		if page_num < 0 {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid page number"))
 		}
-		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerId, producerId, int64(limit), int64(skip), dbClient)
+		retrievedJobs, errorResponse := job.GetJobsByDesignerOrProducerId(designerIdObj, producerIdObj, int64(limit), int64(skip), dbClient)
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
@@ -51,7 +55,17 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 	api.DELETE("/:id", func(c echo.Context) error {
 		// get job ID
 		jobIDStr := c.Param("id")
-		errorResponse := job.DeleteJob(jobIDStr, dbClient)
+
+		retrievedJob, errorResponse := job.GetJobById(jobIDStr, dbClient)
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
+		}
+
+		if retrievedJob.Status != "PENDING" {
+			return c.JSON(utilities.CreateErrorResponse(400, "You cannot delete a job that is not pending!"))
+		}
+
+		errorResponse = job.DeleteJob(jobIDStr, dbClient)
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
 		}
@@ -66,6 +80,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 			logger.Error(err.Error())
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
+
 		jobCreated, errorResponse := job.CreateJob(*newJob, dbClient, &emailService)
 
 		if errorResponse != nil {
@@ -82,6 +97,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		if err := c.Bind(job_body_param); err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid job data"))
 		}
+
 		retrievedJob, errorResponse := job.UpdateJob(jobId, *job_body_param, dbClient, &emailService)
 
 		if errorResponse != nil {
@@ -97,6 +113,7 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		if err := c.Bind(&patchData); err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid patch data"))
 		}
+
 		patchedJob, errorResponse := job.PatchJob(jobIdStr, patchData, dbClient, &emailService)
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))

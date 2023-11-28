@@ -110,3 +110,8 @@ export type Error = {
   code: number;
   message: string;
 }
+
+export type SSOQueryParams = {
+  user: string,
+  provider: SocialProvider,
+}

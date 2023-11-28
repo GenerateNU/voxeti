@@ -2,7 +2,6 @@ package auth
 
 import (
 	"bytes"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -263,22 +262,21 @@ func TestAuthenticateSession(t *testing.T) {
 	context_unauthorized := e_unauthorized.NewContext(req_unauthorized, res_unauthorized)
 
 	// Authorized user:
-	csrfTokenBody := map[string]interface{}{"csrfToken": "123"}
-	body, _ := json.Marshal(csrfTokenBody)
-
-	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(nil))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	req.Header.Set("Csrftoken", "123")
 	res := httptest.NewRecorder()
 	c := e.NewContext(req, res)
 
 	// create a cookie:
 	session, _ := store.Get(req, "voxeti-session")
 	session.Values["csrfToken"] = "123"
+	session.Values["userId"] = "123"
 	_ = session.Save(req, res)
 	session.IsNew = false
 
 	// 1. Authenticate the session with valid cookie and token:
-	err := AuthenticateSession(c, store)
+	_, err := AuthenticateSession(c, store)
 	if err != nil {
 		assert.Fail(err.Message)
 	}
@@ -289,32 +287,24 @@ func TestAuthenticateSession(t *testing.T) {
 	res = httptest.NewRecorder()
 	c = e.NewContext(req, res)
 
-	err = AuthenticateSession(c, store)
+	_, err = AuthenticateSession(c, store)
 
 	assert.Equal(401, err.Code)
 
-	// 3. Check that AuthenticateSession fails when body is invalid:
-	req = httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
-	res = httptest.NewRecorder()
-	c = e.NewContext(req, res)
-
-	err = AuthenticateSession(c, store)
-
-	assert.Equal(400, err.Code)
-
-	// 4. Check that AuthenticateSession fails when csrfToken provided does not match cookie csrfToken:
+	// 3. Check that AuthenticateSession fails when csrfToken provided does not match cookie csrfToken:
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 	session, _ = store.Get(req, "voxeti-session")
 	session.Values["csrfToken"] = "something_else"
+	session.Values["userId"] = "123"
 	_ = session.Save(req, res)
 	session.IsNew = false
 
-	err = AuthenticateSession(c, store)
+	_, err = AuthenticateSession(c, store)
 
 	assert.Equal(401, err.Code)
 
-	// 5. Check that AuthenticateSession fails when cookie is expired:
+	// 4. Check that AuthenticateSession fails when cookie is expired:
 	req = httptest.NewRequest(http.MethodPost, "/", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	res = httptest.NewRecorder()
@@ -322,16 +312,17 @@ func TestAuthenticateSession(t *testing.T) {
 
 	session, _ = store.Get(req, "voxeti-session")
 	session.Values["csrfToken"] = "123"
+	session.Values["userId"] = "123"
 	_ = session.Save(req, res)
 	session.Options.MaxAge = -1
 	session.IsNew = false
 
-	err = AuthenticateSession(c, store)
+	_, err = AuthenticateSession(c, store)
 
 	assert.Equal(401, err.Code)
 
-	// 6. Should throw error when unauthorized user attempts to access current user's session state
-	err = AuthenticateSession(context_unauthorized, store)
+	// 5. Should throw error when unauthorized user attempts to access current user's session state
+	_, err = AuthenticateSession(context_unauthorized, store)
 
 	assert.Equal(401, err.Code)
 }

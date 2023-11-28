@@ -4,11 +4,13 @@ import UploadFlow from '../components/Upload/UploadFlow';
 import { jobApi, priceEstimationApi, slicerApi } from '../api/api';
 import { EstimateBreakdown, PriceEstimation, SlicerData } from '../api/api.types';
 import useDesignUpload from '../hooks/use-design-upload';
-import { useStateSelector } from '../hooks/use-redux';
+import { useStateDispatch, useStateSelector } from '../hooks/use-redux';
 import { Dimensions, FilamentType, Job } from '../main.types';
-import { useApiError } from '../hooks/use-api-error';
 import router from '../router';
 import BottomNavOptions from '../components/Upload/BottomNavOptions';
+import Auth from '../components/Auth/Auth';
+import { ErrorHandler } from '../utilities/errors';
+import { useApiError } from '../hooks/use-api-error';
 
 export function UploadDesign() {
 	const [currentStep, setCurrentStep] = useState<number>(1); // number, React.Dispatch<React.SetStateAction<number>>
@@ -24,14 +26,15 @@ export function UploadDesign() {
 	const [dimensions, setDimensions] = useState<Dimensions[]>([]);
 	const [isSlicing, setIsSlicing] = useState(false);
 
+	const { addError, setOpen } = useApiError();
+	const dispatch = useStateDispatch();
+
 	const { user : { id } } = useStateSelector((state) => state.user)
   const uploadDesigns = useDesignUpload(file, dimensions);
 
   const [sliceDesign] = slicerApi.useSliceDesignsMutation();
 	const [estimatePrice] = priceEstimationApi.useEstimatePricesMutation();
 	const [createJob] = jobApi.useCreateJobMutation();
-
-	const { addError, setOpen } = useApiError();
 
 	function handlePriceEstimation(priceEstimateRequest : PriceEstimation) {
 			estimatePrice(priceEstimateRequest)
@@ -41,10 +44,10 @@ export function UploadDesign() {
 					setIsSlicing(false);
 					return;
 				})
-				.catch(() => {
-					addError("Something wen't wrong, please try again.");
-					setOpen(true);
+				.catch((error) => {
+					ErrorHandler({ dispatch, addError, setOpen, error });
 					setIsSlicing(false);
+					return;
 				})
 		}
 
@@ -69,11 +72,10 @@ export function UploadDesign() {
 
 				return { ...data, quantity: quantities[index] }
 			})
-			.catch(() => {
-					addError("Something wen't wrong, please try again.");
-					setOpen(true);
-					setIsSlicing(false);
-					return
+			.catch((error) => {
+				ErrorHandler({ dispatch, addError, setOpen, error })
+				setIsSlicing(false);
+				return
 			})
 	}
 
@@ -142,10 +144,15 @@ export function UploadDesign() {
 				.then(() => {
 					setters.currentStep(states.currentStep += 1);
 				})
-				.catch(() => {
+				.catch((error) => {
+					ErrorHandler({
+						dispatch,
+						addError,
+						setOpen,
+						error,
+						customMessage: "An error occurred while creating your job. Please try again."
+					})
 					setters.currentStep(states.currentStep -= 1);
-					addError("An error occurred while creating your job. Please try again.");
-					setOpen(true);
 				})
 	}
 
@@ -166,7 +173,7 @@ export function UploadDesign() {
 			setters.prices([])
 			setters.quantity(1)
 			setters.quality('0.2')
-			router.navigate({ to: "/" })
+			router.navigate({ to: "/jobs" })
 	}
 
 	// ----------- helpful objects to track state for the forms
@@ -215,21 +222,23 @@ export function UploadDesign() {
 	console.log(currentStep);
 
 	return (
-		<div className="container mx-auto mt-16 grow h-[100%]">
-			<div className="z-0 min-h-[84vh] flex flex-col">
-				<VoxetiStepper
-					currentStep={currentStep}
-				/>
-				<UploadFlow
-					states={states}
-					setters={setters}/>
-				<BottomNavOptions
-					cancel={cancelStep}
-					nextPage={isFinalStep ? finalStep : isSubmitStep ? formSubmit : nextStep}
-					enabled={buttonsEnabled.get(currentStep.toString()) as boolean}
-					step={currentStep}
-				/>
+		<Auth authRoute={true}>
+			<div className="container mx-auto mt-16 grow h-[100%]">
+				<div className="z-0 min-h-[84vh] flex flex-col">
+					<VoxetiStepper
+						currentStep={currentStep}
+					/>
+					<UploadFlow
+						states={states}
+						setters={setters}/>
+					<BottomNavOptions
+						cancel={cancelStep}
+						nextPage={isFinalStep ? finalStep : isSubmitStep ? formSubmit : nextStep}
+						enabled={buttonsEnabled.get(currentStep.toString()) as boolean}
+						step={currentStep}
+					/>
+				</div>
 			</div>
-		</div>
+		</Auth>
 	)
 }
