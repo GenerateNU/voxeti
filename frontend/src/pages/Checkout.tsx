@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+import {loadStripe} from '@stripe/stripe-js';
+import {
+  EmbeddedCheckoutProvider,
+  EmbeddedCheckout
+} from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe('pk_test_123');
 
 const ProductDisplay = () => {
     const handleSubmit = async () => {
@@ -52,6 +59,19 @@ const Message = (props: { message: string }) => (
 export default function Checkout() {
     const [message, setMessage] = useState("");
 
+    const [clientSecret, setClientSecret] = useState('');
+
+    useEffect(() => {
+        // Create a Checkout Session as soon as the page loads
+        fetch("/create-checkout-session", {
+        method: "POST",
+        })
+        .then((res) => res.json())
+        .then((data) => setClientSecret(data.clientSecret));
+    }, []);
+
+    const options = {clientSecret};
+
     useEffect(() => {
         // Check to see if this is a redirect back from Checkout
         const query = new URLSearchParams(window.location.search);
@@ -70,6 +90,16 @@ export default function Checkout() {
     return (
         <div>
             {message ? <Message message={message} /> : <ProductDisplay />}
+            <div id="checkout">
+                {clientSecret && (
+                    <EmbeddedCheckoutProvider
+                        stripe={stripePromise}
+                        options={options}
+                        >
+                        <EmbeddedCheckout />
+                    </EmbeddedCheckoutProvider>
+                )}
+            </div>
         </div>
     )
 }

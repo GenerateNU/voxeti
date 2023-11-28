@@ -2,25 +2,31 @@ package controller
 
 import (
     "net/http"
+    "os"
+    
     "github.com/stripe/stripe-go/v76"
+    "github.com/joho/godotenv"
+    "go.mongodb.org/mongo-driver/mongo"
+    "github.com/pterm/pterm"
     "github.com/stripe/stripe-go/v76/checkout/session"
-	"github.com/labstack/echo/v4"
+	  "github.com/labstack/echo/v4"
   	"github.com/labstack/echo/v4/middleware"
 )
 
-func RegisterPaymentHandlers() {
+func RegisterPaymentHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Logger) {
   // This is a public sample test API key.
   // Don’t submit any personally identifiable information in requests made with this key.
   // Sign in to see your own test API key embedded in code samples.
-  stripe.Key = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+  godotenv.Load(".env")
+  stripe.Key = os.Getenv("STRIPE_API_SECRET_KEY")
+	api := e.Group("/payment")
 
-  e := echo.New()
-  e.Use(middleware.Logger())
-  e.Use(middleware.Recover())
+  api.Use(middleware.Logger())
+  api.Use(middleware.Recover())
 
-  e.POST("/create-checkout-session", createCheckoutSession)
+  api.POST("/create-checkout-session", createCheckoutSession)
 
-  e.Logger.Fatal(e.Start("localhost:4242"))
+  
 }
 
 type CheckoutData struct {
