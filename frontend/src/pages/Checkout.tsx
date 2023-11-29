@@ -5,7 +5,7 @@ import {
   EmbeddedCheckout
 } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe('pk_test_123');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
 
 const ProductDisplay = () => {
     const handleSubmit = async () => {
@@ -69,10 +69,11 @@ export default function Checkout() {
         method: "POST",
         })
         .then((res) => res.json())
-        .then((data) => setClientSecret(data.clientSecret));
+        .then((data) => setClientSecret(data.client_secret));
     }, []);
 
     const options = {clientSecret};
+    console.log(JSON.stringify(options));
 
     useEffect(() => {
         // Check to see if this is a redirect back from Checkout
