@@ -2,6 +2,8 @@
 package schema
 
 import (
+	"time"
+
 	"github.com/paulmach/orb/geojson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -44,6 +46,7 @@ type Job struct {
 	ShippingAddress    Address              `bson:"shippingAddress,omitempty" json:"shippingAddress"`
 	DeclinedProducers  []primitive.ObjectID `bson:"declinedProducers,omitempty" json:"declinedProducers"`
 	PotentialProducers []primitive.ObjectID `bson:"potentialProducers,omitempty" json:"potentialProducers"`
+	LastUpdated        time.Time            `bson:"lastUpdated,omitempty" json:"lastUpdated"`
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding

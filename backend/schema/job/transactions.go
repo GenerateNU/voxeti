@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"time"
 
 	"voxeti/backend/schema"
 
@@ -209,8 +210,11 @@ func declineJobDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.
 func addPotentialProducerDb(jobId *primitive.ObjectID, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 
-	// update job with potential producer
-	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, bson.M{"$push": bson.M{"potentialProducers": producerId}})
+	update := bson.M{
+		"$push": bson.M{"potentialProducers": producerId},
+		"$set":  bson.M{"lastUpdated": time.Now()},
+	}
+	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, update)
 	if err != nil {
 		return &schema.ErrorResponse{Code: 500, Message: "Unable to add potential producer"}
 	}
@@ -245,18 +249,32 @@ func getPotentialProducerJobsDb(producerId *primitive.ObjectID, dbClient *mongo.
 	return &jobs, nil
 }
 
-func transferPotentialToDeclinedDb(DENOMINATOR int, dbClient *mongo.Client) *schema.ErrorResponse {
+func transferPotentialToDeclinedDb(TRANSFER_NUM int, MAX_INACTIVE time.Duration, dbClient *mongo.Client) *schema.ErrorResponse {
 
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 
-	cursor, err := jobCollection.Find(context.Background(), bson.M{
+	thresholdTime := time.Now().Add(-MAX_INACTIVE)
+
+	filter := bson.M{
 		"$expr": bson.M{
-			"$gt": bson.A{
-				bson.M{"$size": bson.M{"$ifNull": bson.A{"$potentialProducers", []interface{}{}}}},
-				0,
+			"$and": bson.A{
+				bson.M{
+					"$gt": bson.A{
+						bson.M{"$size": bson.M{"$ifNull": bson.A{"$potentialProducers", []interface{}{}}}},
+						0,
+					},
+				},
+				bson.M{
+					"$lt": bson.A{
+						"$lastUpdated",
+						thresholdTime,
+					},
+				},
 			},
 		},
-	})
+	}
+
+	cursor, err := jobCollection.Find(context.Background(), filter)
 	if err != nil {
 		return &schema.ErrorResponse{Code: 500, Message: err.Error()}
 	}
@@ -277,12 +295,16 @@ func transferPotentialToDeclinedDb(DENOMINATOR int, dbClient *mongo.Client) *sch
 	}
 
 	// iterate over jobs and transfer potential producers to declined producers
+	// transfer first TRANSFER_NUM potential producers to declined producers
 	for _, job := range jobs {
 		potentialProducers := job.PotentialProducers
 		declinedProducers := job.DeclinedProducers
-		firstHalf := potentialProducers[:len(potentialProducers)/DENOMINATOR]
+		if len(potentialProducers) < TRANSFER_NUM {
+			TRANSFER_NUM = len(potentialProducers)
+		}
+		firstHalf := potentialProducers[:TRANSFER_NUM]
 		declinedProducers = append(declinedProducers, firstHalf...)
-		potentialProducers = potentialProducers[len(potentialProducers)/DENOMINATOR:]
+		potentialProducers = potentialProducers[TRANSFER_NUM:]
 		_, err = jobCollection.UpdateOne(context.Background(), bson.M{"_id": job.Id}, bson.M{"$set": bson.M{"potentialProducers": potentialProducers, "declinedProducers": declinedProducers}})
 		if err != nil {
 			return &schema.ErrorResponse{Code: 500, Message: "Unable to transfer potential producers to declined producers"}
