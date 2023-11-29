@@ -116,3 +116,8 @@ export enum PageStatus {
   Loading,
   Error,
 }
+
+export type SSOQueryParams = {
+  user: string,
+  provider: SocialProvider,
+}

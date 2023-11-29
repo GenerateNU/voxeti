@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { UserCredentials } from "./api.types";
 import { UserSliceState } from "../store/store.types";
+import { RootState } from "../store/store";
 
 // Auth API:
 export const createAuthApi = (baseUrl: string) =>
@@ -9,6 +10,13 @@ export const createAuthApi = (baseUrl: string) =>
     baseQuery: fetchBaseQuery({
       baseUrl: `${baseUrl}/auth`,
       credentials: "include",
+      prepareHeaders: (headers, { getState }) => {
+        const token = (getState() as RootState).user.csrfToken
+        if (token) {
+          headers.set("Csrftoken", token)
+        }
+        return headers
+      }
     }),
     endpoints: (builder) => ({
       login: builder.mutation<UserSliceState, UserCredentials>({
@@ -18,9 +26,8 @@ export const createAuthApi = (baseUrl: string) =>
           url: "/login",
         }),
       }),
-      logout: builder.mutation<void, string>({
-        query: (csrfToken) => ({
-          body: { csrfToken },
+      logout: builder.mutation({
+        query: () => ({
           method: "POST",
           url: "/logout",
         }),
@@ -32,5 +39,11 @@ export const createAuthApi = (baseUrl: string) =>
           url: "/google-provider",
         }),
       }),
+      authenticate: builder.query({
+        query: () => ({
+          method: "POST",
+          url: "/authenticate"
+        })
+      })
     }),
   });

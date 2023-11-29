@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { User } from "../main.types";
+import { RootState } from "../store/store";
 
 // User API:
 export const createUserApi = (baseUrl: string) =>
@@ -8,6 +9,13 @@ export const createUserApi = (baseUrl: string) =>
     baseQuery: fetchBaseQuery({
       baseUrl: `${baseUrl}/users`,
       credentials: "include",
+      prepareHeaders: (headers, { getState }) => {
+        const token = (getState() as RootState).user.csrfToken
+        if (token) {
+          headers.set("Csrftoken", token)
+        }
+        return headers
+      }
     }),
     endpoints: (builder) => ({
       createUser: builder.mutation<User, User>({

@@ -238,4 +238,14 @@ func CreateJobCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 	if createErr != nil {
 		logger.Fatal(createErr.Error())
 	}
+
+	// Add geospatial index for the 'location' field
+	geoIndexModel := mongo.IndexModel{
+		Keys: bson.D{{Key: "shippingAddress.location", Value: "2dsphere"}},
+	}
+
+	_, geoIndexErr := database.Collection("jobs").Indexes().CreateOne(context.TODO(), geoIndexModel)
+	if geoIndexErr != nil {
+		logger.Fatal(geoIndexErr.Error())
+	}
 }

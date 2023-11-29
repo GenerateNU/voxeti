@@ -2,7 +2,6 @@ import { useParams } from "@tanstack/react-router";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Box, Container, IconButton } from "@mui/material";
 import { Link } from "@mui/material";
-import Divider from "@mui/material/Divider";
 import * as React from "react";
 import { jobApi } from "../api/api";
 import { Job, PageStatus } from "../main.types";
@@ -10,6 +9,7 @@ import DesignInfo from "../components/JobAccept/DesignInfo";
 import DesignerName from "../components/JobAccept/DesignerInfo";
 import { useApiError } from "../hooks/use-api-error";
 import Loading from "../components/JobAccept/Loading";
+import FieldValueRow from "../components/JobAccept/FieldValueRow";
 
 export default function JobInfo() {
   const [jobDetails] = jobApi.useGetJobMutation();
@@ -58,6 +58,43 @@ export default function JobInfo() {
     );
   };
 
+  const PageError = () => {
+    return (
+      <Container className="h-[60vh] min-h-[500px]">
+        <Box className="flex flex-col justify-center items-center align-middle h-full">
+          <BackButton />
+        </Box>
+      </Container>
+    );
+  };
+
+  const PageSuccess = () => {
+    return (
+      <div className="py-32 w-full flex flex-col items-center justify-center">
+        <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
+          <BackButton />
+          <div className=" py-3" />
+          <div className=" flex flex-row justify-between">
+            {currentJob && <DesignerName job={currentJob} />}
+          </div>
+          {currentJob &&
+            currentJob.designId.map(
+              (designId: string, index: number) =>
+                designId && (
+                  <DesignInfo
+                    designId={designId}
+                    quantity={currentJob.quantity[index]}
+                  />
+                )
+            )}
+          {jobInfo.map((section) => (
+            <FieldValueRow section={section} />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   React.useEffect(() => {
     if (params.jobId) {
       jobDetails(params.jobId)
@@ -89,48 +126,10 @@ export default function JobInfo() {
 
   switch (pageStatus) {
     case PageStatus.Success:
-      return (
-        <div className="py-32 w-full flex flex-col items-center justify-center">
-          <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
-            <BackButton />
-            <div className=" py-3" />
-            <div className=" flex flex-row justify-between">
-              {currentJob && <DesignerName job={currentJob} />}
-            </div>
-            {currentJob &&
-              currentJob.designId.map(
-                (designId: string, index: number) =>
-                  designId && (
-                    <DesignInfo
-                      designId={designId}
-                      quantity={currentJob.quantity[index]}
-                    />
-                  )
-              )}
-            {jobInfo.map((section) => (
-              <div className=" flex flex-col">
-                <Divider variant="middle" className=" py-3" />
-                <div className=" py-3" />
-                {section.map((row) => (
-                  <div className=" flex justify-between py-1">
-                    <p>{row.field}</p>
-                    <p>{row.value}</p>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    case PageStatus.Loading:
-      return (
-        <Container className="h-[60vh] min-h-[500px]">
-          <Box className="flex flex-col justify-center items-center align-middle h-full">
-            <BackButton />
-          </Box>
-        </Container>
-      );
+      return <PageSuccess />;
     case PageStatus.Error:
+      return <PageError />;
+    case PageStatus.Loading:
       return <Loading />;
   }
 }

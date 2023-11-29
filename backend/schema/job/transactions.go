@@ -33,23 +33,18 @@ func getJobByIdDb(jobId string, dbClient *mongo.Client) (schema.Job, *schema.Err
 }
 
 // Find a specified job by either a producer or designer ID
-func getJobsByDesignerOrProducerIdDb(designerId string, producerId string, status string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
+func getJobsByDesignerOrProducerIdDb(designerId primitive.ObjectID, producerId primitive.ObjectID, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
 	// load jobs collection
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
-	// Extract Object IDs
-	designerObjId, _ := primitive.ObjectIDFromHex(designerId)
-	producerObjId, _ := primitive.ObjectIDFromHex(producerId)
 
 	// Create filter
-	filter := primitive.D{}
-	if designerId != "" {
-		filter = append(filter, bson.E{Key: "designerId", Value: designerObjId})
-	}
-	if producerId != "" {
-		filter = append(filter, bson.E{Key: "producerId", Value: producerObjId})
-	}
-	if status != "" {
-		filter = append(filter, bson.E{Key: "status", Value: status})
+	var filter primitive.D
+	if !designerId.IsZero() && !producerId.IsZero() {
+		filter = bson.D{{Key: "designerId", Value: designerId}, {Key: "producerId", Value: producerId}}
+	} else if !designerId.IsZero() && producerId.IsZero() {
+		filter = bson.D{{Key: "designerId", Value: designerId}}
+	} else if designerId.IsZero() && !producerId.IsZero() {
+		filter = bson.D{{Key: "producerId", Value: designerId}}
 	}
 
 	var jobs []schema.Job
@@ -158,4 +153,31 @@ func patchJobDb(jobIdStr string, patchData bson.M, dbClient *mongo.Client) (sche
 		return schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Unable to retrieve updated job"}
 	}
 	return updatedJob, nil
+}
+
+func getJobsByFilterDb(filter *primitive.M, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+
+	// get jobs with filter and add to jobs
+	cursor, err := jobCollection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
+	}
+
+	// Iterate over the cursor and append each job to the slice
+	var jobs []schema.Job
+	for cursor.Next(context.Background()) {
+		var job schema.Job
+		if err := cursor.Decode(&job); err != nil {
+			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
+		}
+		jobs = append(jobs, job)
+	}
+
+	// If there was an error iterating over the cursor, return an error
+	if err := cursor.Err(); err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	}
+
+	return &jobs, nil
 }
