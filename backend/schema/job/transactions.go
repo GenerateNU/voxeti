@@ -210,18 +210,6 @@ func addPotentialProducerDb(jobId *primitive.ObjectID, producerId *primitive.Obj
 	return nil
 }
 
-func removePotentialProducerDb(jobId *primitive.ObjectID, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
-	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
-
-	// remove producer from potential producers
-	_, err := jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobId}, bson.M{"$pull": bson.M{"potentialProducers": producerId}})
-	if err != nil {
-		return &schema.ErrorResponse{Code: 500, Message: "Unable to remove potential producer"}
-	}
-
-	return nil
-}
-
 func getPotentialProducerJobsDb(producerId *primitive.ObjectID, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 
@@ -247,4 +235,56 @@ func getPotentialProducerJobsDb(producerId *primitive.ObjectID, dbClient *mongo.
 	}
 
 	return &jobs, nil
+}
+
+func transferPotentialToDeclinedDb(MAX_DECLINED_PRODUCERS int, dbClient *mongo.Client) *schema.ErrorResponse {
+	const DENOMINATOR = 2
+
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+
+	cursor, err := jobCollection.Find(context.Background(), bson.M{
+		"$expr": bson.M{
+			"$gt": bson.A{
+				bson.M{"$size": bson.M{"$ifNull": bson.A{"$potentialProducers", []interface{}{}}}},
+				0,
+			},
+		},
+	})
+	if err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: err.Error()}
+	}
+
+	// Iterate over the cursor and append each job to the slice
+	var jobs []schema.Job
+	for cursor.Next(context.Background()) {
+		var job schema.Job
+		if err := cursor.Decode(&job); err != nil {
+			return &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
+		}
+		jobs = append(jobs, job)
+	}
+
+	// If there was an error iterating over the cursor, return an error
+	if err := cursor.Err(); err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	}
+
+	// iterate over jobs and transfer potential producers to declined producers
+	for _, job := range jobs {
+		potentialProducers := job.PotentialProducers
+		declinedProducers := job.DeclinedProducers
+		firstHalf := potentialProducers[:len(potentialProducers)/DENOMINATOR]
+		declinedProducers = append(declinedProducers, firstHalf...)
+		if len(declinedProducers) > MAX_DECLINED_PRODUCERS {
+			deleteJobDb(job.Id.Hex(), dbClient)
+			continue
+		}
+		potentialProducers = potentialProducers[len(potentialProducers)/DENOMINATOR:]
+		_, err = jobCollection.UpdateOne(context.Background(), bson.M{"_id": job.Id}, bson.M{"$set": bson.M{"potentialProducers": potentialProducers, "declinedProducers": declinedProducers}})
+		if err != nil {
+			return &schema.ErrorResponse{Code: 500, Message: "Unable to transfer potential producers to declined producers"}
+		}
+	}
+
+	return nil
 }

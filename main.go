@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 	"voxeti/backend/controller"
-	"voxeti/backend/database"
+	"voxeti/backend/schema/job"
 	"voxeti/frontend"
 
 	"github.com/joho/godotenv"
@@ -117,9 +117,9 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 	spinnerSuccess.Success("Connected to database")
 
 	// create needed collections
-	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Creating MongoDB collections...")
-	database.Setup(dbClient, logger)
-	spinnerSuccess.Success("Created MongoDB collections")
+	// spinnerSuccess, _ = pterm.DefaultSpinner.Start("Creating MongoDB collections...")
+	// database.Setup(dbClient, logger)
+	// spinnerSuccess.Success("Created MongoDB collections")
 
 	// register frontend handlers
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Registering frontend handlers...")
@@ -130,5 +130,8 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Registering backend handlers...")
 	controller.RegisterHandlers(e, dbClient, logger)
 	spinnerSuccess.Success("Registered backend handlers")
+
+	go job.TransferPotentialToDeclined(dbClient, logger)
+
 	return
 }

@@ -1,7 +1,6 @@
 package job
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -10,9 +9,15 @@ import (
 	"voxeti/backend/schema/user"
 	"voxeti/backend/utilities"
 
+	"github.com/pterm/pterm"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+)
+
+const (
+	MAX_DECLINED_PRODUCERS  = 5
+	MAX_POTENTIAL_PRODUCERS = 5
 )
 
 // Find a specified job by its ID
@@ -37,19 +42,15 @@ func CreateJob(newJob schema.Job, dbClient *mongo.Client, emailService utilities
 		return job, err
 	}
 
-	go func() {
-		email, constructErr := constructJobCreationEmail(&job, dbClient)
-		if constructErr != nil {
-			fmt.Println("Error constructing job creation email:", constructErr)
-			return
-		}
+	email, constructErr := constructJobCreationEmail(&job, dbClient)
+	if constructErr != nil {
+		return job, constructErr
+	}
 
-		emailErr := emailService.SendNotification(email)
-		if emailErr != nil {
-			fmt.Println("Error sending notification:", emailErr)
-			return
-		}
-	}()
+	emailErr := emailService.SendNotification(email)
+	if emailErr != nil {
+		return job, emailErr
+	}
 
 	return job, nil
 }
@@ -64,21 +65,17 @@ func UpdateJob(jobId string, job schema.Job, dbClient *mongo.Client, emailServic
 		return updatedJob, updateErr
 	}
 
-	go func() {
-		if previousJob.Status != updatedJob.Status {
-			email, constructErr := constructUpdateJobStatusEmail(&updatedJob, dbClient)
-			if constructErr != nil {
-				fmt.Println("Error constructing update job status email:", constructErr)
-				return
-			}
-
-			emailErr := emailService.SendNotification(email)
-			if emailErr != nil {
-				fmt.Println("Error sending notification:", emailErr)
-				return
-			}
+	if previousJob.Status != updatedJob.Status {
+		email, constructErr := constructUpdateJobStatusEmail(&updatedJob, dbClient)
+		if constructErr != nil {
+			return updatedJob, constructErr
 		}
-	}()
+
+		emailErr := emailService.SendNotification(email)
+		if emailErr != nil {
+			return updatedJob, emailErr
+		}
+	}
 
 	return updatedJob, updateErr
 }
@@ -92,21 +89,17 @@ func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailServi
 		return patchedJob, patchErr
 	}
 
-	go func() {
-		if previousJob.Status != patchedJob.Status {
-			email, constructErr := constructUpdateJobStatusEmail(&patchedJob, dbClient)
-			if constructErr != nil {
-				fmt.Println("Error constructing update job status email:", constructErr)
-				return
-			}
-
-			emailErr := emailService.SendNotification(email)
-			if emailErr != nil {
-				fmt.Println("Error sending notification:", emailErr)
-				return
-			}
+	if previousJob.Status != patchedJob.Status {
+		email, constructErr := constructUpdateJobStatusEmail(&patchedJob, dbClient)
+		if constructErr != nil {
+			return patchedJob, constructErr
 		}
-	}()
+
+		emailErr := emailService.SendNotification(email)
+		if emailErr != nil {
+			return patchedJob, emailErr
+		}
+	}
 
 	return patchedJob, patchErr
 }
@@ -147,13 +140,10 @@ func GetRecommendedJobs(page int, limit int, filter string, sort string, id *pri
 	// paginate recommended jobs
 	sortedJobs = paginateJobs(page, limit, sortedJobs)
 
-	go func() {
-		err := updatePotentialProducers(id, sortedJobs, dbClient)
-		if err != nil {
-			fmt.Println("Error updating potential producers:", err)
-			return
-		}
-	}()
+	err = updatePotentialProducers(id, sortedJobs, dbClient)
+	if err != nil {
+		return nil, err
+	}
 
 	// append sorted jobs to potential producer jobs
 	recommendedJobs := append(*potentialProducerJobs, *sortedJobs...)
@@ -168,13 +158,10 @@ func DeclineJob(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Cl
 		return err
 	}
 
-	go func() {
-		err := checkMaxDeclinedProducers(jobId, dbClient)
-		if err != nil {
-			fmt.Println("Error checking max declined producers:", err)
-			return
-		}
-	}()
+	err = checkMaxDeclinedProducers(jobId, dbClient)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -245,8 +232,8 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 	availableFilamentTypes := user.GetAvailableFilamentTypes(producer)
 	supportedFilamentTypes := user.GetSupportedFilamentTypes(producer)
 	availableColors := user.GetAvailableColors(producer)
-	var MAX_POTENTIAL_PRODUCERS = 5
-	var METERS_PER_MILE = 1609.34
+	const METERS_PER_MILE = 1609.34
+	const MAX_MILES = 100
 	var PENDING = bson.M{"status": bson.M{"$eq": "PENDING"}}
 	var DECLINED_PRODUCERS = bson.M{"declinedProducers": bson.M{"$nin": []primitive.ObjectID{producer.Id}}}
 	var MAX_POTENTIAL_PRODUCERS_FILTER = bson.M{
@@ -274,7 +261,7 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 					// nearSphere sorts by distance, so no need to have distance sorter
 					"$nearSphere": bson.M{
 						"$geometry":    producer.Addresses[0].Location,
-						"$maxDistance": 100 * METERS_PER_MILE,
+						"$maxDistance": MAX_MILES * METERS_PER_MILE,
 					},
 				},
 			}
@@ -369,9 +356,6 @@ func getRecommendationSorter(sort string) (RecommendationSorter, *schema.ErrorRe
 // update potential producers for a given producer
 // remove producer from potential producers if it is still in there after specified time
 func updatePotentialProducers(producerId *primitive.ObjectID, jobs *[]schema.Job, dbClient *mongo.Client) *schema.ErrorResponse {
-
-	var MAX_TIME = 5 * time.Hour
-
 	for _, job := range *jobs {
 		if !slices.Contains(job.PotentialProducers, *producerId) {
 			err := addPotentialProducerDb(&job.Id, producerId, dbClient)
@@ -381,32 +365,24 @@ func updatePotentialProducers(producerId *primitive.ObjectID, jobs *[]schema.Job
 		}
 	}
 
-	time.Sleep(MAX_TIME)
-
-	for _, job := range *jobs {
-		// get job again from database to get updated potential producers
-		currentJob, err := getJobByIdDb(job.Id.Hex(), dbClient)
-		if err != nil {
-			return err
-		}
-
-		if slices.Contains(currentJob.PotentialProducers, *producerId) {
-			err := removePotentialProducerDb(&currentJob.Id, producerId, dbClient)
-			if err != nil {
-				return err
-			}
-			err = DeclineJob(currentJob.Id.Hex(), producerId, dbClient)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
 	return nil
 }
 
+func TransferPotentialToDeclined(dbClient *mongo.Client, logger *pterm.Logger) {
+	for {
+		const TIME_INTERVAL = 1 * time.Minute
+
+		err := transferPotentialToDeclinedDb(MAX_DECLINED_PRODUCERS, dbClient)
+		if err != nil {
+			logger.Error(err.Message)
+		}
+		logger.Info("Transferred potential producers to declined producers")
+
+		time.Sleep(TIME_INTERVAL)
+	}
+}
+
 func checkMaxDeclinedProducers(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
-	var MAX_DECLINED_PRODUCERS = 5
 	job, err := getJobByIdDb(jobId, dbClient)
 	if err != nil {
 		return err
