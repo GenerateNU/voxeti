@@ -15,11 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const (
-	MAX_DECLINED_PRODUCERS  = 5
-	MAX_POTENTIAL_PRODUCERS = 5
-)
-
 // Find a specified job by its ID
 func GetJobById(jobId string, dbClient *mongo.Client) (schema.Job, *schema.ErrorResponse) {
 	return getJobByIdDb(jobId, dbClient)
@@ -158,7 +153,8 @@ func DeclineJob(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Cl
 		return err
 	}
 
-	err = checkMaxDeclinedProducers(jobId, dbClient)
+	err = removePotentialProducerDb(jobId, producerId, dbClient)
+
 	if err != nil {
 		return err
 	}
@@ -234,6 +230,7 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 	availableColors := user.GetAvailableColors(producer)
 	const METERS_PER_MILE = 1609.34
 	const MAX_MILES = 100
+	const MAX_POTENTIAL_PRODUCERS = 5
 	var PENDING = bson.M{"status": bson.M{"$eq": "PENDING"}}
 	var DECLINED_PRODUCERS = bson.M{"declinedProducers": bson.M{"$nin": []primitive.ObjectID{producer.Id}}}
 	var MAX_POTENTIAL_PRODUCERS_FILTER = bson.M{
@@ -371,8 +368,9 @@ func updatePotentialProducers(producerId *primitive.ObjectID, jobs *[]schema.Job
 func TransferPotentialToDeclined(dbClient *mongo.Client, logger *pterm.Logger) {
 	for {
 		const TIME_INTERVAL = 1 * time.Minute
+		const DENOMINATOR = 2
 
-		err := transferPotentialToDeclinedDb(MAX_DECLINED_PRODUCERS, dbClient)
+		err := transferPotentialToDeclinedDb(DENOMINATOR, dbClient)
 		if err != nil {
 			logger.Error(err.Message)
 		}
@@ -382,18 +380,17 @@ func TransferPotentialToDeclined(dbClient *mongo.Client, logger *pterm.Logger) {
 	}
 }
 
-func checkMaxDeclinedProducers(jobId string, dbClient *mongo.Client) *schema.ErrorResponse {
-	job, err := getJobByIdDb(jobId, dbClient)
-	if err != nil {
-		return err
-	}
+func DeleteMaxDeclinedJobs(dbClient *mongo.Client, logger *pterm.Logger) {
+	for {
+		const TIME_INTERVAL = 1 * time.Minute
+		const MAX_DECLINED_PRODUCERS = 5
 
-	if len(job.DeclinedProducers) >= MAX_DECLINED_PRODUCERS {
-		err := deleteJobDb(jobId, dbClient)
-
+		err := deleteMaxDeclinedJobsDb(MAX_DECLINED_PRODUCERS, dbClient)
 		if err != nil {
-			return err
+			logger.Error(err.Message)
 		}
+		logger.Info("Deleted max declined jobs")
+
+		time.Sleep(TIME_INTERVAL)
 	}
-	return nil
 }

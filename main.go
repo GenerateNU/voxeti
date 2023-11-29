@@ -133,6 +133,7 @@ func configureServer(dbUri string) (e *echo.Echo, dbDisconnect func()) {
 	spinnerSuccess.Success("Registered backend handlers")
 
 	go job.TransferPotentialToDeclined(dbClient, logger)
+	go job.DeleteMaxDeclinedJobs(dbClient, logger)
 
 	return
 }

@@ -186,7 +186,15 @@ func declineJobDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	jobObjectId, err := primitive.ObjectIDFromHex(jobId)
 	if err != nil {
-		return &schema.ErrorResponse{Code: 404, Message: "Invalid JobId"}
+		return &schema.ErrorResponse{Code: 400, Message: "Invalid JobId"}
+	}
+
+	// findone job with jobId and producerId in declinedProducers array
+	var job schema.Job
+	err = jobCollection.FindOne(context.Background(), bson.M{"_id": jobObjectId, "declinedProducers": bson.M{"$in": []primitive.ObjectID{*producerId}}}).Decode(&job)
+	// if job is found, return error
+	if err == nil {
+		return &schema.ErrorResponse{Code: 400, Message: "Producer has already declined this job"}
 	}
 
 	// update job with declined producer
@@ -237,8 +245,7 @@ func getPotentialProducerJobsDb(producerId *primitive.ObjectID, dbClient *mongo.
 	return &jobs, nil
 }
 
-func transferPotentialToDeclinedDb(MAX_DECLINED_PRODUCERS int, dbClient *mongo.Client) *schema.ErrorResponse {
-	const DENOMINATOR = 2
+func transferPotentialToDeclinedDb(DENOMINATOR int, dbClient *mongo.Client) *schema.ErrorResponse {
 
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 
@@ -275,15 +282,41 @@ func transferPotentialToDeclinedDb(MAX_DECLINED_PRODUCERS int, dbClient *mongo.C
 		declinedProducers := job.DeclinedProducers
 		firstHalf := potentialProducers[:len(potentialProducers)/DENOMINATOR]
 		declinedProducers = append(declinedProducers, firstHalf...)
-		if len(declinedProducers) > MAX_DECLINED_PRODUCERS {
-			deleteJobDb(job.Id.Hex(), dbClient)
-			continue
-		}
 		potentialProducers = potentialProducers[len(potentialProducers)/DENOMINATOR:]
 		_, err = jobCollection.UpdateOne(context.Background(), bson.M{"_id": job.Id}, bson.M{"$set": bson.M{"potentialProducers": potentialProducers, "declinedProducers": declinedProducers}})
 		if err != nil {
 			return &schema.ErrorResponse{Code: 500, Message: "Unable to transfer potential producers to declined producers"}
 		}
+	}
+
+	return nil
+}
+
+func deleteMaxDeclinedJobsDb(MAX_DECLINED_PRODUCERS int, dbClient *mongo.Client) *schema.ErrorResponse {
+
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+
+	// delete jobs where declinedProducers array is greater than MAX_DECLINED_PRODUCERS
+	_, err := jobCollection.DeleteMany(context.Background(), bson.M{"$expr": bson.M{"$gt": bson.A{bson.M{"$size": bson.M{"$ifNull": bson.A{"$declinedProducers", []interface{}{}}}}, MAX_DECLINED_PRODUCERS}}})
+
+	if err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Unable to delete jobs exceeding max declined producers"}
+	}
+
+	return nil
+}
+
+func removePotentialProducerDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+	jobObjectId, err := primitive.ObjectIDFromHex(jobId)
+	if err != nil {
+		return &schema.ErrorResponse{Code: 400, Message: "Invalid JobId"}
+	}
+
+	// remove producer from potential producers
+	_, err = jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobObjectId}, bson.M{"$pull": bson.M{"potentialProducers": producerId}})
+	if err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Unable to remove potential producer"}
 	}
 
 	return nil
