@@ -165,19 +165,9 @@ func getJobsByFilterDb(filter *primitive.M, dbClient *mongo.Client) (*[]schema.J
 		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
 	}
 
-	// Iterate over the cursor and append each job to the slice
 	var jobs []schema.Job
-	for cursor.Next(context.Background()) {
-		var job schema.Job
-		if err := cursor.Decode(&job); err != nil {
-			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
-		}
-		jobs = append(jobs, job)
-	}
-
-	// If there was an error iterating over the cursor, return an error
-	if err := cursor.Err(); err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	if err := cursor.All(context.Background(), &jobs); err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding jobs!"}
 	}
 
 	return &jobs, nil
@@ -190,17 +180,24 @@ func declineJobDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.
 		return &schema.ErrorResponse{Code: 400, Message: "Invalid JobId"}
 	}
 
-	// findone job with jobId and producerId in declinedProducers array
-	var job schema.Job
-	err = jobCollection.FindOne(context.Background(), bson.M{"_id": jobObjectId, "declinedProducers": bson.M{"$in": []primitive.ObjectID{*producerId}}}).Decode(&job)
-	// if job is found, return error
-	if err == nil {
-		return &schema.ErrorResponse{Code: 400, Message: "Producer has already declined this job"}
+	filter := bson.M{
+		"_id": jobObjectId,
+		"declinedProducers": bson.M{
+			"$nin": []primitive.ObjectID{*producerId},
+		},
 	}
 
-	// update job with declined producer
-	_, err = jobCollection.UpdateOne(context.Background(), bson.M{"_id": jobObjectId}, bson.M{"$push": bson.M{"declinedProducers": producerId}})
-	if err != nil {
+	update := bson.M{
+		"$push": bson.M{"declinedProducers": producerId},
+	}
+
+	options := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	var updatedJob schema.Job
+	err = jobCollection.FindOneAndUpdate(context.Background(), filter, update, options).Decode(&updatedJob)
+
+	if err == mongo.ErrNoDocuments {
+		return &schema.ErrorResponse{Code: 400, Message: "Producer has already declined this job"}
+	} else if err != nil {
 		return &schema.ErrorResponse{Code: 500, Message: "Unable to decline job"}
 	}
 
@@ -231,19 +228,9 @@ func getPotentialProducerJobsDb(producerId *primitive.ObjectID, dbClient *mongo.
 		return nil, &schema.ErrorResponse{Code: 500, Message: err.Error()}
 	}
 
-	// Iterate over the cursor and append each job to the slice
 	var jobs []schema.Job
-	for cursor.Next(context.Background()) {
-		var job schema.Job
-		if err := cursor.Decode(&job); err != nil {
-			return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
-		}
-		jobs = append(jobs, job)
-	}
-
-	// If there was an error iterating over the cursor, return an error
-	if err := cursor.Err(); err != nil {
-		return nil, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	if err := cursor.All(context.Background(), &jobs); err != nil {
+		return nil, &schema.ErrorResponse{Code: 500, Message: "Error decoding jobs!"}
 	}
 
 	return &jobs, nil
@@ -279,19 +266,9 @@ func transferPotentialToDeclinedDb(TRANSFER_NUM int, MAX_INACTIVE time.Duration,
 		return &schema.ErrorResponse{Code: 500, Message: err.Error()}
 	}
 
-	// Iterate over the cursor and append each job to the slice
 	var jobs []schema.Job
-	for cursor.Next(context.Background()) {
-		var job schema.Job
-		if err := cursor.Decode(&job); err != nil {
-			return &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
-		}
-		jobs = append(jobs, job)
-	}
-
-	// If there was an error iterating over the cursor, return an error
-	if err := cursor.Err(); err != nil {
-		return &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+	if err := cursor.All(context.Background(), &jobs); err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Error decoding jobs!"}
 	}
 
 	// iterate over jobs and transfer potential producers to declined producers

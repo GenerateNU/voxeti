@@ -47,6 +47,7 @@ type Job struct {
 	DeclinedProducers  []primitive.ObjectID `bson:"declinedProducers,omitempty" json:"declinedProducers"`
 	PotentialProducers []primitive.ObjectID `bson:"potentialProducers,omitempty" json:"potentialProducers"`
 	LastUpdated        time.Time            `bson:"lastUpdated,omitempty" json:"lastUpdated"`
+	// lastUpdated represents last time a potential producer was added
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
