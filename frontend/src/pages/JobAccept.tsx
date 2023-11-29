@@ -17,6 +17,7 @@ import { jobApi, userApi } from "../api/api";
 import { useStateSelector } from "../hooks/use-redux";
 import { Job } from "../main.types";
 import Loading from "../components/JobAccept/Loading";
+import { PageStatus } from "../main.types";
 
 export function JobFilesName(props: { designId: string }) {
   // const { data: data } = designApi.useGetDesignQuery(props.designId); Reinclude this once the design API works properly
@@ -26,7 +27,9 @@ export function JobFilesName(props: { designId: string }) {
 
 export default function JobAccept() {
   const [jobFilter, setJobFilter] = React.useState("Pending");
-  const [pageStatus, setPageStatus] = React.useState("LOADING");
+  const [pageStatus, setPageStatus] = React.useState<PageStatus>(
+    PageStatus.Loading
+  );
 
   const JobTable = () => {
     const handleChange = (event: SelectChangeEvent) => {
@@ -36,7 +39,7 @@ export default function JobAccept() {
 
     const { user } = useStateSelector((state) => state.user);
 
-    const { data: data } = jobApi.useGetDesignerJobsFilteredQuery({
+    const useQueryResponse = jobApi.useGetDesignerJobsFilteredQuery({
       designerId: user.id,
       status: jobFilter.toUpperCase(),
       page: "0",
@@ -54,13 +57,15 @@ export default function JobAccept() {
     };
 
     React.useEffect(() => {
-      if (data) {
-        setRows(data);
-        setPageStatus("GOOD");
+      if (useQueryResponse.isSuccess) {
+        setRows(useQueryResponse.data);
+        setPageStatus(PageStatus.Success);
+      } else if (useQueryResponse.isError) {
+        setPageStatus(PageStatus.Error);
       }
-    }, [data, jobFilter]);
+    }, [useQueryResponse, jobFilter]);
 
-    if (pageStatus == "LOADING") return <Loading />;
+    if (pageStatus == PageStatus.Loading) return <Loading />;
 
     return (
       <div className="py-32 w-full h-screen flex flex-col items-center justify-center">
@@ -143,7 +148,7 @@ export default function JobAccept() {
             </Table>
           </TableContainer>
           <div>
-            {!data ? (
+            {!useQueryResponse.data ? (
               <h2 className=" text-xl py-8 text-center">No Matching Jobs</h2>
             ) : (
               <div></div>

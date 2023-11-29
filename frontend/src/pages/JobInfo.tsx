@@ -5,7 +5,7 @@ import { Link } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import * as React from "react";
 import { jobApi } from "../api/api";
-import { Job } from "../main.types";
+import { Job, PageStatus } from "../main.types";
 import DesignInfo from "../components/JobAccept/DesignInfo";
 import DesignerName from "../components/JobAccept/DesignerInfo";
 import { useApiError } from "../hooks/use-api-error";
@@ -15,7 +15,9 @@ export default function JobInfo() {
   const [jobDetails] = jobApi.useGetJobMutation();
   const { addError, setOpen } = useApiError();
 
-  const [pageStatus, setPageStatus] = React.useState("LOADING");
+  const [pageStatus, setPageStatus] = React.useState<PageStatus>(
+    PageStatus.Loading
+  );
   const [currentJob, setCurrentJob] = React.useState<Job>();
 
   const [jobPrice, setJobPrice] = React.useState(0);
@@ -74,19 +76,19 @@ export default function JobInfo() {
           date.setDate(date.getDate() + 10);
           setEstDelivery(new Date(date));
 
-          setPageStatus("GOOD");
+          setPageStatus(PageStatus.Success);
         })
         .catch((error) => {
           addError("Job doesn't exist or you don't have permission");
           setOpen(true);
           console.log(error);
-          setPageStatus("BAD");
+          setPageStatus(PageStatus.Error);
         });
     }
   }, []);
 
-  if (pageStatus == "LOADING") return <Loading />;
-  if (pageStatus == "BAD")
+  if (pageStatus == PageStatus.Loading) return <Loading />;
+  if (pageStatus == PageStatus.Error)
     return (
       <Container className="h-[60vh] min-h-[500px]">
         <Box className="flex flex-col justify-center items-center align-middle h-full">
