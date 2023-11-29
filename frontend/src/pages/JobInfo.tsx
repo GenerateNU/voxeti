@@ -87,47 +87,50 @@ export default function JobInfo() {
     }
   }, []);
 
-  if (pageStatus == PageStatus.Loading) return <Loading />;
-  if (pageStatus == PageStatus.Error)
-    return (
-      <Container className="h-[60vh] min-h-[500px]">
-        <Box className="flex flex-col justify-center items-center align-middle h-full">
-          <BackButton />
-        </Box>
-      </Container>
-    );
-
-  return (
-    <div className="py-32 w-full flex flex-col items-center justify-center">
-      <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
-        <BackButton />
-        <div className=" py-3" />
-        <div className=" flex flex-row justify-between">
-          {currentJob && <DesignerName job={currentJob} />}
-        </div>
-        {currentJob &&
-          currentJob.designId.map(
-            (designId: string, index: number) =>
-              designId && (
-                <DesignInfo
-                  designId={designId}
-                  quantity={currentJob.quantity[index]}
-                />
-              )
-          )}
-        {jobInfo.map((section) => (
-          <div className=" flex flex-col">
-            <Divider variant="middle" className=" py-3" />
+  switch (pageStatus) {
+    case PageStatus.Success:
+      return (
+        <div className="py-32 w-full flex flex-col items-center justify-center">
+          <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
+            <BackButton />
             <div className=" py-3" />
-            {section.map((row) => (
-              <div className=" flex justify-between py-1">
-                <p>{row.field}</p>
-                <p>{row.value}</p>
+            <div className=" flex flex-row justify-between">
+              {currentJob && <DesignerName job={currentJob} />}
+            </div>
+            {currentJob &&
+              currentJob.designId.map(
+                (designId: string, index: number) =>
+                  designId && (
+                    <DesignInfo
+                      designId={designId}
+                      quantity={currentJob.quantity[index]}
+                    />
+                  )
+              )}
+            {jobInfo.map((section) => (
+              <div className=" flex flex-col">
+                <Divider variant="middle" className=" py-3" />
+                <div className=" py-3" />
+                {section.map((row) => (
+                  <div className=" flex justify-between py-1">
+                    <p>{row.field}</p>
+                    <p>{row.value}</p>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
-        ))}
-      </div>
-    </div>
-  );
+        </div>
+      );
+    case PageStatus.Loading:
+      return (
+        <Container className="h-[60vh] min-h-[500px]">
+          <Box className="flex flex-col justify-center items-center align-middle h-full">
+            <BackButton />
+          </Box>
+        </Container>
+      );
+    case PageStatus.Error:
+      return <Loading />;
+  }
 }
