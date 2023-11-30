@@ -36,23 +36,6 @@ export default function DesignerName(props: { job: Job }) {
         </div>
         {props.job && <JobAcceptButtons currentJob={props.job} />}
       </div>
-      <Divider variant="middle" className=" py-3" />
-      <div className=" py-3" />
-      <div className=" flex justify-between py-1 w-full">
-        <p>Address</p>
-        {address && (
-          <div className=" text-right">
-            <p>{address.line1}</p>
-            <p>{address.line2}</p>
-            <p>
-              {address.city}, {address.state}
-            </p>
-            <p>
-              {address.zipCode}, {address.country}
-            </p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
