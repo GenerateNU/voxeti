@@ -13,6 +13,8 @@ import { ErrorHandler } from '../utilities/errors';
 import { useApiError } from '../hooks/use-api-error';
 
 export function UploadDesign() {
+	const { user : { addresses, id } } = useStateSelector((state) => state.user)
+
 	const [currentStep, setCurrentStep] = useState<number>(1); // number, React.Dispatch<React.SetStateAction<number>>
 	const [file, setFile] = useState<File[]>([]);
 	const [quantities, setQuantities] = useState<number[]>([]);
@@ -24,13 +26,13 @@ export function UploadDesign() {
 	const [prices, setPrices] = useState<EstimateBreakdown[]>([]);
 	const [filament, setFilament] = useState('PLA')
 	const [dimensions, setDimensions] = useState<Dimensions[]>([]);
+	const [address, setAddress] = useState<number>(0);
 	const [isSlicing, setIsSlicing] = useState(false);
+
+  const uploadDesigns = useDesignUpload(file, dimensions);
 
 	const { addError, setOpen } = useApiError();
 	const dispatch = useStateDispatch();
-
-	const { user : { id } } = useStateSelector((state) => state.user)
-  const uploadDesigns = useDesignUpload(file, dimensions);
 
   const [sliceDesign] = slicerApi.useSliceDesignsMutation();
 	const [estimatePrice] = priceEstimationApi.useEstimatePricesMutation();
@@ -61,9 +63,9 @@ export function UploadDesign() {
 			.unwrap()
 			.then((data : SlicerData) => {
 				// Compute slice dimensions:
-				const height = data.maxy - data.miny;
-				const width = data.maxx - data.minx;
-				const depth = data.maxz - data.minz;
+				const height = Math.round((data.maxy - data.miny) * 100);
+				const width = Math.round((data.maxx - data.minx) * 100);
+				const depth = Math.round((data.maxz - data.minz) * 100);
 
 				setDimensions((dimensions) => {
 					dimensions[index] = { height: height, width: width, depth: depth }
@@ -134,6 +136,7 @@ export function UploadDesign() {
 				taxes: Math.round(taxes * 100),
 				color: states.color,
 				filament: states.filament as FilamentType,
+				shippingAddress: addresses[states.address],
 				layerHeight: parseFloat(quality),
 		}
 
@@ -188,6 +191,7 @@ export function UploadDesign() {
 		expirationDate: expirationDate,
 		prices: prices,
 		filament: filament,
+		address: address,
 		isLoading: isSlicing,
 	}
 
@@ -203,6 +207,7 @@ export function UploadDesign() {
 		expirationDate: setExpirationDate,
 		slice: handleSlicing,
 		filament: setFilament,
+		address: setAddress,
 		prices: setPrices,
 	}
 	// -----------
