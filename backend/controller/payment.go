@@ -50,6 +50,7 @@ func createCheckoutSession(c echo.Context) (err error) {
         Quantity: stripe.Int64(1),
       },
     },
+    AutomaticTax: &stripe.CheckoutSessionAutomaticTaxParams{Enabled: stripe.Bool(true)},
   }
 
   s, _ := session.New(params)

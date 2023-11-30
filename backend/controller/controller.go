@@ -35,6 +35,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 				"/api/users":                "POST",
 				"/api/auth/login":           "POST",
 				"/api/auth/google-provider": "POST",
+				"/api/payment/create-checkout-session": "POST",
 			}
 
 			// Check if the current request is an auth route:
