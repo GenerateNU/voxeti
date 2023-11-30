@@ -1,29 +1,40 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Design } from "../main.types";
+import { RootState } from "../store/store";
 
-// Design API:
 export const createDesignApi = (baseUrl: string) =>
   createApi({
     reducerPath: "designApi",
     baseQuery: fetchBaseQuery({
       baseUrl: `${baseUrl}/designs`,
       credentials: "include",
+      prepareHeaders: (headers, { getState }) => {
+        const token = (getState() as RootState).user.csrfToken
+        if (token) {
+          headers.set("Csrftoken", token)
+        }
+        return headers
+      }
     }),
     endpoints: (builder) => ({
-      createDesign: builder.mutation<Design, Design>({
+      uploadDesign: builder.mutation<Design[], FormData>({
         query: (body) => ({
           body,
           method: "POST",
           url: "",
+          formData: true
         }),
       }),
       getDesign: builder.query<Design, string>({
-        query: (id) => `/${id}`,
+        query: (designId) => ({
+          method: "GET",
+          url: `/${designId}`,
+        }),
       }),
-      deleteDesign: builder.mutation<Design, string>({
-        query: (id) => ({
+      deleteDesign: builder.mutation<void, string>({
+        query: (designId) => ({
           method: "DELETE",
-          url: `/${id}`,
+          url: `/${designId}`,
         }),
       }),
     }),

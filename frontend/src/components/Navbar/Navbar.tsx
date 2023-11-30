@@ -3,10 +3,12 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import NavDropDownIcon from "./Dropdown/NavDropDownIcon";
 import { useState } from "react";
 import NavDropDown from "./Dropdown/NavDropDown";
+import useLogout from "../../hooks/use-logout";
 
 export default function NavBar() {
   const [navOpen, setNavOpen] = useState(false);
   const [hidden, setHidden] = useState(true);
+  const logout = useLogout();
 
   return (
     <div>
@@ -18,6 +20,11 @@ export default function NavBar() {
           Voxeti
         </a>
         <div className='flex flex-row items-center gap-x-4'>
+          <button
+            onClick={logout}
+          >
+            Logout
+          </button>
           <Link
             href="/upload-design"
             underline="none"
