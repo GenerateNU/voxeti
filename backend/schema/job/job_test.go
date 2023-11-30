@@ -906,7 +906,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		mt.AddMockResponses(res, end)
 
 		// Assertions
-		foundJob, err := GetJobsByDesignerOrProducerId(jobIdHex, producerId, 10, 0, mt.Client)
+		foundJob, err := GetJobsByDesignerOrProducerId(jobIdHex, producerId, "", 10, 0, mt.Client)
 
 		assert.Nil(err)
 		assert.Equal(foundJob, []schema.Job{expectedJob})
@@ -959,7 +959,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		mt.AddMockResponses(res, end)
 
 		// Assertions
-		foundJob, err := GetJobsByDesignerOrProducerId(designerId, jobIdHex, 10, 0, mt.Client)
+		foundJob, err := GetJobsByDesignerOrProducerId(designerId, jobIdHex, "", 10, 0, mt.Client)
 
 		assert.Nil(err)
 		assert.Equal(foundJob, []schema.Job{expectedJob})
@@ -976,7 +976,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		// Assertions
 		nonExistingDesignerId := primitive.NewObjectID()
 		nonExistingProducerId, _ := primitive.ObjectIDFromHex("")
-		_, err := getJobsByDesignerOrProducerIdDb(nonExistingDesignerId, nonExistingProducerId, 10, 0, mt.Client)
+		_, err := getJobsByDesignerOrProducerIdDb(nonExistingDesignerId, nonExistingProducerId, "", 10, 0, mt.Client)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
 			return
@@ -989,7 +989,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		// Assertions
 		nonExistingDesignerId, _ := primitive.ObjectIDFromHex("INCORRECT FORMAT")
 		nonExistingProducerId, _ := primitive.ObjectIDFromHex("")
-		_, err := getJobsByDesignerOrProducerIdDb(nonExistingDesignerId, nonExistingProducerId, 10, 0, mt.Client)
+		_, err := getJobsByDesignerOrProducerIdDb(nonExistingDesignerId, nonExistingProducerId, "", 10, 0, mt.Client)
 		if err == nil {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
 			return

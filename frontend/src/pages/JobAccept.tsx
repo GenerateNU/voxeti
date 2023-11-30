@@ -31,7 +31,7 @@ export default function JobAccept() {
     PageStatus.Loading
   );
 
-  const JobTable = () => {
+  const JobTable = (props: { filter: string }) => {
     const handleChange = (event: SelectChangeEvent) => {
       setJobFilter(event.target.value as string);
     };
@@ -41,7 +41,7 @@ export default function JobAccept() {
 
     const useQueryResponse = jobApi.useGetDesignerJobsFilteredQuery({
       designerId: user.id,
-      status: jobFilter.toUpperCase(),
+      status: props.filter.toUpperCase(),
       page: "0",
     });
 
@@ -166,5 +166,5 @@ export default function JobAccept() {
       </div>
     );
   };
-  return <JobTable />;
+  return <JobTable filter={jobFilter} />;
 }
