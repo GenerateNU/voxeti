@@ -281,9 +281,9 @@ func TestCreateJob(t *testing.T) {
 			assert.Fail("Expected error to be thrown when retrieving non-existing ID")
 			return
 		}
-		assert.Equal(err.Code, 500)
-		assert.Equal(err.Message, "Unable to create job")
-		assert.Equal(mockEmailService.numCallsSendNotification, 0) // Ensure no emails were sent
+		assert.Equal(500, err.Code)
+		assert.Equal("Unable to create job", err.Message)
+		assert.Equal(0, mockEmailService.numCallsSendNotification) // Ensure no emails were sent
 	})
 }
 

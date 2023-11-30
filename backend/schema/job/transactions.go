@@ -109,7 +109,7 @@ func createJobDb(newJob schema.Job, dbClient *mongo.Client) (schema.Job, *schema
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 	result, err := jobCollection.InsertOne(context.Background(), newJob)
 	if err != nil {
-		return schema.Job{}, &schema.ErrorResponse{Code: 500, Message: err.Error()}
+		return schema.Job{}, &schema.ErrorResponse{Code: 500, Message: "Unable to create job"}
 	}
 	// add an ID field to the new job
 	newJob.Id = result.InsertedID.(primitive.ObjectID)
