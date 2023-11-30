@@ -10,21 +10,12 @@ export const createJobApi = (baseUrl: string) =>
       baseUrl: `${baseUrl}/jobs`,
       credentials: "include",
       prepareHeaders: (headers, { getState }) => {
-<<<<<<< HEAD
         const token = (getState() as RootState).user.csrfToken;
         if (token) {
           headers.set("Csrftoken", token);
         }
         return headers;
       },
-=======
-        const token = (getState() as RootState).user.csrfToken
-        if (token) {
-          headers.set("Csrftoken", token)
-        }
-        return headers
-      }
->>>>>>> fix-job-upload
     }),
     endpoints: (builder) => ({
       getJob: builder.mutation<Job, string>({
@@ -53,7 +44,6 @@ export const createJobApi = (baseUrl: string) =>
           url: `/${id}`,
         }),
       }),
-<<<<<<< HEAD
       getDesignerJobs: builder.query<
         Job[],
         { designerId: string; page: string }
@@ -67,18 +57,12 @@ export const createJobApi = (baseUrl: string) =>
         query: ({ designerId, status, page }) =>
           `?designer=${designerId}&status=${status}&page=${page}`,
       }),
-=======
-      getDesignerJobs: builder.query<Job[], { designerId: string; page: string }>({
-        query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
-      }),
->>>>>>> fix-job-upload
       getProducerJobs: builder.query<
         Job[],
         { producerId: string; page: string }
       >({
         query: ({ producerId, page }) => `?producer=${producerId}&page=${page}`,
       }),
-<<<<<<< HEAD
       getProducerJobsFiltered: builder.query<
         Job[],
         { producerId: string; status: string; page: string }
@@ -86,8 +70,6 @@ export const createJobApi = (baseUrl: string) =>
         query: ({ producerId, status, page }) =>
           `?producer=${producerId}&status=${status}&page=${page}`,
       }),
-=======
->>>>>>> fix-job-upload
       patchJob: builder.mutation<Job, { id: string; body: Partial<Job> }>({
         query: ({ id, body }) => ({
           body,

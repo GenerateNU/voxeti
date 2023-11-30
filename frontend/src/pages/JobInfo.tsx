@@ -4,7 +4,7 @@ import { Box, Container, IconButton } from "@mui/material";
 import { Link } from "@mui/material";
 import * as React from "react";
 import { jobApi } from "../api/api";
-import { Job, PageStatus } from "../main.types";
+import { Address, Job, PageStatus } from "../main.types";
 import DesignInfo from "../components/JobAccept/DesignInfo";
 import DesignerName from "../components/JobAccept/DesignerInfo";
 import { useApiError } from "../hooks/use-api-error";
@@ -58,6 +58,26 @@ export default function JobInfo() {
     );
   };
 
+  const AddressBox = (props: { address: Address }) => {
+    return (
+      <div className=" flex justify-between py-1 w-full">
+        <p>Address</p>
+        {props.address && (
+          <div className=" text-right">
+            <p>{props.address.line1}</p>
+            <p>{props.address.line2}</p>
+            <p>
+              {props.address.city}, {props.address.state}
+            </p>
+            <p>
+              {props.address.zipCode}, {props.address.country}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const PageError = () => {
     return (
       <Container className="h-[60vh] min-h-[500px]">
@@ -87,7 +107,13 @@ export default function JobInfo() {
                   />
                 )
             )}
-          {jobInfo.map((section) => (
+          {jobInfo.slice(0, -1).map((section) => (
+            <FieldValueRow section={section} />
+          ))}
+          {currentJob?.shippingAddress && (
+            <AddressBox address={currentJob?.shippingAddress} />
+          )}
+          {jobInfo.slice(-1).map((section) => (
             <FieldValueRow section={section} />
           ))}
         </div>
