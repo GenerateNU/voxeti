@@ -34,22 +34,24 @@ type CheckoutData struct {
 }
 
 func createCheckoutSession(c echo.Context) (err error) {
+  lineItems := []*stripe.CheckoutSessionLineItemParams{
+    &stripe.CheckoutSessionLineItemParams{
+      PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+        Currency: stripe.String("usd"),
+        ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+          Name: stripe.String("T-shirt"),
+        },
+        UnitAmount: stripe.Int64(2000),
+      },
+      Quantity: stripe.Int64(2),
+    },
+  }
+  
   params := &stripe.CheckoutSessionParams{
     Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
     UIMode: stripe.String("embedded"),
     RedirectOnCompletion: stripe.String("never"),
-    LineItems: []*stripe.CheckoutSessionLineItemParams{
-      &stripe.CheckoutSessionLineItemParams{
-        PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
-          Currency: stripe.String("usd"),
-          ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
-            Name: stripe.String("T-shirt"),
-          },
-          UnitAmount: stripe.Int64(2000),
-        },
-        Quantity: stripe.Int64(1),
-      },
-    },
+    LineItems: lineItems,
     AutomaticTax: &stripe.CheckoutSessionAutomaticTaxParams{Enabled: stripe.Bool(true)},
   }
 
