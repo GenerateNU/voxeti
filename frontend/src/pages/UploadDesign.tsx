@@ -14,7 +14,7 @@ import { useApiError } from '../hooks/use-api-error';
 
 export function UploadDesign() {
 	const { user : { addresses, id } } = useStateSelector((state) => state.user)
-	
+
 	const [currentStep, setCurrentStep] = useState<number>(1); // number, React.Dispatch<React.SetStateAction<number>>
 	const [file, setFile] = useState<File[]>([]);
 	const [quantities, setQuantities] = useState<number[]>([]);

@@ -113,7 +113,7 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
               {user.addresses.map((address, index) => {
                 return (
                   <MenuItem key={address.name} value={index}>
-                    {address.line1}, {address.line2} {address.city}, {address.state} {address.zipCode} 
+                    {address.line1}, {address.line2} {address.city}, {address.state} {address.zipCode}
                   </MenuItem>
                 );
               })}
