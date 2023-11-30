@@ -15,6 +15,7 @@ import StatusCell from "../components/OrderStatus/StatusCell";
 import FileCell from "../components/OrderStatus/FileCell";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Auth from "../components/Auth/Auth";
+import { resetUser } from "../store/userSlice";
 
 export default function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -26,10 +27,10 @@ export default function Jobs() {
     page: "0",
   });
   if (data && jobs.length == 0) {
-    setJobs(data)
+    setJobs(data);
   }
 
-  if (error && 'status' in error && error.status == 401) {
+  if (error && "status" in error && error.status == 401) {
     dispatch(resetUser());
   }
 

@@ -24,6 +24,7 @@ export type States = {
   prices: EstimateBreakdown[],
   filament: string,
   quality: string,
+  address: number,
   isLoading: boolean,
 }
 
@@ -40,4 +41,5 @@ export type Setters = {
   quality: React.Dispatch<React.SetStateAction<string>>;
   slice: () => void;
   prices: React.Dispatch<React.SetStateAction<EstimateBreakdown[]>>;
+  address: React.Dispatch<React.SetStateAction<number>>;
 }

@@ -30,6 +30,7 @@ export interface Job {
   color: string;
   filament: FilamentType;
   layerHeight: number;
+  shippingAddress: Address;
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
@@ -115,6 +116,11 @@ export enum PageStatus {
   Success,
   Loading,
   Error,
+}
+
+export type SSOQueryParams = {
+  user: string,
+  provider: SocialProvider,
 }
 
 export type SSOQueryParams = {

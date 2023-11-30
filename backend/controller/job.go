@@ -37,6 +37,10 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		//status := c.QueryParam("status")
 		page_num, _ := strconv.Atoi(c.QueryParam("page")) // the current page the user is on
 		skip := limit * page_num
+    
+		// Convert Ids to correct type:
+		designerIdObj, _ := primitive.ObjectIDFromHex(designerId)
+		producerIdObj, _ := primitive.ObjectIDFromHex(producerId)
 
 		// Convert Ids to correct type:
 		designerIdObj, _ := primitive.ObjectIDFromHex(designerId)
