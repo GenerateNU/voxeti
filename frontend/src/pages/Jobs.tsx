@@ -27,10 +27,10 @@ export default function Jobs() {
     page: "0",
   });
   if (data && jobs.length == 0) {
-    setJobs(data)
+    setJobs(data);
   }
 
-  if (error && 'status' in error && error.status == 401) {
+  if (error && "status" in error && error.status == 401) {
     dispatch(resetUser());
   }
 

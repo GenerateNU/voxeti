@@ -11,9 +11,11 @@ import (
 )
 
 // Setup for when backend gets created
-func Setup(dbClient *mongo.Client, logger *pterm.Logger) {
-	CreateUserCollection(dbClient, logger)
-	CreateJobCollection(dbClient, logger)
+func Setup(dbClient *mongo.Client, logger *pterm.Logger, resetDb bool) {
+	if resetDb {
+		CreateUserCollection(dbClient, logger)
+		CreateJobCollection(dbClient, logger)
+	}
 }
 
 func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {

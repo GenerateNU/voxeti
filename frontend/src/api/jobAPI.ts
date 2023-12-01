@@ -10,15 +10,15 @@ export const createJobApi = (baseUrl: string) =>
       baseUrl: `${baseUrl}/jobs`,
       credentials: "include",
       prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as RootState).user.csrfToken
+        const token = (getState() as RootState).user.csrfToken;
         if (token) {
-          headers.set("Csrftoken", token)
+          headers.set("Csrftoken", token);
         }
-        return headers
-      }
+        return headers;
+      },
     }),
     endpoints: (builder) => ({
-      getJob: builder.mutation<Design[], FormData>({
+      getJob: builder.mutation<Job, string>({
         query: (jobId) => ({
           method: "GET",
           url: `/${jobId}`,
@@ -44,14 +44,31 @@ export const createJobApi = (baseUrl: string) =>
           url: `/${id}`,
         }),
       }),
-      getDesignerJobs: builder.query<Job[], { designerId: string; page: string }>({
+      getDesignerJobs: builder.query<
+        Job[],
+        { designerId: string; page: string }
+      >({
         query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
+      }),
+      getDesignerJobsFiltered: builder.query<
+        Job[],
+        { designerId: string; status: string; page: string }
+      >({
+        query: ({ designerId, status, page }) =>
+          `?designer=${designerId}&status=${status}&page=${page}`,
       }),
       getProducerJobs: builder.query<
         Job[],
         { producerId: string; page: string }
       >({
         query: ({ producerId, page }) => `?producer=${producerId}&page=${page}`,
+      }),
+      getProducerJobsFiltered: builder.query<
+        Job[],
+        { producerId: string; status: string; page: string }
+      >({
+        query: ({ producerId, status, page }) =>
+          `?producer=${producerId}&status=${status}&page=${page}`,
       }),
       patchJob: builder.mutation<Job, { id: string; body: Partial<Job> }>({
         query: ({ id, body }) => ({

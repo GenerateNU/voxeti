@@ -99,9 +99,9 @@ const (
 
 // Print/printer physical dimensions
 type Dimensions struct {
-	Height uint64 `bson:"height,omitempty" json:"height,omitempty"`
-	Width  uint64 `bson:"width,omitempty" json:"width,omitempty"`
-	Depth  uint64 `bson:"depth,omitempty" json:"depth,omitempty"`
+	Height float64 `bson:"height,omitempty" json:"height,omitempty"`
+	Width  float64 `bson:"width,omitempty" json:"width,omitempty"`
+	Depth  float64 `bson:"depth,omitempty" json:"depth,omitempty"`
 }
 
 // A filament

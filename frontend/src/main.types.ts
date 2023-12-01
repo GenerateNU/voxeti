@@ -19,7 +19,7 @@ export interface User {
 // A Voxeti print Job
 export interface Job {
   id?: string;
-  createdAt: Date,
+  createdAt: Date;
   designerId: string;
   producerId?: string;
   designId: string[];
@@ -111,9 +111,15 @@ export type SocialProvider = "NONE" | "GOOGLE";
 export type Error = {
   code: number;
   message: string;
+};
+
+export enum PageStatus {
+  Success,
+  Loading,
+  Error,
 }
 
 export type SSOQueryParams = {
-  user: string,
-  provider: SocialProvider,
-}
+  user: string;
+  provider: SocialProvider;
+};

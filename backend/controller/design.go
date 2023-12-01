@@ -53,8 +53,8 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 		// Validate each file:
 		for _, file := range files {
 			// Check to make sure the file does not exceed 20MB:
-			if file.Size > (1000 * 1000 * 20) {
-				return c.JSON(utilities.CreateErrorResponse(400, "STL file exceeds the 20MB file limit"))
+			if file.Size > (1000 * 1000 * 50) {
+				return c.JSON(utilities.CreateErrorResponse(400, "STL file exceeds the 50MB file limit"))
 			}
 
 			// Validate STL file:
@@ -72,7 +72,7 @@ func RegisterDesignHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm
 			var dimensions schema.Dimensions
 			err := json.Unmarshal([]byte(dimensionString), &dimensions)
 			if err != nil {
-				return c.JSON(utilities.CreateErrorResponse(400, "Unable to unmarshall json data from string form!"))
+				return c.JSON(utilities.CreateErrorResponse(400, dimensionString))
 			}
 
 			// Add STL file to DB:
