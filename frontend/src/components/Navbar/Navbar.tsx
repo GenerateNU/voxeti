@@ -4,6 +4,7 @@ import NavDropDown from "./Dropdown/NavDropDown";
 import NotifactionIcon from "../../assets/navbar/notifaction.png"
 import ProfileIcon from "../../assets/navbar/profile.png"
 import { useStateSelector } from "../../hooks/use-redux";
+import router from "../../router";
 
 export default function NavBar() {
   const { user } = useStateSelector((state) => state.user)
@@ -20,7 +21,7 @@ export default function NavBar() {
         >
           voxeti
         </a>
-        {loggedIn &&
+        {loggedIn ?
           <div className='flex flex-row items-center gap-x-6'>
             {user.userType === 'DESIGNER' &&
               <Link
@@ -46,6 +47,13 @@ export default function NavBar() {
               <img className='w-6' src={ProfileIcon}/>
             </Fab>
           </div>
+          : <Fab
+              size='small'
+              className='!shadow-none !bg-transparent'
+              onClick={() => router.navigate({ to: '/login' })}
+            >
+              <img className='w-6' src={ProfileIcon}/>
+            </Fab>
         }
       </nav>
       {loggedIn &&
