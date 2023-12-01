@@ -1,14 +1,16 @@
 import { Fab, Link } from "@mui/material";
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import NavDropDownIcon from "./Dropdown/NavDropDownIcon";
 import { useState } from "react";
 import NavDropDown from "./Dropdown/NavDropDown";
-import useLogout from "../../hooks/use-logout";
+import NotifactionIcon from "../../assets/navbar/notifaction.png"
+import ProfileIcon from "../../assets/navbar/profile.png"
+import { useStateSelector } from "../../hooks/use-redux";
+import router from "../../router";
 
 export default function NavBar() {
+  const { user } = useStateSelector((state) => state.user)
+  const loggedIn = user.id !== ""
+
   const [navOpen, setNavOpen] = useState(false);
-  const [hidden, setHidden] = useState(true);
-  const logout = useLogout();
 
   return (
     <div>
@@ -17,39 +19,48 @@ export default function NavBar() {
           className='text-2xl font-semibold mr-auto'
           href='/'
         >
-          Voxeti
+          voxeti
         </a>
-        <div className='flex flex-row items-center gap-x-4'>
-          <button
-            onClick={logout}
-          >
-            Logout
-          </button>
-          <Link
-            href="/upload-design"
-            underline="none"
-            color="black"
-            sx={{cursor: 'pointer'}}
-            className='!hidden md:!flex'
-          >
-            Create a Job
-          </Link>
-          <Fab
-            className='!shadow-none !bg-transparent'
-          >
-            <NotificationsNoneIcon />
-          </Fab>
-          <NavDropDownIcon
-            setNavOpen={setNavOpen}
-            setHidden={setHidden}
-            hidden={hidden}
-          />
-        </div>
+        {loggedIn ?
+          <div className='flex flex-row items-center gap-x-6'>
+            {user.userType === 'DESIGNER' &&
+              <Link
+                href="/upload-design"
+                underline="none"
+                color="black"
+                className='!hidden md:!flex !cursor-pointer'
+              >
+                Create a Job
+              </Link>
+            }
+            <Fab
+              size='small'
+              className='!shadow-none !bg-transparent'
+            >
+              <img className='h-6' src={NotifactionIcon}/>
+            </Fab>
+            <Fab
+              size='small'
+              className='!shadow-none !bg-transparent'
+              onClick={() => setNavOpen(!navOpen)}
+            >
+              <img className='w-6' src={ProfileIcon}/>
+            </Fab>
+          </div>
+          : <Fab
+              size='small'
+              className='!shadow-none !bg-transparent'
+              onClick={() => router.navigate({ to: '/login' })}
+            >
+              <img className='w-6' src={ProfileIcon}/>
+            </Fab>
+        }
       </nav>
-      <NavDropDown
-        navOpen={navOpen}
-        hidden={hidden}
-      />
+      {loggedIn &&
+        <NavDropDown
+          navOpen={navOpen}
+        />
+      }
     </div>
   );
 }

@@ -61,6 +61,7 @@ const QuestionForm = () => {
     // create new user object
     const newUser: User = {
       id: "",
+      userType: data.userType,
       firstName: data.firstName,
       lastName: data.lastName,
       email: ssoEmail ?? data.email,
@@ -185,7 +186,7 @@ const QuestionForm = () => {
           return (
             <div
               key={"section" + index}
-              className={`w-2 md:w-6 h-[3px] md:h-[2px] ${temp === 'producer' ? 'bg-producer' : 'bg-designer'} ${
+              className={`w-2 md:w-6 h-[3px] md:h-[2px] ${temp === 'PRODUCER' ? 'bg-producer' : 'bg-designer'} ${
                 currentSectionIndex === index ? "opacity-100" : "opacity-50"
               } rounded-full`}
             ></div>
