@@ -40,7 +40,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
   };
 
   const declineJob = () => {
-    console.log("declined job");
+    console.log(`declined job ${props.currentJob.id}`);
 
     //Send to confirmation page that job has been decline
   };
@@ -61,6 +61,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
             variant="outlined"
             color="black"
             className=" w-32"
+            href="/job-accept"
             onClick={declineJob}
           >
             Decline
