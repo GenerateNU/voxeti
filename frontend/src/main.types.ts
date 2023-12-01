@@ -3,6 +3,7 @@
 // A Voxeti User, can be both a Designer and a Producer
 export interface User {
   id: string;
+  userType?: 'DESIGNER' | 'PRODUCER' | 'HYBRID',
   firstName: string;
   lastName: string;
   email: string;

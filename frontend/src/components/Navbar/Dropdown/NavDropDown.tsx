@@ -2,39 +2,62 @@ import { Link } from "@mui/material";
 import { NavDropDownProps } from "./NavDropDown.types";
 import PersonIcon from '@mui/icons-material/Person';
 import ConstructionIcon from '@mui/icons-material/Construction';
+import useLogout from "../../../hooks/use-logout";
 
-export default function NavDropDown({ navOpen, hidden } : NavDropDownProps) {
+export default function NavDropDown({ navOpen } : NavDropDownProps) {
+  const logout = useLogout();
 
-  const navItems = [
+  const pages = [
     {
       href: '/profile',
-      text: 'Account',
+      text: 'Profile',
       icon: <PersonIcon />
     },
     {
       href: '/jobs',
       text: 'Jobs',
       icon: <ConstructionIcon />
-    }
+    },
+  ]
+
+  const user = [
+    {
+      onClick: () => logout(),
+      text: 'Logout',
+    },
   ]
 
   return (
     <div
-        className={`flex flex-col fixed w-full md:w-[275px] -top-[156px] shadow-md right-0 md:right-24 rounded-bl-lg rounded-br-lg ${navOpen ? 'animate-slideIn' : 'animate-slideOut'} ${hidden ? 'hidden' : 'visible'}`}
+        className={`flex flex-col fixed bg-background w-full md:w-[200px] top-24 z-10 shadow-md overflow-hidden right-0 md:right-24 !rounded-bl-2xl !rounded-br-2xl ${navOpen ? 'visible' : 'hidden'}`}
         style={{ animationFillMode: 'forwards' }}
       >
-        {navItems.map((item) => {
-          return (
-            <Link
-              href={item.href}
-              className='flex flex-row gap-x-2 w-full h-14 items-center justify-center !text-primary !font-base bg-background hover:bg-[#000000] hover:bg-opacity-10 transition-all ease-in-out'
-              underline='none'
-            >
-              {item.icon}
-              {item.text}
-            </Link>
-          )
-        })}
+        <div className='border-[#D9D9D9] border-t-[1px] border-b-[1px] pb-5'>
+          {pages.map((item) => {
+            return (
+              <Link
+                href={item.href}
+                className='flex flex-row gap-x-2 w-full pt-5 pl-6 !text-base items-center !text-primary !font-base ease-in-out cursor-pointer !transition-all hover:!text-[#7A7A7A]'
+                underline='none'
+              >
+                {item.text}
+              </Link>
+            )
+          })}
+        </div>
+        <div className='border-[#D9D9D9] pb-5'>
+          {user.map((item) => {
+            return (
+              <Link
+                onClick={item.onClick}
+                className='flex flex-row gap-x-2 w-full pt-5 pl-6 !text-base items-center !font-base ease-in-out cursor-pointer !text-[#7A7A7A] hover:!text-primary transition-all'
+                underline='none'
+              >
+                {item.text}
+              </Link>
+            )
+          })}
+        </div>
     </div>
   )
 }

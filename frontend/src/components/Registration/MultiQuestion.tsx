@@ -11,8 +11,8 @@ export default function MultiQuestion({
     control: Control
     userType: string
 }) {
-    const userTypeStylingSelected = `${userType === 'producer' ? '!bg-producer' : '!bg-designer'} !bg-opacity-80 !hover:!bg-opacity-80`
-    const userTypeStylingHover = userType === 'producer' ? 'hover:!bg-producer' : 'hover:!bg-designer'
+    const userTypeStylingSelected = `${userType === 'PRODUCER' ? '!bg-producer' : '!bg-designer'} !bg-opacity-80 !hover:!bg-opacity-80`
+    const userTypeStylingHover = userType === 'PRODUCER' ? 'hover:!bg-producer' : 'hover:!bg-designer'
 
     return (
         <Controller

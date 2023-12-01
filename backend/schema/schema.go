@@ -14,6 +14,7 @@ var DatabaseName = "data"
 // A Voxeti User, can be both a Designer and a Producer
 type User struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	UserType					UserType					 `bson:"userType,omitempty" json:"userType,omitempty"`
 	FirstName         string             `bson:"firstName,omitempty" json:"firstName,omitempty"`
 	LastName          string             `bson:"lastName,omitempty" json:"lastName,omitempty"`
 	Email             string             `bson:"email,omitempty" json:"email,omitempty"`
@@ -126,4 +127,12 @@ type SocialProvider string
 const (
 	None   = "NONE"
 	Google = "GOOGLE"
+)
+
+type UserType string
+
+const (
+	Producer UserType = "DESIGNER"
+	Designer UserType = "PRODUCER"
+	Hybrid UserType = "HYBRID"
 )
