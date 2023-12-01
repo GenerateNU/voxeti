@@ -37,10 +37,10 @@ export default function JobAccept() {
     };
     const [rows, setRows] = React.useState<Job[]>([]);
 
-    const { user } = useStateSelector((state) => state.user);
+    // const { user } = useStateSelector((state) => state.user);
 
-    const useQueryResponse = jobApi.useGetDesignerJobsFilteredQuery({
-      designerId: user.id,
+    const useQueryResponse = jobApi.useGetProducerJobsFilteredQuery({
+      producerId: "", // Need to be changed to user.id when job schema is changed
       status: props.filter.toUpperCase(),
       page: "0",
     });
