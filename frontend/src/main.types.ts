@@ -119,11 +119,6 @@ export enum PageStatus {
 }
 
 export type SSOQueryParams = {
-  user: string,
-  provider: SocialProvider,
-}
-
-export type SSOQueryParams = {
-  user: string,
-  provider: SocialProvider,
-}
+  user: string;
+  provider: SocialProvider;
+};
