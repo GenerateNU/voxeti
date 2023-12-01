@@ -148,7 +148,7 @@ export default function JobInfo() {
           setPageStatus(PageStatus.Error);
         });
     }
-  });
+  }, []);
 
   switch (pageStatus) {
     case PageStatus.Success:

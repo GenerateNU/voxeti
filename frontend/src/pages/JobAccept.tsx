@@ -14,7 +14,7 @@ import Paper from "@mui/material/Paper";
 import { Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
 import { jobApi, userApi } from "../api/api";
-import { useStateSelector } from "../hooks/use-redux";
+// import { useStateSelector } from "../hooks/use-redux";
 import { Job } from "../main.types";
 import Loading from "../components/JobAccept/Loading";
 import { PageStatus } from "../main.types";

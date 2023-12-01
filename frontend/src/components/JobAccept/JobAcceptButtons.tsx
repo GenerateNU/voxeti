@@ -1,6 +1,9 @@
 import * as React from "react";
 import { Job } from "../../main.types";
 import { Button, createTheme, ThemeProvider } from "@mui/material";
+import { jobApi } from "../../api/api";
+import { useStateSelector } from "../../hooks/use-redux";
+import { useApiError } from "../../hooks/use-api-error";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -32,11 +35,30 @@ const theme = createTheme({
 
 export default function JobAcceptButtons(props: { currentJob: Job }) {
   const [jobStatus, setJobStatus] = React.useState(props.currentJob.status);
+  const [patchJob] = jobApi.usePatchJobMutation();
+
+  const { addError, setOpen } = useApiError();
+  const { user } = useStateSelector((state) => state.user);
 
   const acceptJob = () => {
-    console.log("accepted job");
+    console.log("accepting job");
 
-    setJobStatus("ACCEPTED");
+    const jobId = props.currentJob.id;
+    if (jobId) {
+      console.log("patching job");
+      patchJob({ id: jobId, body: { producerId: user.id } })
+        .unwrap()
+        .then((jobData: Job) => {
+          console.log("success");
+          console.log(jobData);
+          setJobStatus("ACCEPTED");
+        })
+        .catch((error) => {
+          addError("Error accepting the job");
+          setOpen(true);
+          console.log(error);
+        });
+    }
   };
 
   const declineJob = () => {
