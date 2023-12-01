@@ -22,7 +22,7 @@ export default function NavBar() {
         </a>
         {loggedIn &&
           <div className='flex flex-row items-center gap-x-6'>
-            {user.userType === 'DESIGNER' && 
+            {user.userType === 'DESIGNER' &&
               <Link
                 href="/upload-design"
                 underline="none"
