@@ -131,7 +131,7 @@ export default function JobAccept() {
       } else if (useQueryResponse.isError) {
         setPageStatus(PageStatus.Error);
       }
-    }, [useQueryResponse, jobFilter]);
+    }, [useQueryResponse]);
 
     if (pageStatus == PageStatus.Loading) return <Loading />;
 
