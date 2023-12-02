@@ -8,7 +8,7 @@ export default function Jobs() {
 
   return (
     <Auth authRoute={true}>
-      { user.userType === 'PRODUCER' 
+      { user.userType === 'PRODUCER'
         ? <JobsProducer />
         : <JobsDesigner />
       }
