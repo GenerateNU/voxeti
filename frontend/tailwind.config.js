@@ -1,3 +1,5 @@
+import defaultTheme from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -12,6 +14,10 @@ export default {
       background: "rgb(var(--background-color) / <alpha-value>)",
       "body-text": "rgb(var(--body-text-color) / <alpha-value>)",
       inactivity: "rgb(var(--inactivity-color) / <alpha-value>)",
+    },
+    fontFamily: {
+      display: ["SF Pro Display Bold", ...defaultTheme.fontFamily.sans],
+      sans: ["SF Pro Display Regular", ...defaultTheme.fontFamily.sans],
     },
     extend: {
       animation: {
@@ -30,13 +36,13 @@ export default {
           "100%": { transform: "rotate(0)" },
         },
         slideIn: {
-          "0%": { transform: "translateY(0px)"},
-          "100%": { transform: "translateY(252px)"},
+          "0%": { transform: "translateY(0px)" },
+          "100%": { transform: "translateY(252px)" },
         },
         slideOut: {
-          "0%": { transform: "translateY(252px)"},
-          "100%": { transform: "translateY(0)"},
-        }
+          "0%": { transform: "translateY(252px)" },
+          "100%": { transform: "translateY(0)" },
+        },
       },
     },
   },

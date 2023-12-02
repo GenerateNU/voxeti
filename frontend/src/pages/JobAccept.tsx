@@ -138,7 +138,7 @@ export default function JobAccept() {
     return (
       <div className="py-32 w-full h-screen flex flex-col items-center justify-center">
         <div className=" px-4 w-full sm:w-3/5">
-          <h2 className=" font-bold text-2xl py-8">My Jobs</h2>
+          <h2 className=" font-bold font-display text-2xl py-8">My Jobs</h2>
           <FilterDropDown />
           <div className=" py-2"></div>
           <TableContainer component={Paper}>

@@ -6,7 +6,10 @@ import router from "../router.tsx";
 import { useStateDispatch, useStateSelector } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
 import Auth from "../components/Auth/Auth.tsx";
-import {FormSection, allQuestions } from "../utilities/FormQuestions/registration.ts";
+import {
+  FormSection,
+  allQuestions,
+} from "../utilities/FormQuestions/registration.ts";
 import SelectQuestion from "../components/Registration/SelectQuestion.tsx";
 import MultiQuestion from "../components/Registration/MultiQuestion.tsx";
 import TextQuestion from "../components/Registration/TextQuestion.tsx";
@@ -15,7 +18,7 @@ import DropdownQuestion from "../components/Registration/DropdownQuestion.tsx";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
-  (section) => section.userType !== "producer",
+  (section) => section.userType !== "producer"
 );
 
 const QuestionForm = () => {
@@ -28,7 +31,8 @@ const QuestionForm = () => {
   } = useForm({ mode: "onChange" });
 
   // Handle sso registration:
-  const { user : ssoEmail, provider } = router.state.location.search as SSOQueryParams
+  const { user: ssoEmail, provider } = router.state.location
+    .search as SSOQueryParams;
   const { ssoAccessToken } = useStateSelector((state) => state.user);
   const [googleSSO] = authApi.useGoogleSSOMutation();
 
@@ -37,13 +41,13 @@ const QuestionForm = () => {
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
   const [totalSections, setTotalSections] = useState<number>(
-    allQuestions.sections.length,
+    allQuestions.sections.length
   );
   const [questions, setQuestions] = useState<FormSection[]>(
-    allQuestions.sections,
+    allQuestions.sections
   );
 
-  const temp:string = watch("userType");
+  const temp: string = watch("userType");
 
   useEffect(() => {
     if (temp === "producer") {
@@ -88,16 +92,16 @@ const QuestionForm = () => {
     createUser(newUser)
       .unwrap()
       .then(() => {
-        if (newUser.socialProvider === 'NONE') {
+        if (newUser.socialProvider === "NONE") {
           login({ email: data.email, password: data.password })
-          .unwrap()
-          .then((res) => {
-            dispatch(setUser(res));
-            router.navigate({ to: "/" });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+            .unwrap()
+            .then((res) => {
+              dispatch(setUser(res));
+              router.navigate({ to: "/" });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         } else {
           googleSSO(ssoAccessToken)
             .unwrap()
@@ -107,7 +111,7 @@ const QuestionForm = () => {
             })
             .catch((err) => {
               console.log(err);
-            })
+            });
         }
       })
       .catch((err) => {
@@ -119,46 +123,78 @@ const QuestionForm = () => {
 
   const RenderQuestions = () => {
     return (
-        <div className={`flex flex-col justify-center lg:min-w-[${currentSectionIndex !== 0 ? '40vw' : '450px'}] space-y-2`}>
-          <h2
-            className={`text-2xl md:text-3xl text-center font-semibold mb-12 ${
-              currentSectionIndex !== 0 && "mt-8"
-            }`}
+      <div
+        className={`flex flex-col justify-center lg:min-w-[${
+          currentSectionIndex !== 0 ? "40vw" : "450px"
+        }] space-y-2`}
+      >
+        <h2
+          className={`text-2xl md:text-3xl text-center font-bold font-display mb-12 ${
+            currentSectionIndex !== 0 && "mt-8"
+          }`}
+        >
+          {currentSection?.sectionTitle}
+        </h2>
+        {currentSection?.questionGroups.map((group, index) => (
+          <div
+            key={"group_" + index}
+            className="flex flex-wrap lg:flex-nowrap justify-center gap-x-4"
           >
-            {currentSection?.sectionTitle}
-          </h2>
-          {currentSection?.questionGroups.map((group, index) => (
-            <div key={"group_" + index}
-            className="flex flex-wrap lg:flex-nowrap justify-center gap-x-4">
-              {group.questions?.map((question) => {
-                if (ssoEmail) {
-                  if (question.key === 'password') {
-                    return;
-                  } else if (question.key === 'email') {
-                    question.disabled = true;
-                    question.defaultValue = ssoEmail;
-                    question.rules = {};
-                  }
+            {group.questions?.map((question) => {
+              if (ssoEmail) {
+                if (question.key === "password") {
+                  return;
+                } else if (question.key === "email") {
+                  question.disabled = true;
+                  question.defaultValue = ssoEmail;
+                  question.rules = {};
                 }
+              }
 
-                switch (question.format) {
-                  case "selection":
-                    return (<SelectQuestion key={question.key  + "master"} question={question} control={control} userType={temp} />);
-                  case "multiple":
-                    return (<MultiQuestion key={question.key  + "master"} question={question} control={control} userType={temp} />);
-                  case "text":
-                    return (<TextQuestion key={question.key  + "master"} question={question} control={control}/>);
-                  case "dropdown":
-                    return (<DropdownQuestion key={question.key + "master"} question={question} control={control} />)
-                  default:
-                    return (<>Something went wrong here</>)
-                }
-              })}
-            </div>
-          ))}
-        </div>
+              switch (question.format) {
+                case "selection":
+                  return (
+                    <SelectQuestion
+                      key={question.key + "master"}
+                      question={question}
+                      control={control}
+                      userType={temp}
+                    />
+                  );
+                case "multiple":
+                  return (
+                    <MultiQuestion
+                      key={question.key + "master"}
+                      question={question}
+                      control={control}
+                      userType={temp}
+                    />
+                  );
+                case "text":
+                  return (
+                    <TextQuestion
+                      key={question.key + "master"}
+                      question={question}
+                      control={control}
+                    />
+                  );
+                case "dropdown":
+                  return (
+                    <DropdownQuestion
+                      key={question.key + "master"}
+                      question={question}
+                      control={control}
+                    />
+                  );
+                default:
+                  return <>Something went wrong here</>;
+              }
+            })}
+          </div>
+        ))}
+      </div>
     );
-  }
+  };
 
   // Go to next section
   const handleNext = () => {
@@ -186,7 +222,9 @@ const QuestionForm = () => {
           return (
             <div
               key={"section" + index}
-              className={`w-2 md:w-6 h-[3px] md:h-[2px] ${temp === 'PRODUCER' ? 'bg-producer' : 'bg-designer'} ${
+              className={`w-2 md:w-6 h-[3px] md:h-[2px] ${
+                temp === "PRODUCER" ? "bg-producer" : "bg-designer"
+              } ${
                 currentSectionIndex === index ? "opacity-100" : "opacity-50"
               } rounded-full`}
             ></div>
@@ -199,7 +237,13 @@ const QuestionForm = () => {
   // Only show appropriate buttons based on section index
   const RenderButtons = () => {
     return (
-      <div className={`mt-4 flex ${currentSectionIndex !== 0 && 'justify-between lg:absolute lg:bottom-6 right-0 left-0 space-x-4'}`} key="top">
+      <div
+        className={`mt-4 flex ${
+          currentSectionIndex !== 0 &&
+          "justify-between lg:absolute lg:bottom-6 right-0 left-0 space-x-4"
+        }`}
+        key="top"
+      >
         {currentSectionIndex === 0 && (
           <div className="py-4 w-full" key="create">
             <StyledButton
@@ -267,7 +311,10 @@ const QuestionForm = () => {
 
   return (
     <Auth authRoute={false}>
-      <div key={"Master_div"} className="flex justify-center h-full items-center">
+      <div
+        key={"Master_div"}
+        className="flex justify-center h-full items-center"
+      >
         {currentSectionIndex === 0 && (
           <div className="hidden h-full w-3/5 lg:flex justify-center items-center">
             <img src="src/assets/registration.png" className="w-[60%]" />
@@ -278,15 +325,15 @@ const QuestionForm = () => {
             currentSectionIndex === 0 && "lg:w-2/5 items-center"
           }`}
         >
-            <form
-              key={"formOverhead"}
-              onSubmit={handleSubmit(onSubmit)}
-              onKeyDown={handleKeyPress}
-              className='h-full flex flex-col justify-center relative p-5 md:p-0 mt-20 lg:mt-0'
-            >
-              {RenderQuestions()}
-              {RenderButtons()}
-            </form>
+          <form
+            key={"formOverhead"}
+            onSubmit={handleSubmit(onSubmit)}
+            onKeyDown={handleKeyPress}
+            className="h-full flex flex-col justify-center relative p-5 md:p-0 mt-20 lg:mt-0"
+          >
+            {RenderQuestions()}
+            {RenderButtons()}
+          </form>
         </div>
       </div>
     </Auth>

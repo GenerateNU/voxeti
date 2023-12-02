@@ -25,7 +25,7 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
   const delivery = ["Shipping", "Pick up"];
   const expirations = ["2 days", "7 days", "30 days"];
 
-  const { user } = useStateSelector((state) => state.user)
+  const { user } = useStateSelector((state) => state.user);
 
   const types = ["PLA", "ABS", "TPS"];
   const qualities = [
@@ -58,9 +58,10 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
 
   // Handle shipping fade:
   function toggleTransitionWithTimeout(state: string) {
-    const designerLocation = document.getElementById('delivery-address')
+    const designerLocation = document.getElementById("delivery-address");
 
-    const content = state === 'Shipping' ? 'Shipping Address' : 'Current Address'
+    const content =
+      state === "Shipping" ? "Shipping Address" : "Current Address";
     if (designerLocation !== null && designerLocation.innerHTML !== content) {
       designerLocation.classList.remove("!opacity-100");
       setTimeout(() => {
@@ -74,11 +75,11 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
 
   return (
     <Container>
-      <div className="text-2xl font-semibold mb-6">Filters</div>
+      <div className="text-2xl font-bold font-display mb-6">Filters</div>
       <FormGroup className="flex flex-col gap-y-4 w-[100%]">
         <Box className="w-full flex flex-row flex-wrap justify-between align-middle">
           <Box className="rounded-md w-full mt-6 md:mt-0 md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]">
-            <div className="text-lg font-semibold mb-3">Delivery</div>
+            <div className="text-lg font-bold font-display mb-3">Delivery</div>
             <FormGroup defaultValue={states.delivery}>
               {delivery.map((delivery: string) => {
                 return (
@@ -101,19 +102,25 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
             </FormGroup>
           </Box>
           <Box className="rounded-md w-full mt-6 md:mt-0 md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]">
-            <div id='delivery-address' className={`text-lg font-semibold mb-4 transition-all opacity-0 !opacity-100`}>
+            <div
+              id="delivery-address"
+              className={`text-lg font-bold font-display mb-4 transition-all opacity-0 !opacity-100`}
+            >
               Shipping Address
             </div>
             <Select
               value={states.address}
               className="w-full"
-              onChange={(event) => setters.address(event.target.value as number)}
+              onChange={(event) =>
+                setters.address(event.target.value as number)
+              }
               MenuProps={MenuProps}
             >
               {user.addresses.map((address, index) => {
                 return (
                   <MenuItem key={address.name} value={index}>
-                    {address.line1}, {address.line2} {address.city}, {address.state} {address.zipCode}
+                    {address.line1}, {address.line2} {address.city},{" "}
+                    {address.state} {address.zipCode}
                   </MenuItem>
                 );
               })}
@@ -122,7 +129,7 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
         </Box>
         <Box className="w-full flex flex-row flex-wrap justify-between align-middle">
           <Box className="rounded-md w-full md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]">
-            <div className="text-lg font-semibold mb-3">Colors</div>
+            <div className="text-lg font-bold font-display mb-3">Colors</div>
             <RadioGroup defaultValue={states.color} name="colors">
               {colors.map((color: string) => {
                 return (
@@ -146,7 +153,9 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
             </RadioGroup>
           </Box>
           <Box className="rounded-md w-full mt-6 md:mt-0 md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]">
-            <div className="text-lg font-semibold mb-4">Filament Type</div>
+            <div className="text-lg font-bold font-display mb-4">
+              Filament Type
+            </div>
             <Select
               value={states.filament}
               className="w-full"
@@ -165,7 +174,9 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
         </Box>
         <Box className="w-full flex flex-row flex-wrap justify-between align-middle">
           <Box className="rounded-md w-full md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]">
-            <div className="text-lg font-semibold mb-4">Print Quality</div>
+            <div className="text-lg font-bold font-display mb-4">
+              Print Quality
+            </div>
             <Select
               value={states.quality}
               className="w-full"
@@ -182,7 +193,9 @@ export default function FiltersStep({ states, setters }: FiltersStepProps) {
             </Select>
           </Box>
           <Box className="!flex !flex-col rounded-md w-full mt-6 md:mt-0 md:w-[49.25%] p-6 pl-8 border border-[#E8E8E8]">
-            <div className="text-lg font-semibold mb-3">Expiration Date</div>
+            <div className="text-lg font-bold font-display mb-3">
+              Expiration Date
+            </div>
             <FormGroup
               defaultValue={states.delivery}
               className="!flex !flex-row mt-auto mb-auto"

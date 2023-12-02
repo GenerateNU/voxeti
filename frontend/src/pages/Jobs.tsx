@@ -38,7 +38,9 @@ export default function Jobs() {
     <Auth authRoute={true}>
       <div className="flex flex-col justify-center items-center w-[50%] mx-auto mt-16">
         <div className="text-left w-full pt-10 pb-5 mt-8">
-          <h1 className="text-4xl font-bold py-5">Job Submissions</h1>
+          <h1 className="text-4xl font-bold font-display py-5">
+            Job Submissions
+          </h1>
         </div>
         <div className="text-left w-full pb-10">
           Approved Jobs

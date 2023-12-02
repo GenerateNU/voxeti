@@ -16,7 +16,7 @@ export default function DesignerName(props: { job: Job }) {
             sx={{ width: 64, height: 64 }}
           />
           <div className=" px-4">
-            <p className=" text-lg font-medium">
+            <p className=" text-lg">
               {data && data.firstName} {data && data.lastName}
             </p>
             <p className=" text-sm">Designer</p>
