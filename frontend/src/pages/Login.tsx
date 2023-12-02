@@ -17,10 +17,10 @@ import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
 import { ErrorHandler } from "../utilities/errors";
 import { useApiError } from "../hooks/use-api-error";
 import { validateEmail } from "../utilities/Primitives/strings";
+import { NEW_USER_ID } from "../main.types";
 
 export function Login() {
   // SSO Auth State:
-  const NEW_USER_ID = "000000000000000000000000";
   const [providerLoginPending, setProviderLoginPending] = useState(false);
   const [providerUser, setProviderUser] = useState<UserSliceState>();
   const [provider, setProvider] = useState("");

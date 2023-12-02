@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Job } from "../../main.types";
+import { Job } from "../../../../main.types";
 import { Button, createTheme, ThemeProvider } from "@mui/material";
-import { jobApi } from "../../api/api";
-import { useStateSelector } from "../../hooks/use-redux";
-import { useApiError } from "../../hooks/use-api-error";
+import { jobApi } from "../../../../api/api";
+import { useStateSelector } from "../../../../hooks/use-redux";
+import { useApiError } from "../../../../hooks/use-api-error";
 
 declare module "@mui/material/styles" {
   interface Palette {

@@ -13,11 +13,11 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
-import { jobApi, userApi } from "../api/api";
+import { jobApi, userApi } from "../../../api/api";
 // import { useStateSelector } from "../hooks/use-redux";
-import { Job } from "../main.types";
-import Loading from "../components/JobAccept/Loading";
-import { PageStatus } from "../main.types";
+import { Job } from "../../../main.types";
+import Loading from "./components/Loading";
+import { PageStatus } from "../../../main.types";
 
 export function JobFilesName(props: { designId: string }) {
   // const { data: data } = designApi.useGetDesignQuery(props.designId); Reinclude this once the design API works properly
@@ -25,7 +25,7 @@ export function JobFilesName(props: { designId: string }) {
   return <div>{props?.designId}</div>;
 }
 
-export default function JobAccept() {
+export default function JobsProducer() {
   const [jobFilter, setJobFilter] = React.useState("Pending");
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
     PageStatus.Loading

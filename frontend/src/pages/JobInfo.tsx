@@ -5,11 +5,11 @@ import { Link } from "@mui/material";
 import * as React from "react";
 import { jobApi } from "../api/api";
 import { Address, Job, PageStatus } from "../main.types";
-import DesignInfo from "../components/JobAccept/DesignInfo";
-import DesignerName from "../components/JobAccept/DesignerInfo";
+import DesignInfo from "../components/Jobs/ProducerJobs/components/DesignInfo";
+import DesignerName from "../components/Jobs/ProducerJobs/components/DesignerInfo";
 import { useApiError } from "../hooks/use-api-error";
-import Loading from "../components/JobAccept/Loading";
-import FieldValueRow from "../components/JobAccept/FieldValueRow";
+import Loading from "../components/Jobs/ProducerJobs/components/Loading";
+import FieldValueRow from "../components/Jobs/ProducerJobs/components/FieldValueRow";
 
 export default function JobInfo() {
   const [jobDetails] = jobApi.useGetJobMutation();
