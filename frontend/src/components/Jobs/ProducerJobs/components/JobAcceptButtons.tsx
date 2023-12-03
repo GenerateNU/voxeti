@@ -35,7 +35,6 @@ const theme = createTheme({
 
 export default function JobAcceptButtons(props: { currentJob: Job }) {
   const [jobStatus, setJobStatus] = React.useState(props.currentJob.status);
-  const [patchJob] = jobApi.usePatchJobMutation();
   const [putDeclineJob] = jobApi.useDeclineJobMutation();
   const [putAcceptJob] = jobApi.useAcceptJobMutation();
 
