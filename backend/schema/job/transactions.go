@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Find a specified job by its ID
@@ -48,19 +48,42 @@ func getJobsByDesignerOrProducerIdDb(designerId primitive.ObjectID, producerId p
 		filter = append(filter, bson.E{Key: "status", Value: status})
 	}
 
-	var jobs []schema.Job
-
-	// pagination options
-	paginationOptions := options.Find()
-	paginationOptions.SetLimit(limit)
-	paginationOptions.SetSkip(skip)
+	// Create pipeline
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: filter}},
+		// perforns left inner join on users collection (matching by producer)
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "users"},
+			{Key: "localField", Value: "producerId"},
+			{Key: "foreignField", Value: "_id"},
+			{Key: "as", Value: "producer"},
+		}}},
+		// output new document with producer fields
+		bson.D{{Key: "$unwind", Value: bson.D{
+			{Key: "path", Value: "$producer"},
+			{Key: "preserveNullAndEmptyArrays", Value: true},
+		}}},
+		// add producer fields to job
+		bson.D{{Key: "$addFields", Value: bson.D{
+			{Key: "producerFirstName", Value: "$producer.firstName"},
+			{Key: "producerLastName", Value: "$producer.lastName"},
+		}}},
+		// set producer to null
+		bson.D{{Key: "$project", Value: bson.D{
+			{Key: "producer", Value: 0},
+		}}},
+		bson.D{{Key: "$skip", Value: skip}},
+		bson.D{{Key: "$limit", Value: limit}},
+	}
 
 	// If jobs are not found, throw an error
-	cursor, err := jobCollection.Find(context.Background(), filter, paginationOptions)
+	cursor, err := jobCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
 		return []schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
 	}
 	defer cursor.Close(context.Background())
+
+	var jobs []schema.Job
 
 	// Iterate over the cursor and append each job to the slice
 	for cursor.Next(context.Background()) {
