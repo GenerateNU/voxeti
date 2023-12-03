@@ -13,11 +13,11 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
-import { jobApi, userApi } from "../api/api";
+import { jobApi, userApi } from "../../../api/api";
 // import { useStateSelector } from "../hooks/use-redux";
-import { Job } from "../main.types";
-import Loading from "../components/JobAccept/Loading";
-import { PageStatus } from "../main.types";
+import { Job } from "../../../main.types";
+import Loading from "./components/Loading";
+import { PageStatus } from "../../../main.types";
 
 export function JobFilesName(props: { designId: string }) {
   // const { data: data } = designApi.useGetDesignQuery(props.designId); Reinclude this once the design API works properly
@@ -25,7 +25,7 @@ export function JobFilesName(props: { designId: string }) {
   return <div>{props?.designId}</div>;
 }
 
-export default function JobAccept() {
+export default function JobsProducer() {
   const [jobFilter, setJobFilter] = React.useState("Pending");
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
     PageStatus.Loading
@@ -105,7 +105,6 @@ export default function JobAccept() {
               <Avatar
                 className=" outline outline-3 outline-offset-2 outline-designer"
                 alt="Remy Sharp"
-                src="/static/images/avatar/1.jpg"
               />
               <div className="px-3">
                 <DesignerName designerId={props.row.designerId} />
@@ -136,9 +135,9 @@ export default function JobAccept() {
     if (pageStatus == PageStatus.Loading) return <Loading />;
 
     return (
-      <div className="py-32 w-full h-screen flex flex-col items-center justify-center">
+      <div className="py-32 w-full h-screen flex flex-col items-center">
         <div className=" px-4 w-full sm:w-3/5">
-          <h2 className=" font-bold font-display text-2xl py-8">My Jobs</h2>
+          <h2 className="text-4xl font-bold py-5">My Jobs</h2>
           <FilterDropDown />
           <div className=" py-2"></div>
           <TableContainer component={Paper}>

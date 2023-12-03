@@ -123,3 +123,5 @@ export type SSOQueryParams = {
   user: string;
   provider: SocialProvider;
 };
+
+export const NEW_USER_ID = "000000000000000000000000"

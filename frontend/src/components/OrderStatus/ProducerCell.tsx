@@ -1,10 +1,12 @@
-import { Job } from "../../main.types";
-import { userApi } from "../../api/api";
 import { Avatar } from "@mui/material";
 
-export default function ProducerCell(props: { job: Job }) {
-  const { data: data } = userApi.useGetUserQuery(props.job.producerId as string);
+type ProducerCellProps = {
+  avatar?: string,
+  firstName?: string,
+  lastName?: string,
+}
 
+export default function ProducerCell({ avatar, firstName, lastName } : ProducerCellProps) {
   return (
     <div className="flex items-center text-lg">
       <Avatar
@@ -24,11 +26,11 @@ export default function ProducerCell(props: { job: Job }) {
             color: "#FFFFFF",
           }}
         >
-          <Avatar src={""} style={{ width: 60, height: 60 }} />
+          <Avatar src={avatar ?? ""} style={{ width: 60, height: 60 }} />
         </Avatar>
       </Avatar>
 
-      {data && data.firstName + " " + data.lastName}
+      {(firstName && lastName) ? firstName + " " + lastName : "Awaiting Acceptance"}
     </div>
   );
 }

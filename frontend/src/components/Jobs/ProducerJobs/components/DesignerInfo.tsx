@@ -1,5 +1,5 @@
-import { userApi } from "../../api/api";
-import { Job } from "../../main.types";
+import { userApi } from "../../../../api/api";
+import { Job } from "../../../../main.types";
 import { Avatar } from "@mui/material";
 import JobAcceptButtons from "./JobAcceptButtons";
 
