@@ -279,8 +279,8 @@ func transferPotentialToDeclinedDb(TRANSFER_NUM int, MAX_INACTIVE time.Duration,
 		if len(potentialProducers) < TRANSFER_NUM {
 			TRANSFER_NUM = len(potentialProducers)
 		}
-		firstHalf := potentialProducers[:TRANSFER_NUM]
-		declinedProducers = append(declinedProducers, firstHalf...)
+		transferredProducers := potentialProducers[:TRANSFER_NUM]
+		declinedProducers = append(declinedProducers, transferredProducers...)
 		potentialProducers = potentialProducers[TRANSFER_NUM:]
 		_, err = jobCollection.UpdateOne(context.Background(), bson.M{"_id": job.Id}, bson.M{"$set": bson.M{"potentialProducers": potentialProducers, "declinedProducers": declinedProducers}})
 		if err != nil {
