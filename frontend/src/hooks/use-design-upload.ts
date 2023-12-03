@@ -13,6 +13,7 @@ export default function useDesignUpload(files : File[], dimensions : Dimensions[
     })
 
     dimensions.forEach((dimension) => {
+      console.log(JSON.stringify(dimension));
       formData.append('dimensions', JSON.stringify(dimension))
     })
 

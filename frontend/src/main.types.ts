@@ -3,6 +3,7 @@
 // A Voxeti User, can be both a Designer and a Producer
 export interface User {
   id: string;
+  userType?: 'DESIGNER' | 'PRODUCER' | 'HYBRID',
   firstName: string;
   lastName: string;
   email: string;
@@ -18,7 +19,7 @@ export interface User {
 // A Voxeti print Job
 export interface Job {
   id?: string;
-  createdAt: Date,
+  createdAt: Date;
   designerId: string;
   producerId?: string;
   designId: string[];
@@ -30,6 +31,7 @@ export interface Job {
   color: string;
   filament: FilamentType;
   layerHeight: number;
+  shippingAddress: Address;
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
@@ -109,9 +111,15 @@ export type SocialProvider = "NONE" | "GOOGLE";
 export type Error = {
   code: number;
   message: string;
+};
+
+export enum PageStatus {
+  Success,
+  Loading,
+  Error,
 }
 
 export type SSOQueryParams = {
-  user: string,
-  provider: SocialProvider,
-}
+  user: string;
+  provider: SocialProvider;
+};

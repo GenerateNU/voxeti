@@ -21,12 +21,12 @@ export default function SocialProvider({
 
   return (
     <Button
-      className="h-[50px] !bg-background !normal-case !rounded-[5px] !text-lg hover:!bg-[#D3D3D3] !font-light !text-primary"
+      className="h-[50px] !bg-background !normal-case !rounded-[5px] !text-lg hover:!bg-[#D3D3D3] !text-primary"
       variant="contained"
       onClick={handleClick}
       startIcon={
         isLoading ? (
-          <CircularProgress size={25} sx={{ marginRight:'8px' }} />
+          <CircularProgress size={25} sx={{ marginRight: "8px" }} />
         ) : (
           <img className="h-[25px] mr-2" src={GoogleLogo} />
         )

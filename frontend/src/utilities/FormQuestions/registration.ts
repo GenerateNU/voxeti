@@ -52,18 +52,18 @@ export const allQuestions: MultiForm = {
               key: "userType",
               format: "selection",
               type: "radio",
-              defaultOption: "designer",
+              defaultOption: "DESIGNER",
               rules: { required: true },
               options: [
                 {
                   choiceLabel: "I'm a producer",
-                  choiceValue: "producer",
+                  choiceValue: "PRODUCER",
                   selectedColor: `!bg-producer`,
                   hoverColor: 'hover:!bg-producer'
                 },
                 {
                   choiceLabel: "I'm a designer",
-                  choiceValue: "designer",
+                  choiceValue: "DESIGNER",
                   selectedColor: `!bg-designer`,
                   hoverColor: 'hover:!bg-designer',
                   default: true,

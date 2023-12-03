@@ -13,6 +13,11 @@ frontend-dev: frontend/node_modules
 backend-dev: db-dev
 	wgo -exit clear :: go run -tags dev . -db mongodb://administrator:Welcome1234@127.0.0.1:27017
 
+# Start the backend dev server
+.PHONY: backend-dev-reset
+backend-dev-reset: db-dev
+	wgo -exit clear :: go run -tags dev . -db mongodb://administrator:Welcome1234@127.0.0.1:27017 -reset
+
 # Start the dev database
 .PHONY: db-dev
 db-dev:
