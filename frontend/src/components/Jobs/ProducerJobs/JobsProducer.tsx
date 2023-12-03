@@ -105,7 +105,6 @@ export default function JobsProducer() {
               <Avatar
                 className=" outline outline-3 outline-offset-2 outline-designer"
                 alt="Remy Sharp"
-                src="/static/images/avatar/1.jpg"
               />
               <div className="px-3">
                 <DesignerName designerId={props.row.designerId} />
@@ -136,9 +135,9 @@ export default function JobsProducer() {
     if (pageStatus == PageStatus.Loading) return <Loading />;
 
     return (
-      <div className="py-32 w-full h-screen flex flex-col items-center justify-center">
+      <div className="py-32 w-full h-screen flex flex-col items-center">
         <div className=" px-4 w-full sm:w-3/5">
-          <h2 className=" font-bold text-2xl py-8">My Jobs</h2>
+          <h2 className="text-4xl font-bold py-5">My Jobs</h2>
           <FilterDropDown />
           <div className=" py-2"></div>
           <TableContainer component={Paper}>

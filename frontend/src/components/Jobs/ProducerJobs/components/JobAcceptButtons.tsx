@@ -83,7 +83,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
             variant="outlined"
             color="black"
             className=" w-32"
-            href="/job-accept"
+            href="/jobs"
             onClick={declineJob}
           >
             Decline
@@ -97,7 +97,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
         <div className=" flex flex-row flex-wrap items-center justify-end gap-y-1 gap-x-4">
           <p className=" text-producer">JOB ACCEPTED</p>
           <Button
-            href="/job-accept"
+            href="/jobs"
             variant="outlined"
             color="black"
             className=""

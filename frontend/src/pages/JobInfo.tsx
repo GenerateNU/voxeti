@@ -43,10 +43,10 @@ export default function JobInfo() {
 
   const BackButton = () => {
     return (
-      <IconButton href="/job-accept" aria-label="delete" size="small">
+      <IconButton href="/jobs" aria-label="delete" size="small">
         <ArrowBackIosIcon fontSize="inherit" />
         <Link
-          href="/job-accept"
+          href="/jobs"
           underline="none"
           color="black"
           sx={{ cursor: "pointer" }}
