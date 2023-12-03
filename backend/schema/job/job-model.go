@@ -101,9 +101,6 @@ func PatchJob(jobId string, patchData bson.M, dbClient *mongo.Client, emailServi
 
 // get recommended jobs
 func GetRecommendedJobs(page int, limit int, filter string, sort string, id *primitive.ObjectID, dbClient *mongo.Client) (*[]schema.Job, *schema.ErrorResponse) {
-	// GIVE PRIORITY TO JOBS WHERE PRODUCER IS ALREADY A POTENTIAL PRODUCER
-	// THIS COULD RESULT IN OPTIMAL JOBS BEING PRIORITIZED LESS THAN JOBS WHERE PRODUCER IS ALREADY A POTENTIAL PRODUCER
-	// SHOULD POTENTIAL PRODUCER JOBS BE SORTED?
 	potentialProducerJobs, err := getPotentialProducerJobsDb(id, dbClient)
 	if err != nil {
 		return nil, err
@@ -257,13 +254,7 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 			},
 		},
 	}
-	// THIS AVOIDS DUPLICATE JOBS
 	var NOT_POTENTIAL_PRODUCER = bson.M{"potentialProducers": bson.M{"$nin": []primitive.ObjectID{producer.Id}}}
-
-	// USE THIS IF WE NO LONGER WANT TO GIVE PRIORITY TO JOBS WHERE PRODUCER IS ALREADY A POTENTIAL PRODUCER
-	// (WE WILL NO LONGER RETRIEVE POTENTIAL PRODUCER JOBS IMMEDIATELY, SO THEY SHOULD BE INCLUDED IN THE FILTER)
-	// var POTENTIAL_PRODUCER = bson.M{"potentialProducers": bson.M{"$in": []primitive.ObjectID{producer.Id}}}
-	// var MAX_POTENTIAL_PRODUCERS_OR_POTENTIAL_PRODUCER = bson.M{"$or": []bson.M{MAX_POTENTIAL_PRODUCERS_FILTER, POTENTIAL_PRODUCER}}
 	bsonFilters := []bson.M{PENDING, DECLINED_PRODUCERS, MAX_POTENTIAL_PRODUCERS_FILTER, NOT_POTENTIAL_PRODUCER}
 
 	for _, filter := range filters {
