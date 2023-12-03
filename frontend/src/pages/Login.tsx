@@ -10,7 +10,13 @@ import { UserSliceState } from "../store/store.types";
 import { UserCredentials } from "../api/api.types";
 import { useForm } from "react-hook-form";
 import router from "../router";
-import { Grid, TextField, Typography, Link, CircularProgress } from "@mui/material";
+import {
+  Grid,
+  TextField,
+  Typography,
+  Link,
+  CircularProgress,
+} from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import SignInImage from "../assets/signIn/SignInImage.png";
 import SignInWrapper from "../components/SignInWrapper/SignInWrapper";
@@ -31,7 +37,8 @@ export function Login() {
 
   // Auth API:
   const [login, { isLoading: isLoginLoading }] = authApi.useLoginMutation();
-  const [googleSSO, { isLoading: isGoogleLoading }] = authApi.useGoogleSSOMutation();
+  const [googleSSO, { isLoading: isGoogleLoading }] =
+    authApi.useGoogleSSOMutation();
 
   // Hooks:
   const dispatch = useStateDispatch();
@@ -45,8 +52,14 @@ export function Login() {
   useEffect(() => {
     if (providerUser) {
       if (providerUser.user.id === NEW_USER_ID) {
-        dispatch(setSSOAccessToken(providerUser.ssoAccessToken))
-        router.navigate({ to: '/register', search: { user: providerUser.user.email, provider: providerUser.user.socialProvider } })
+        dispatch(setSSOAccessToken(providerUser.ssoAccessToken));
+        router.navigate({
+          to: "/register",
+          search: {
+            user: providerUser.user.email,
+            provider: providerUser.user.socialProvider,
+          },
+        });
       } else {
         dispatch(setUser(providerUser));
       }
@@ -61,7 +74,7 @@ export function Login() {
         dispatch(setUser(res));
       })
       .catch((error) => {
-        ErrorHandler({ dispatch, addError, setOpen, error })
+        ErrorHandler({ dispatch, addError, setOpen, error });
       });
   };
 
@@ -100,7 +113,7 @@ export function Login() {
       )}
       <SignInWrapper img_src={SignInImage}>
         <div className="flex flex-col justify-center pb-10 w-[75%] xl:w-[60%]">
-          <h1 className="text-4xl font-semibold mb-12">Sign In</h1>
+          <h1 className="text-4xl font-bold font-display mb-12">Sign In</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register("email", { required: "Please provide an email" })}
@@ -174,18 +187,18 @@ export function Login() {
                 </Link>
               </Grid>
             </Grid>
-            <StyledButton type="submit" color='primary'>
-              {isLoginLoading ?
-                <CircularProgress size={25} sx={{ color:'white' }} />
-                : "Sign In"
-              }
+            <StyledButton type="submit" color="primary">
+              {isLoginLoading ? (
+                <CircularProgress size={25} sx={{ color: "white" }} />
+              ) : (
+                "Sign In"
+              )}
             </StyledButton>
           </form>
           <div className="relative w-full flex justify-center mt-7 mb-7">
             <span className="before:content-normal before:block before:w-[45%] before:h-[2px] before:bg-inactivity before:absolute before:left-0 before:top-[50%] after:content-normal after:block after:w-[45%] after:h-[2px] after:bg-inactivity after:absolute after:right-0 after:top-[50%]">
               {" "}
-              or
-              {" "}
+              or{" "}
             </span>
           </div>
           <SocialProvider
