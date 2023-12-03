@@ -95,7 +95,12 @@ export default function JobInfo() {
           <BackButton />
           <div className=" py-3" />
           <div className=" flex flex-row justify-between">
-            {currentJob && <DesignerName job={currentJob} />}
+            {currentJob && (
+              <DesignerName
+                designerId={currentJob.designerId}
+                job={currentJob}
+              />
+            )}
           </div>
           {currentJob &&
             currentJob.designId.map(
