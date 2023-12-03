@@ -46,7 +46,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
     const jobId = props.currentJob.id;
     if (jobId) {
       console.log("patching job");
-      patchJob({ id: jobId, body: { producerId: user.id } })
+      patchJob({ id: jobId, body: { producerId: user.id, status: "ACCEPTED" } })
         .unwrap()
         .then((jobData: Job) => {
           console.log("success");
@@ -96,12 +96,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
       <ThemeProvider theme={theme}>
         <div className=" flex flex-row flex-wrap items-center justify-end gap-y-1 gap-x-4">
           <p className=" text-producer">JOB ACCEPTED</p>
-          <Button
-            href="/jobs"
-            variant="outlined"
-            color="black"
-            className=""
-          >
+          <Button href="/jobs" variant="outlined" color="black" className="">
             Current Jobs
           </Button>
         </div>
