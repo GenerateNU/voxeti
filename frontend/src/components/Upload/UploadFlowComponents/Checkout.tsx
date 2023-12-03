@@ -4,10 +4,16 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout
 } from '@stripe/react-stripe-js';
+import { Setters, States } from "../upload.types";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
 
-export default function Checkout() {
+export interface CheckoutProps {
+  states: States;
+  setters: Setters;
+}
+
+export default function Checkout({states, setters}: CheckoutProps) {
     const [clientSecret, setClientSecret] = useState('');
     const base = "http://localhost:3000/api/"
 
@@ -16,14 +22,14 @@ export default function Checkout() {
         console.log("Doing the embedded stripe work")
         fetch(base + "payment/create-checkout-session", {
         method: "POST",
-        // body: JSON.stringify({ quantity: states.prices }),
+        body: JSON.stringify({ prices: states.prices, quantities: states.quantities }),
         })
         .then((res) => res.json())
         .then((data) => setClientSecret(data.client_secret));
     }, []);
 
     const handleComplete = () => {
-        
+        setters.currentStep(states.currentStep + 1);
     }
 
     const options = {
