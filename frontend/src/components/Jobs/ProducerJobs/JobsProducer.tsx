@@ -43,6 +43,12 @@ export default function JobsProducer() {
       producerId: user.id,
       page: "1",
       limit: "10",
+      filter: [
+        "DISTANCE",
+        "SUPPORTEDFILAMENTTYPES",
+        "AVAILABLEFILAMENTTYPES",
+        "AVAILABLECOLORS",
+      ],
       sort: "PRICE",
     });
 

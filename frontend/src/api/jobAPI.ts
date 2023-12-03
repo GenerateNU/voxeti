@@ -89,11 +89,14 @@ export const createJobApi = (baseUrl: string) =>
           producerId: string;
           page: string;
           limit: string;
+          filter: string[];
           sort: string;
         }
       >({
-        query: ({ producerId, page, limit, sort }) =>
-          `/recommendations/${producerId}?page=${page}&limit=${limit}&filter=DISTANCE,SUPPORTEDFILAMENTTYPES,AVAILABLEFILAMENTTYPES,AVAILABLECOLORS&sort=${sort}`,
+        query: ({ producerId, page, limit, filter, sort }) =>
+          `/recommendations/${producerId}?page=${page}&limit=${limit}&filter=${filter.join(
+            ","
+          )}&sort=${sort}`,
       }),
 
       patchJob: builder.mutation<Job, { id: string; body: Partial<Job> }>({
