@@ -23,14 +23,14 @@ export default function FilterDropDown({ options, onChange, value }: FilterDropD
           onChange={onChange}
           defaultValue="Pending"
           variant="standard"
-          sx={{ 
+          sx={{
             width: 120,
             ':before': {
               borderBottom: 0,
             }
           }}
         >
-          {options.map((option) => 
+          {options.map((option) =>
             <MenuItem key={option.value} value={option.value}>
               {option.title}
             </MenuItem>

@@ -77,7 +77,7 @@ export default function JobsDesigner() {
     <div className="py-32 w-full h-screen flex flex-col items-center">
       <div className=" px-4 w-full sm:w-3/5">
         <h2 className="text-3xl py-5">Job Submissions</h2>
-        <FilterDropDown 
+        <FilterDropDown
           options={filterOptions}
           onChange={(e) => setFilter(e.target.value)}
           value={filter}

@@ -12,7 +12,7 @@ export default function AvatarCell({ firstName, lastName, userType } : ProducerC
     designer: '!bg-designer',
     producer: '!bg-producer',
   }
-  
+
   return (
     <div className="flex items-center text-base">
       <Avatar
@@ -30,20 +30,20 @@ export default function AvatarCell({ firstName, lastName, userType } : ProducerC
             backgroundColor: "#FFFFFF",
           }}
         >
-          <Avatar 
-            sx={{ 
+          <Avatar
+            sx={{
               width: 70,
               height: 70
-            }} 
+            }}
           >
             {firstName?.charAt(0)}
           </Avatar>
         </Avatar>
       </Avatar>
-      {(firstName && lastName) 
-        ? firstName + " " + lastName 
-        : userType === "producer" 
-          ? "Awaiting Acceptance" 
+      {(firstName && lastName)
+        ? firstName + " " + lastName
+        : userType === "producer"
+          ? "Awaiting Acceptance"
           : "User Not Found"}
     </div>
   );

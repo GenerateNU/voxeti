@@ -30,7 +30,7 @@ export default function JobsProducer() {
     PageStatus.Loading
   );
 
-  const dispatch = useStateDispatch(); 
+  const dispatch = useStateDispatch();
 
   const JobTable = (props: { filter: string }) => {
     const handleChange = (event: SelectChangeEvent) => {
@@ -87,7 +87,7 @@ export default function JobsProducer() {
       <div className="py-32 w-full h-screen flex flex-col items-center">
         <div className=" px-4 w-full sm:w-3/5">
           <h2 className="text-3xl py-5">My Jobs</h2>
-          <FilterDropDown 
+          <FilterDropDown
             options={filterOptions}
             onChange={handleChange}
             value={jobFilter}

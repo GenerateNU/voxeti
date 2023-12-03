@@ -49,21 +49,21 @@ export default function JobRow({ job, type }: JobRowProps) {
     return undefined;
   };
 
-  // Retrieve the designer name: 
+  // Retrieve the designer name:
   const name = designerName(type === 'producer' ? job.producerId as string : job.designerId as string)
 
   return (
     <TableRow
       key={job.id}
-      sx={{ 
-        "&:last-child td, &:last-child th": { 
+      sx={{
+        "&:last-child td, &:last-child th": {
             border: 0
         },
         position: 'relative'
       }}
     >
       <JobTableCell size='lg'>
-        <AvatarCell 
+        <AvatarCell
           userType={type}
           firstName={name?.firstName}
           lastName={name?.lastName}
