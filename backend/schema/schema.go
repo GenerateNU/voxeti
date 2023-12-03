@@ -16,6 +16,7 @@ var DatabaseName = "data"
 // A Voxeti User, can be both a Designer and a Producer
 type User struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	UserType          UserType           `bson:"userType,omitempty" json:"userType,omitempty"`
 	FirstName         string             `bson:"firstName,omitempty" json:"firstName,omitempty"`
 	LastName          string             `bson:"lastName,omitempty" json:"lastName,omitempty"`
 	Email             string             `bson:"email,omitempty" json:"email,omitempty"`
@@ -104,9 +105,9 @@ const (
 
 // Print/printer physical dimensions
 type Dimensions struct {
-	Height uint64 `bson:"height,omitempty" json:"height,omitempty"`
-	Width  uint64 `bson:"width,omitempty" json:"width,omitempty"`
-	Depth  uint64 `bson:"depth,omitempty" json:"depth,omitempty"`
+	Height float64 `bson:"height,omitempty" json:"height,omitempty"`
+	Width  float64 `bson:"width,omitempty" json:"width,omitempty"`
+	Depth  float64 `bson:"depth,omitempty" json:"depth,omitempty"`
 }
 
 // A filament
@@ -132,4 +133,12 @@ type SocialProvider string
 const (
 	None   = "NONE"
 	Google = "GOOGLE"
+)
+
+type UserType string
+
+const (
+	Producer UserType = "DESIGNER"
+	Designer UserType = "PRODUCER"
+	Hybrid   UserType = "HYBRID"
 )
