@@ -162,6 +162,22 @@ func DeclineJob(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Cl
 	return nil
 }
 
+func AcceptJob(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
+	err := acceptJobDb(jobId, producerId, dbClient)
+
+	if err != nil {
+		return err
+	}
+
+	err = removePotentialProducerDb(jobId, producerId, dbClient)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // given a job, constructs an email for the job's designer that indicates the job's status has been updated
 func constructUpdateJobStatusEmail(job *schema.Job, dbClient *mongo.Client) (*schema.Email, *schema.ErrorResponse) {
 	designer, designerErr := user.GetUserById(&job.DesignerId, dbClient)

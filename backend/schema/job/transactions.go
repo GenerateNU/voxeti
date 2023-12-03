@@ -204,6 +204,31 @@ func declineJobDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.
 	return nil
 }
 
+func acceptJobDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
+	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
+	jobObjectId, err := primitive.ObjectIDFromHex(jobId)
+	if err != nil {
+		return &schema.ErrorResponse{Code: 400, Message: "Invalid JobId"}
+	}
+
+	filter := bson.M{
+		"_id": jobObjectId,
+	}
+
+	// set producerId to producerId
+	update := bson.M{
+		"$set": bson.M{"producerId": producerId},
+	}
+
+	_, err = jobCollection.UpdateOne(context.Background(), filter, update)
+
+	if err != nil {
+		return &schema.ErrorResponse{Code: 500, Message: "Unable to accept job"}
+	}
+
+	return nil
+}
+
 func addPotentialProducerDb(jobId *primitive.ObjectID, producerId *primitive.ObjectID, dbClient *mongo.Client) *schema.ErrorResponse {
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 

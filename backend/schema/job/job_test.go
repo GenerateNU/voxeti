@@ -29,7 +29,7 @@ func TestMain(m *testing.M) {
 		fmt.Println("Failed to load environment variables from .env file")
 	}
 
-	fmt.Println("Running user tests...")
+	fmt.Println("Running job tests...")
 	os.Exit(m.Run())
 }
 
@@ -1226,5 +1226,86 @@ func TestGetRecommendedJobs(t *testing.T) {
 		for i := 2; i < len(derefJobs)-1; i++ {
 			assert.True(derefJobs[i].Price <= derefJobs[i+1].Price)
 		}
+	})
+}
+
+func TestDeclineJob(t *testing.T) {
+	assert := assert.New(t)
+
+	// insert the mock job document into the mock MongoDB database
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
+
+	producerId := primitive.NewObjectID()
+	jobId := primitive.NewObjectID()
+	jobDesignerId := primitive.NewObjectID()
+
+	mt.Run("Success - decline job", func(mt *mtest.T) {
+
+		expectedJob := schema.Job{
+			Id:         jobId,
+			DesignerId: jobDesignerId,
+			Status:     schema.Pending,
+			Price:      1,
+			Filament:   schema.PLA,
+			Color:      "Red",
+			ShippingAddress: schema.Address{
+				Name:    "Home",
+				Line1:   "35 Oklahoma St",
+				Line2:   "Apt 1",
+				ZipCode: "12345",
+				City:    "Phoenix",
+				State:   "AZ",
+				Country: "USA",
+				Location: geojson.Geometry{
+					Type:        "Point",
+					Coordinates: orb.Point{1, 1},
+				},
+			},
+		}
+
+		expectedJobBson, _ := bson.Marshal(expectedJob)
+		var jobBsonD bson.D
+
+		if err := bson.Unmarshal(expectedJobBson, &jobBsonD); err != nil {
+			assert.Fail("Failed to unmarshal bson data into document while prepping mock mongoDB. Test Name: 'Get Job by ID'")
+		}
+
+		// Mock MongoDB Database Response
+
+		findOneAndUpdateRes := bson.D{
+			{Key: "ok", Value: 1},
+			{Key: "value", Value: jobBsonD},
+		}
+
+		mt.AddMockResponses(findOneAndUpdateRes, mtest.CreateSuccessResponse())
+
+		// Assertions
+		err := DeclineJob(jobId.Hex(), &producerId, mt.Client)
+
+		assert.Nil(err)
+	})
+}
+
+func TestAcceptJob(t *testing.T) {
+	assert := assert.New(t)
+
+	// insert the mock job document into the mock MongoDB database
+	mtest_options := mtest.NewOptions().DatabaseName("data").ClientType(mtest.Mock)
+	mt := mtest.New(t, mtest_options)
+	defer mt.Close()
+
+	producerId := primitive.NewObjectID()
+	jobId := primitive.NewObjectID()
+
+	mt.Run("Success - decline job", func(mt *mtest.T) {
+
+		mt.AddMockResponses(mtest.CreateSuccessResponse(), mtest.CreateSuccessResponse())
+
+		// Assertions
+		err := AcceptJob(jobId.Hex(), &producerId, mt.Client)
+
+		assert.Nil(err)
 	})
 }

@@ -176,4 +176,29 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 
 		return c.NoContent(http.StatusNoContent)
 	})
+
+	api.PUT("/accept/:id", func(c echo.Context) error {
+		// get job ID
+		jobId := c.Param("id")
+
+		idRequest := schema.IdRequest{}
+
+		if err := c.Bind(&idRequest); err != nil {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id data"))
+		}
+
+		// convert id to object id
+		producerId, err := primitive.ObjectIDFromHex(idRequest.Id)
+		if err != nil {
+			return c.JSON(utilities.CreateErrorResponse(400, "Invalid producer id"))
+		}
+
+		errorResponse := job.AcceptJob(jobId, &producerId, dbClient)
+
+		if errorResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
 }
