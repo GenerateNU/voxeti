@@ -243,7 +243,7 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 	availableColors := user.GetAvailableColors(producer)
 	const METERS_PER_MILE = 1609.34
 	const MAX_MILES = 100
-	const MAX_POTENTIAL_PRODUCERS = 5
+	const MAX_POTENTIAL_PRODUCERS = 50
 	var PENDING = bson.M{"status": bson.M{"$eq": "PENDING"}}
 	var DECLINED_PRODUCERS = bson.M{"declinedProducers": bson.M{"$nin": []primitive.ObjectID{producer.Id}}}
 	var MAX_POTENTIAL_PRODUCERS_FILTER = bson.M{
@@ -374,9 +374,9 @@ func updatePotentialProducers(producerId *primitive.ObjectID, jobs *[]schema.Job
 
 func TransferPotentialToDeclined(dbClient *mongo.Client, logger *pterm.Logger) {
 	for {
-		const TIME_INTERVAL = 1 * time.Minute
-		const MAX_INACTIVE = 1 * time.Minute
-		const TRANSFER_NUM = 3
+		const TIME_INTERVAL = 12 * time.Minute
+		const MAX_INACTIVE = 12 * time.Hour
+		const TRANSFER_NUM = 5
 
 		err := transferPotentialToDeclinedDb(TRANSFER_NUM, MAX_INACTIVE, dbClient)
 		if err != nil {
@@ -390,8 +390,8 @@ func TransferPotentialToDeclined(dbClient *mongo.Client, logger *pterm.Logger) {
 
 func DeleteMaxDeclinedJobs(dbClient *mongo.Client, logger *pterm.Logger) {
 	for {
-		const TIME_INTERVAL = 1 * time.Minute
-		const MAX_DECLINED_PRODUCERS = 5
+		const TIME_INTERVAL = 12 * time.Hour
+		const MAX_DECLINED_PRODUCERS = 500
 
 		err := deleteMaxDeclinedJobsDb(MAX_DECLINED_PRODUCERS, dbClient)
 		if err != nil {
