@@ -218,7 +218,10 @@ func acceptJobDb(jobId string, producerId *primitive.ObjectID, dbClient *mongo.C
 
 	// set producerId to producerId
 	update := bson.M{
-		"$set": bson.M{"producerId": producerId},
+		"$set": bson.M{
+			"producerId": producerId,
+			"status":     "ACCEPTED",
+		},
 	}
 
 	_, err = jobCollection.UpdateOne(context.Background(), filter, update)

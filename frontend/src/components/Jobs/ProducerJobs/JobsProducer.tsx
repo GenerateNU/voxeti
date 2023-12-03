@@ -14,7 +14,7 @@ import Paper from "@mui/material/Paper";
 import { Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
 import { jobApi, userApi } from "../../../api/api";
-// import { useStateSelector } from "../hooks/use-redux";
+import { useStateSelector } from "../../../hooks/use-redux";
 import { Job } from "../../../main.types";
 import Loading from "./components/Loading";
 import { PageStatus } from "../../../main.types";
@@ -37,10 +37,17 @@ export default function JobsProducer() {
     };
     const [rows, setRows] = React.useState<Job[]>([]);
 
-    // const { user } = useStateSelector((state) => state.user);
+    const { user } = useStateSelector((state) => state.user);
 
-    const useQueryResponse = jobApi.useGetProducerJobsFilteredQuery({
-      producerId: "", // Need to be changed to user.id when job schema is changed
+    const useQueryRecommendations = jobApi.useGetRecommendationsQuery({
+      producerId: user.id,
+      page: "1",
+      limit: "10",
+      sort: "PRICE",
+    });
+
+    const useQueryResponseOther = jobApi.useGetProducerJobsFilteredQuery({
+      producerId: user.id as string, // Need to be changed to user.id when job schema is changed
       status: props.filter.toUpperCase(),
       page: "0",
     });
@@ -124,13 +131,31 @@ export default function JobsProducer() {
     };
 
     React.useEffect(() => {
-      if (useQueryResponse.isSuccess) {
-        setRows(useQueryResponse.data);
+      if (
+        jobFilter == "Pending" &&
+        useQueryRecommendations.isSuccess &&
+        useQueryRecommendations.data
+      ) {
+        console.log(useQueryRecommendations.data);
+        setRows(useQueryRecommendations.data);
         setPageStatus(PageStatus.Success);
-      } else if (useQueryResponse.isError) {
+      } else if (
+        jobFilter != "Pending" &&
+        useQueryResponseOther.isSuccess &&
+        useQueryResponseOther.data
+      ) {
+        setRows(useQueryResponseOther.data);
+        setPageStatus(PageStatus.Success);
+      } else if (
+        useQueryResponseOther.isError &&
+        useQueryRecommendations.isError
+      ) {
         setPageStatus(PageStatus.Error);
+      } else {
+        setPageStatus(PageStatus.Error);
+        console.log("Something else happened");
       }
-    }, [useQueryResponse]);
+    }, [useQueryResponseOther, useQueryRecommendations]);
 
     if (pageStatus == PageStatus.Loading) return <Loading />;
 
@@ -157,7 +182,7 @@ export default function JobsProducer() {
             </Table>
           </TableContainer>
           <div>
-            {!useQueryResponse.data && (
+            {!useQueryResponseOther.data && (
               <h2 className=" text-xl py-8 text-center">No Matching Jobs</h2>
             )}
           </div>
