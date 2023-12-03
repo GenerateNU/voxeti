@@ -91,3 +91,7 @@ type Email struct {
 	Subject   string `json:"subject"`
 	Body      string `json:"body"`
 }
+
+type IdRequest struct {
+	Id string `json:"id"`
+}
