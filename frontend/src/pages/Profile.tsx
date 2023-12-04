@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import DesignerInfo from "../components/Jobs/ProducerJobs/components/DesignerInfo";
 import { useStateSelector } from "../hooks/use-redux";
 import { PageStatus } from "../main.types";
@@ -17,13 +17,25 @@ export default function ProfilePage() {
 
   const { user } = useStateSelector((state) => state.user);
 
+  const escFunction = useCallback((event: { key: string }) => {
+    if (event.key === "Escape") {
+      cancelEdit();
+    }
+  }, []);
+
   React.useEffect(() => {
     if (user) {
       setPageStatus(PageStatus.Success);
     } else {
       addError("Not logged in");
     }
-  }, [pageStatus, sectionEdit]);
+
+    document.addEventListener("keydown", escFunction, false);
+
+    return () => {
+      document.removeEventListener("keydown", escFunction, false);
+    };
+  }, [pageStatus, sectionEdit, escFunction]);
 
   const loginInfo: [string, string, string?][][] = [
     [["Email", user.email]],
@@ -90,13 +102,25 @@ export default function ProfilePage() {
     );
   };
 
+  const cancelEdit = () => {
+    setSectionEdit("");
+  };
+
+  const saveEdit = () => {
+    setSectionEdit("");
+  };
+
+  const startEdit = (sectionName: string) => {
+    setSectionEdit(sectionName);
+  };
+
   const EditSaveButton = (props: { sectionName: string }) => {
     return sectionEdit == props.sectionName ? (
       <StyledButton
         size={"sm"}
         color={"seconday"}
         onClick={() => {
-          setSectionEdit("");
+          saveEdit();
         }}
       >
         Save
@@ -106,7 +130,7 @@ export default function ProfilePage() {
         size={"sm"}
         color={"seconday"}
         onClick={() => {
-          setSectionEdit(props.sectionName);
+          startEdit(props.sectionName);
         }}
       >
         Edit
