@@ -22,7 +22,6 @@ export default function DesignerName(props: { designerId: string; job?: Job }) {
                   : "outline-producer"
               }`}
               alt={`${data.firstName} ${data.lastName}`}
-              src="/static/images/avatar/1.jpg"
               sx={{ width: 64, height: 64 }}
             />
           ) : (

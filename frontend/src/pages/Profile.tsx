@@ -68,13 +68,14 @@ export default function ProfilePage() {
         {props.rows.map((section) => {
           return (
             <div className="flex flex-row gap-4 pr-4">
-              {section.map(([key, value, type]) => {
+              {section.map(([key, value, type], index) => {
                 return (
                   <div className=" pb-4">
                     <div>{key}</div>
                     <div className=" ">
                       <TextField
-                        id="standard-basic"
+                        id={`form-fields-${key.toLowerCase()}`}
+                        key={key.toLowerCase()}
                         variant="standard"
                         size="small"
                         margin="none"
@@ -82,7 +83,9 @@ export default function ProfilePage() {
                         placeholder={key}
                         type={type}
                         disabled={!props.edit}
-                        InputProps={{ disableUnderline: !props.edit }}
+                        InputProps={{
+                          disableUnderline: !props.edit,
+                        }}
                       />
                     </div>
                   </div>
@@ -112,10 +115,11 @@ export default function ProfilePage() {
     patchUser({ id: user.id, body: {} })
       .unwrap()
       .then((user) => {
+        console.log(user);
         setSectionEdit("");
       })
       .catch((error) => {
-        addError("Job doesn't exist or you don't have permission");
+        addError("Error saving your new info");
         setOpen(true);
         console.log(error);
         setPageStatus(PageStatus.Error);
@@ -177,13 +181,11 @@ export default function ProfilePage() {
             </div>
           </div>
           <CustomDivider />
-          <div className="flex h-full flex-row justify-between">
+          <div className="flex h-full flex-row justify-between items-center pb-2">
             <div>Deactivate Account</div>
-            <div className=" flex items-center">
-              <StyledButton size={"sm"} color={"delete"} onClick={() => {}}>
-                Delete
-              </StyledButton>
-            </div>
+            <StyledButton size={"sm"} color={"delete"} onClick={() => {}}>
+              Delete
+            </StyledButton>
           </div>
           <CustomDivider />
         </div>
