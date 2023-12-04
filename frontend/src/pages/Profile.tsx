@@ -18,11 +18,31 @@ export default function ProfilePage() {
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
   const [addressIndex, setAddressIndex] = React.useState(0);
-  const [currentAddresses, setCurrentAddresses] = React.useState<Address>();
-  const [newAddresses, setNewAddresses] = React.useState<Address>();
+  const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>([]);
+  const [newAddresses, setNewAddresses] = React.useState<Address[]>([]);
   const [patchUser] = userApi.usePatchUserMutation();
 
   const { user } = useStateSelector((state) => state.user);
+
+  const loginInfo: [string, string, string?][][] = [
+    [["Email", user.email]],
+    [["Password", "••••••••••••••••", "password"]],
+  ];
+
+  const shippingInfo: [string, string?, string?][][] = [
+    [
+      ["Line 1", currentAddresses[addressIndex]?.line1],
+      ["Line 2", currentAddresses[addressIndex]?.line2],
+    ],
+    [
+      ["City", currentAddresses[addressIndex]?.city],
+      ["State", currentAddresses[addressIndex]?.state],
+    ],
+    [
+      ["Zipcode", currentAddresses[addressIndex]?.zipCode],
+      ["Country", currentAddresses[addressIndex]?.country],
+    ],
+  ];
 
   const escFunction = useCallback((event: { key: string }) => {
     if (event.key === "Escape") {
@@ -32,8 +52,9 @@ export default function ProfilePage() {
 
   React.useEffect(() => {
     if (user) {
-      setCurrentAddresses(user.addresses[0]);
-      setNewAddresses(user.addresses[0]);
+      console.log(user);
+      setCurrentAddresses(user.addresses.map((a) => ({ ...a })));
+      setNewAddresses(user.addresses.map((a) => ({ ...a })));
       setPageStatus(PageStatus.Success);
     } else {
       addError("Not logged in");
@@ -46,25 +67,71 @@ export default function ProfilePage() {
     };
   }, [pageStatus, sectionEdit, escFunction]);
 
-  const loginInfo: [string, string, string?][][] = [
-    [["Email", user.email]],
-    [["Password", "••••••••••••••••", "password"]],
-  ];
+  const cancelEdit = () => {
+    setSectionEdit("");
+  };
 
-  const shippingInfo: [string, string?, string?][][] = [
-    [
-      ["Line 1", currentAddresses?.line1],
-      ["Line 2", currentAddresses?.line2],
-    ],
-    [
-      ["City", currentAddresses?.city],
-      ["State", currentAddresses?.state],
-    ],
-    [
-      ["Zipcode", currentAddresses?.zipCode],
-      ["Country", currentAddresses?.country],
-    ],
-  ];
+  const saveEdit = () => {
+    patchUser({
+      id: user.id,
+      body: { addresses: newAddresses },
+    })
+      .unwrap()
+      .then((user) => {
+        setSectionEdit("");
+        console.log(user);
+        setCurrentAddresses(newAddresses.map((a) => ({ ...a })));
+      })
+      .catch((error) => {
+        setNewAddresses(currentAddresses.map((a) => ({ ...a })));
+        setSectionEdit("");
+        addError("Error saving your new info");
+        setOpen(true);
+        console.log(error);
+        setPageStatus(PageStatus.Error);
+      });
+
+    setSectionEdit("");
+  };
+
+  const startEdit = (sectionName: string) => {
+    setSectionEdit(sectionName);
+  };
+
+  const adjustAddressIndex = (delta: number) => {
+    setAddressIndex(
+      Math.min(Math.max(addressIndex + delta, 0), currentAddresses.length - 1)
+    );
+  };
+  const changeFieldValue = (key: string, value: string) => {
+    const tempAddress = { ...newAddresses[addressIndex] };
+    if (tempAddress) {
+      switch (key) {
+        case "Line 1":
+          tempAddress.line1 = value;
+          break;
+        case "Line 2":
+          tempAddress.line2 = value;
+          break;
+        case "City":
+          tempAddress.city = value;
+          break;
+        case "State":
+          tempAddress.state = value;
+          break;
+        case "Zipcode":
+          tempAddress.zipCode = value;
+          break;
+        case "Country":
+          tempAddress.country = value;
+          break;
+      }
+
+      console.log(tempAddress);
+
+      newAddresses[addressIndex] = tempAddress;
+    }
+  };
 
   const FieldValuePairs = (props: {
     rows: [string, string?, string?][][];
@@ -75,7 +142,7 @@ export default function ProfilePage() {
         {props.rows.map((section) => {
           return (
             <div className="flex flex-row gap-4 pr-4">
-              {section.map(([key, value, type], index) => {
+              {section.map(([key, value, type]) => {
                 return (
                   <div className=" pb-4">
                     <div>{key}</div>
@@ -91,33 +158,7 @@ export default function ProfilePage() {
                         type={type}
                         disabled={!props.edit}
                         onChange={(event) => {
-                          const tempAddress = newAddresses;
-                          console.log(key);
-                          if (tempAddress) {
-                            switch (key) {
-                              case "Line 1":
-                                tempAddress.line1 = event.target.value;
-                                break;
-                              case "Line 2":
-                                tempAddress.line2 = event.target.value;
-                                break;
-                              case "City":
-                                tempAddress.city = event.target.value;
-                                break;
-                              case "State":
-                                tempAddress.state = event.target.value;
-                                break;
-                              case "Zipcode":
-                                tempAddress.zipCode = event.target.value;
-                                break;
-                              case "Country":
-                                tempAddress.country = event.target.value;
-                                break;
-                            }
-
-                            console.log(tempAddress);
-                            setNewAddresses(tempAddress);
-                          }
+                          changeFieldValue(key, event.target.value);
                         }}
                         InputProps={{
                           disableUnderline: !props.edit,
@@ -143,34 +184,6 @@ export default function ProfilePage() {
     );
   };
 
-  const cancelEdit = () => {
-    setSectionEdit("");
-  };
-
-  const saveEdit = () => {
-    patchUser({
-      id: user.id,
-      body: { addresses: newAddresses ? [newAddresses] : [] },
-    })
-      .unwrap()
-      .then((user) => {
-        console.log(user);
-        setSectionEdit("");
-      })
-      .catch((error) => {
-        addError("Error saving your new info");
-        setOpen(true);
-        console.log(error);
-        setPageStatus(PageStatus.Error);
-      });
-
-    setSectionEdit("");
-  };
-
-  const startEdit = (sectionName: string) => {
-    setSectionEdit(sectionName);
-  };
-
   const EditSaveButton = (props: { sectionName: string }) => {
     return sectionEdit == props.sectionName ? (
       <StyledButton
@@ -194,10 +207,6 @@ export default function ProfilePage() {
         Edit
       </StyledButton>
     );
-  };
-
-  const adjustAddressIndex = (delta: number) => {
-    setAddressIndex(Math.min(Math.max(addressIndex + delta, 0), 10));
   };
 
   const Success = () => {
@@ -227,15 +236,19 @@ export default function ProfilePage() {
           <div className="flex h-full flex-row justify-between items-center">
             <IconButton
               aria-label="Previous Address"
+              disabled={addressIndex == 0}
               onClick={() => {
                 adjustAddressIndex(-1);
               }}
             >
               <ChevronLeftIcon />
             </IconButton>
-            <div>{`${currentAddresses?.name} (${addressIndex + 1})`}</div>
+            <div>{`${currentAddresses[addressIndex]?.name} (${
+              addressIndex + 1
+            })`}</div>
             <IconButton
               aria-label="Next Address"
+              disabled={addressIndex == currentAddresses.length - 1}
               onClick={() => {
                 adjustAddressIndex(1);
               }}
