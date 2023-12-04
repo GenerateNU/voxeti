@@ -86,29 +86,6 @@ func getJobsByDesignerOrProducerIdDb(designerId primitive.ObjectID, producerId p
 		bson.D{{Key: "$limit", Value: limit}},
 	}
 
-	// Create pipeline
-	// pipeline := mongo.Pipeline{
-	// 	// bson.D{{Key: "$match", Value: filter}},
-	// 	// perforns left inner join on users collection (matching by producer)
-	// 	// bson.D{{Key: "$match", Value: filter}},
-	// 	bson.D{{Key: "$lookup", Value: bson.D{
-	// 		{Key: "from", Value: "users"},
-	// 		{Key: "localField", Value: "producerId"},
-	// 		{Key: "foreignField", Value: "id"},
-	// 		{Key: "as", Value: "joined"},
-	// 	}}},
-	// 	// output new document with producer fields
-	// 	// bson.D{{Key: "$unwind", Value: "$producer"}},
-	// 	// add producer fields to job
-	// 	bson.D{{Key: "$addFields", Value: bson.D{
-	// 		{Key: "producerFirstName", Value: "$joined"},
-	// 		// {Key: "producerFirstName", Value: "$joined.firstName"},
-	// 		// {Key: "producerLastName", Value: "$joined.lastName"},
-	// 	}}},
-	// 	bson.D{{Key: "$skip", Value: skip}},
-	// 	bson.D{{Key: "$limit", Value: limit}},
-	// }
-
 	// If jobs are not found, throw an error
 	cursor, err := jobCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
