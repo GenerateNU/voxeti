@@ -23,7 +23,7 @@ function Profile(props: { user: User }) {
     PageStatus.Loading
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
-  const [newEmail, setNewEmail] = React.useState(props.user.email);
+
   const [addressIndex, setAddressIndex] = React.useState(0);
   const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
     props.user.addresses.map((a: Address) => ({ ...a }))
@@ -32,11 +32,6 @@ function Profile(props: { user: User }) {
     props.user.addresses.map((a: Address) => ({ ...a }))
   );
   const [patchUser] = userApi.usePatchUserMutation();
-
-  const loginInfo: [string, string, string?][][] = [
-    [["Email", newEmail]],
-    [["Password", "••••••••••••••••", "password"]],
-  ];
 
   const shippingInfo: [string, string?, string?][][] = [
     [
@@ -74,10 +69,10 @@ function Profile(props: { user: User }) {
     setSectionEdit("");
   };
 
-  const saveEdit = () => {
+  const saveEdit = (body: Partial<User>) => {
     patchUser({
       id: props.user.id,
-      body: { email: newEmail, addresses: newAddresses },
+      body: body,
     })
       .unwrap()
       .then((user) => {
@@ -92,7 +87,7 @@ function Profile(props: { user: User }) {
 
         setNewAddresses(currentAddresses.map((a) => ({ ...a })));
 
-        addError("Error saving your new info");
+        addError(error.data.message);
         setOpen(true);
         setPageStatus(PageStatus.Error);
       });
@@ -108,9 +103,7 @@ function Profile(props: { user: User }) {
     );
   };
   const changeFieldValue = (key: string, value: string) => {
-    if (sectionEdit == "login") {
-      setNewEmail(value);
-    } else if (sectionEdit == "address") {
+    if (sectionEdit == "address") {
       const tempAddress = { ...newAddresses[addressIndex] };
       switch (key) {
         case "Line 1":
@@ -140,6 +133,7 @@ function Profile(props: { user: User }) {
   const FieldValuePairs = (props: {
     rows: [string, string?, string?][][];
     edit?: boolean;
+    updateFields: (key: string, value: string) => void;
   }) => {
     return (
       <div>
@@ -161,7 +155,7 @@ function Profile(props: { user: User }) {
                       type={type}
                       disabled={!props.edit}
                       onChange={(event) => {
-                        changeFieldValue(key, event.target.value);
+                        props.updateFields(key, event.target.value);
                       }}
                       InputProps={{
                         disableUnderline: !props.edit,
@@ -186,14 +180,17 @@ function Profile(props: { user: User }) {
     );
   };
 
-  const EditSaveButton = (props: { sectionName: string }) => {
+  const EditSaveButton = (props: {
+    sectionName: string;
+    body: Partial<User>;
+  }) => {
     return sectionEdit == props.sectionName ? (
       <StyledButton
         size={"sm"}
         color={"seconday"}
         type="submit"
         onClick={() => {
-          saveEdit();
+          saveEdit(props.body);
         }}
       >
         Save
@@ -211,6 +208,32 @@ function Profile(props: { user: User }) {
     );
   };
 
+  const LoginInfo = () => {
+    const [newEmail, setNewEmail] = React.useState(props.user.email);
+
+    const loginInfo: [string, string, string?][][] = [
+      [["Email", newEmail]],
+      [["Password", "••••••••••••••••", "password"]],
+    ];
+
+    return (
+      <div className="flex h-full flex-row justify-between">
+        <FieldValuePairs
+          rows={
+            props.user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]
+          }
+          edit={sectionEdit == "login"}
+          updateFields={(key, value) => setNewEmail(value)}
+        />
+        <div className=" flex items-center">
+          {props.user.socialProvider == "NONE" && (
+            <EditSaveButton sectionName="login" body={{ email: newEmail }} />
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const Success = () => {
     return (
       <div className=" pt-20 sm:pt-28 w-full flex flex-col items-center justify-center">
@@ -219,27 +242,19 @@ function Profile(props: { user: User }) {
           <DesignerInfo designerId={props.user.id} />
           <div className="py-2" />
           <CustomDivider />
-          <div className="flex h-full flex-row justify-between">
-            <FieldValuePairs
-              rows={
-                props.user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]
-              }
-              edit={sectionEdit == "login"}
-            />
-            <div className=" flex items-center">
-              {props.user.socialProvider == "NONE" && (
-                <EditSaveButton sectionName="login" />
-              )}
-            </div>
-          </div>
+          <LoginInfo />
           <CustomDivider />
           <div className="flex h-full flex-row justify-between">
             <FieldValuePairs
               rows={shippingInfo}
               edit={sectionEdit == "address"}
+              updateFields={changeFieldValue}
             />
             <div className=" flex items-center">
-              <EditSaveButton sectionName="address" />
+              <EditSaveButton
+                sectionName="address"
+                body={{ addresses: newAddresses }}
+              />
             </div>
           </div>
           <div className="flex h-full flex-row justify-between items-center">
