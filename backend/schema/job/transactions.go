@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Find a specified job by its ID
@@ -34,7 +35,7 @@ func getJobByIdDb(jobId string, dbClient *mongo.Client) (schema.Job, *schema.Err
 }
 
 // Find a specified job by either a producer or designer ID
-func getJobsByDesignerOrProducerIdDb(designerId primitive.ObjectID, producerId primitive.ObjectID, status string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.Job, *schema.ErrorResponse) {
+func getJobsByDesignerOrProducerIdDb(designerId primitive.ObjectID, producerId primitive.ObjectID, status string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.JobView, *schema.ErrorResponse) {
 	// load jobs collection
 	jobCollection := dbClient.Database(schema.DatabaseName).Collection("jobs")
 
@@ -49,36 +50,67 @@ func getJobsByDesignerOrProducerIdDb(designerId primitive.ObjectID, producerId p
 		filter = append(filter, bson.E{Key: "status", Value: status})
 	}
 
-	var jobs []schema.Job
-
-	// pagination options
-	paginationOptions := options.Find()
-	paginationOptions.SetLimit(limit)
-	paginationOptions.SetSkip(skip)
+	pipeline := mongo.Pipeline{
+		bson.D{{Key: "$match", Value: filter}},
+		// Left outer join on producer ID
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "users"},
+			{Key: "localField", Value: "producerId"},
+			{Key: "foreignField", Value: "_id"},
+			{Key: "as", Value: "producer"},
+		}}},
+		bson.D{{Key: "$unwind", Value: bson.D{
+			{Key: "path", Value: "$producer"},
+			{Key: "preserveNullAndEmptyArrays", Value: true},
+		}}},
+		bson.D{{Key: "$addFields", Value: bson.D{
+			{Key: "producerFirstName", Value: "$producer.firstName"},
+			{Key: "producerLastName", Value: "$producer.lastName"},
+		}}},
+		// Left outer join on designer ID
+		bson.D{{Key: "$lookup", Value: bson.D{
+			{Key: "from", Value: "users"},
+			{Key: "localField", Value: "designerId"},
+			{Key: "foreignField", Value: "_id"},
+			{Key: "as", Value: "designer"},
+		}}},
+		bson.D{{Key: "$unwind", Value: bson.D{
+			{Key: "path", Value: "$designer"},
+			{Key: "preserveNullAndEmptyArrays", Value: true},
+		}}},
+		bson.D{{Key: "$addFields", Value: bson.D{
+			{Key: "designerFirstName", Value: "$designer.firstName"},
+			{Key: "designerLastName", Value: "$designer.lastName"},
+		}}},
+		bson.D{{Key: "$skip", Value: skip}},
+		bson.D{{Key: "$limit", Value: limit}},
+	}
 
 	// If jobs are not found, throw an error
-	cursor, err := jobCollection.Find(context.Background(), filter, paginationOptions)
+	cursor, err := jobCollection.Aggregate(context.Background(), pipeline)
 	if err != nil {
-		return []schema.Job{}, &schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
+		return []schema.JobView{}, &schema.ErrorResponse{Code: 404, Message: "Job does not exist!"}
 	}
 	defer cursor.Close(context.Background())
 
+	var jobs []schema.JobView
+
 	// Iterate over the cursor and append each job to the slice
 	for cursor.Next(context.Background()) {
-		var job schema.Job
+		var job schema.JobView
 		if err := cursor.Decode(&job); err != nil {
-			return []schema.Job{}, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
+			return []schema.JobView{}, &schema.ErrorResponse{Code: 500, Message: "Error decoding job!"}
 		}
 		jobs = append(jobs, job)
 	}
 
 	// If there was an error iterating over the cursor, return an error
 	if err := cursor.Err(); err != nil {
-		return []schema.Job{}, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
+		return []schema.JobView{}, &schema.ErrorResponse{Code: 500, Message: "Error iterating over jobs!"}
 	}
 	// If no jobs exist (ex: there are 2 pages but user tries to go to "page 3")
 	if jobs == nil {
-		return []schema.Job{}, &schema.ErrorResponse{Code: 400, Message: "Page does not exist"}
+		return []schema.JobView{}, &schema.ErrorResponse{Code: 400, Message: "Page does not exist"}
 	}
 
 	// Return the jobs

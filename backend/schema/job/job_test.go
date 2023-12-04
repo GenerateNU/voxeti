@@ -866,7 +866,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		producerId, _ := primitive.ObjectIDFromHex("")
 		// string version of ObjectID used for comparisons
 		jobIdHex := designerId
-		expectedJob := schema.Job{
+		expectedJob := schema.JobView{
 			Id:         jobId,
 			DesignerId: designerId,
 			Status:     schema.Pending,
@@ -885,6 +885,10 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 					Coordinates: orb.Point{1, 1},
 				},
 			},
+			DesignerFirstName: "Kevin",
+			DesignerLastName:  "Durant",
+			ProducerFirstName: "Lebron",
+			ProducerLastName:  "James",
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -909,7 +913,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		foundJob, err := GetJobsByDesignerOrProducerId(jobIdHex, producerId, "", 10, 0, mt.Client)
 
 		assert.Nil(err)
-		assert.Equal(foundJob, []schema.Job{expectedJob})
+		assert.Equal(foundJob, []schema.JobView{expectedJob})
 	})
 
 	mt.Run("Get Producer Jobs by ID", func(mt *mtest.T) {
@@ -919,7 +923,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		producerId := primitive.NewObjectID()
 		// string version of ObjectID used for comparisons
 		jobIdHex := producerId
-		expectedJob := schema.Job{
+		expectedJob := schema.JobView{
 			Id:         jobId,
 			ProducerId: producerId,
 			Status:     schema.Pending,
@@ -938,6 +942,10 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 					Coordinates: orb.Point{1, 1},
 				},
 			},
+			DesignerFirstName: "Kevin",
+			DesignerLastName:  "Durant",
+			ProducerFirstName: "Lebron",
+			ProducerLastName:  "James",
 		}
 		jobBSON, _ := bson.Marshal(expectedJob)
 		var jobBsonData bson.D
@@ -962,7 +970,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		foundJob, err := GetJobsByDesignerOrProducerId(designerId, jobIdHex, "", 10, 0, mt.Client)
 
 		assert.Nil(err)
-		assert.Equal(foundJob, []schema.Job{expectedJob})
+		assert.Equal(foundJob, []schema.JobView{expectedJob})
 	})
 
 	mt.Run("Retrieving Non-existing ID throws error", func(mt *mtest.T) {
