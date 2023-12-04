@@ -62,14 +62,10 @@ function Profile(props: { user: User }) {
       .then((user) => {
         console.log(user);
         setSectionEdit("");
-
-        //setCurrentAddresses(newAddresses.map((a) => ({ ...a })));
       })
       .catch((error) => {
         console.log(error);
         setSectionEdit("");
-
-        //setNewAddresses(currentAddresses.map((a) => ({ ...a })));
 
         addError(error.data.message);
         setOpen(true);
@@ -174,7 +170,10 @@ function Profile(props: { user: User }) {
             props.user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]
           }
           edit={sectionEdit == "login"}
-          updateFields={(key, value) => setNewEmail(value)}
+          updateFields={(key, value) => {
+            console.log(key);
+            setNewEmail(value);
+          }}
         />
         <div className=" flex items-center">
           {props.user.socialProvider == "NONE" && (
