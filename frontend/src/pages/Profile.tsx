@@ -6,12 +6,14 @@ import Loading from "../components/Jobs/ProducerJobs/components/Loading";
 import { Divider } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import { useApiError } from "../hooks/use-api-error";
+import TextField from "@mui/material/TextField";
 
 export default function ProfilePage() {
   const { addError, setOpen } = useApiError();
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
     PageStatus.Loading
   );
+  const [sectionEdit, setSectionEdit] = React.useState("None");
 
   const { user } = useStateSelector((state) => state.user);
 
@@ -21,27 +23,57 @@ export default function ProfilePage() {
     } else {
       addError("Not logged in");
     }
-  }, [pageStatus]);
+  }, [pageStatus, sectionEdit]);
 
-  const loginInfo: [string, string][] = [
-    ["Email", user.email],
-    ["Password", "****************"],
+  const loginInfo: [string, string, string?][][] = [
+    [["Email", user.email]],
+    [["Password", "••••••••••••••••", "password"]],
   ];
 
-  const shippingInfo: [string, string][] = [
-    ["Address", `${user.addresses[0].line1}, ${user.addresses[0].line2}`],
-    ["City", `${user.addresses[0].city}, ${user.addresses[0].state}`],
-    ["Zipcode", user.addresses[0].zipCode],
+  const shippingInfo: [string, string?, string?][][] = [
+    [
+      ["Line 1", user.addresses[0].line1],
+      ["Line 2", user.addresses[0].line2],
+    ],
+    [
+      ["City", user.addresses[0].city],
+      ["State", user.addresses[0].state],
+    ],
+    [
+      ["Zipcode", user.addresses[0].zipCode],
+      ["Country", user.addresses[0].country],
+    ],
   ];
 
-  const FieldValuePairs = (props: { rows: [string, string][] }) => {
+  const FieldValuePairs = (props: {
+    rows: [string, string?, string?][][];
+    edit?: boolean;
+  }) => {
     return (
       <div>
-        {props.rows.map(([key, value]) => {
+        {props.rows.map((section) => {
           return (
-            <div className=" pb-4">
-              <div>{key}</div>
-              <div className=" text-primary text-opacity-50">{value}</div>
+            <div className="flex flex-row gap-4 pr-4">
+              {section.map(([key, value, type]) => {
+                return (
+                  <div className=" pb-4">
+                    <div>{key}</div>
+                    <div className=" ">
+                      <TextField
+                        id="standard-basic"
+                        variant="standard"
+                        size="small"
+                        margin="none"
+                        defaultValue={value ? value : ""}
+                        placeholder={key}
+                        type={type}
+                        disabled={!props.edit}
+                        InputProps={{ disableUnderline: !props.edit }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           );
         })}
@@ -58,6 +90,30 @@ export default function ProfilePage() {
     );
   };
 
+  const EditSaveButton = (props: { sectionName: string }) => {
+    return sectionEdit == props.sectionName ? (
+      <StyledButton
+        size={"sm"}
+        color={"seconday"}
+        onClick={() => {
+          setSectionEdit("");
+        }}
+      >
+        Save
+      </StyledButton>
+    ) : (
+      <StyledButton
+        size={"sm"}
+        color={"seconday"}
+        onClick={() => {
+          setSectionEdit(props.sectionName);
+        }}
+      >
+        Edit
+      </StyledButton>
+    );
+  };
+
   const Success = () => {
     return (
       <div className=" pt-20 sm:pt-28 w-full flex flex-col items-center justify-center">
@@ -67,20 +123,19 @@ export default function ProfilePage() {
           <div className="py-2" />
           <CustomDivider />
           <div className="flex h-full flex-row justify-between">
-            <FieldValuePairs rows={loginInfo} />
+            <FieldValuePairs rows={loginInfo} edit={sectionEdit == "login"} />
             <div className=" flex items-center">
-              <StyledButton size={"sm"} color={"seconday"} onClick={() => {}}>
-                Edit
-              </StyledButton>
+              <EditSaveButton sectionName="login" />
             </div>
           </div>
           <CustomDivider />
           <div className="flex h-full flex-row justify-between">
-            <FieldValuePairs rows={shippingInfo} />
+            <FieldValuePairs
+              rows={shippingInfo}
+              edit={sectionEdit == "address"}
+            />
             <div className=" flex items-center">
-              <StyledButton size={"sm"} color={"seconday"} onClick={() => {}}>
-                Edit
-              </StyledButton>
+              <EditSaveButton sectionName="address" />
             </div>
           </div>
           <CustomDivider />
