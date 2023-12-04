@@ -71,7 +71,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowCredentials: true,
 		AllowOrigins:     []string{"http://localhost:4000"},
-		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodPatch, http.MethodOptions},
 		AllowHeaders:     []string{"Content-Type", "Csrftoken"},
 	}))
 	api.Use(authMiddleware)

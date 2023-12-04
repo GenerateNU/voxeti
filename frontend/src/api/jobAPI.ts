@@ -44,6 +44,18 @@ export const createJobApi = (baseUrl: string) =>
           url: `/${id}`,
         }),
       }),
+      acceptJob: builder.mutation<void, { id: string; producerId: string }>({
+        query: ({ id, producerId }) => ({
+          method: "PUT",
+          url: `/accept/${id}?producer=${producerId}`,
+        }),
+      }),
+      declineJob: builder.mutation<void, { id: string; producerId: string }>({
+        query: ({ id, producerId }) => ({
+          method: "PUT",
+          url: `/decline/${id}?producer=${producerId}`,
+        }),
+      }),
       getDesignerJobs: builder.query<
         Job[],
         { designerId: string; page: string }
@@ -70,6 +82,23 @@ export const createJobApi = (baseUrl: string) =>
         query: ({ producerId, status, page }) =>
           `?producer=${producerId}&status=${status}&page=${page}`,
       }),
+
+      getRecommendations: builder.query<
+        Job[],
+        {
+          producerId: string;
+          page: string;
+          limit: string;
+          filter: string[];
+          sort: string;
+        }
+      >({
+        query: ({ producerId, page, limit, filter, sort }) =>
+          `/recommendations/${producerId}?page=${page}&limit=${limit}&filter=${filter.join(
+            ","
+          )}&sort=${sort}`,
+      }),
+
       patchJob: builder.mutation<Job, { id: string; body: Partial<Job> }>({
         query: ({ id, body }) => ({
           body,
