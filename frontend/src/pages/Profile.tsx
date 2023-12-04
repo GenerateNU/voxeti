@@ -47,7 +47,7 @@ function Profile(props: { user: User }) {
     return () => {
       document.removeEventListener("keydown", escFunction, false);
     };
-  }, [pageStatus, sectionEdit, escFunction]);
+  }, [pageStatus, sectionEdit, escFunction, props.user]);
 
   const cancelEdit = () => {
     setSectionEdit("");
