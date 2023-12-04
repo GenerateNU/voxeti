@@ -3,11 +3,13 @@ import DesignerInfo from "../components/Jobs/ProducerJobs/components/DesignerInf
 import { useStateSelector } from "../hooks/use-redux";
 import { Address, PageStatus } from "../main.types";
 import Loading from "../components/Jobs/ProducerJobs/components/Loading";
-import { Divider } from "@mui/material";
+import { Divider, IconButton } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import { useApiError } from "../hooks/use-api-error";
 import TextField from "@mui/material/TextField";
 import { userApi } from "../api/api";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 export default function ProfilePage() {
   const { addError, setOpen } = useApiError();
@@ -15,6 +17,7 @@ export default function ProfilePage() {
     PageStatus.Loading
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
+  const [addressIndex, setAddressIndex] = React.useState(0);
   const [currentAddresses, setCurrentAddresses] = React.useState<Address>();
   const [newAddresses, setNewAddresses] = React.useState<Address>();
   const [patchUser] = userApi.usePatchUserMutation();
@@ -193,6 +196,10 @@ export default function ProfilePage() {
     );
   };
 
+  const adjustAddressIndex = (delta: number) => {
+    setAddressIndex(Math.min(Math.max(addressIndex + delta, 0), 10));
+  };
+
   const Success = () => {
     return (
       <div className=" pt-20 sm:pt-28 w-full flex flex-col items-center justify-center">
@@ -216,6 +223,25 @@ export default function ProfilePage() {
             <div className=" flex items-center">
               <EditSaveButton sectionName="address" />
             </div>
+          </div>
+          <div className="flex h-full flex-row justify-between items-center">
+            <IconButton
+              aria-label="Previous Address"
+              onClick={() => {
+                adjustAddressIndex(-1);
+              }}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+            <div>{`${currentAddresses?.name} (${addressIndex + 1})`}</div>
+            <IconButton
+              aria-label="Next Address"
+              onClick={() => {
+                adjustAddressIndex(1);
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
           </div>
           <CustomDivider />
           <div className="flex h-full flex-row justify-between items-center pb-2">
