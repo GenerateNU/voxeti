@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import DesignerInfo from "../components/Jobs/ProducerJobs/components/DesignerInfo";
 import { useStateSelector } from "../hooks/use-redux";
-import { PageStatus } from "../main.types";
+import { Address, PageStatus } from "../main.types";
 import Loading from "../components/Jobs/ProducerJobs/components/Loading";
 import { Divider } from "@mui/material";
 import StyledButton from "../components/Button/Button";
@@ -15,6 +15,8 @@ export default function ProfilePage() {
     PageStatus.Loading
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
+  const [currentAddresses, setCurrentAddresses] = React.useState<Address>();
+  const [newAddresses, setNewAddresses] = React.useState<Address>();
   const [patchUser] = userApi.usePatchUserMutation();
 
   const { user } = useStateSelector((state) => state.user);
@@ -27,6 +29,8 @@ export default function ProfilePage() {
 
   React.useEffect(() => {
     if (user) {
+      setCurrentAddresses(user.addresses[0]);
+      setNewAddresses(user.addresses[0]);
       setPageStatus(PageStatus.Success);
     } else {
       addError("Not logged in");
@@ -46,16 +50,16 @@ export default function ProfilePage() {
 
   const shippingInfo: [string, string?, string?][][] = [
     [
-      ["Line 1", user.addresses[0].line1],
-      ["Line 2", user.addresses[0].line2],
+      ["Line 1", currentAddresses?.line1],
+      ["Line 2", currentAddresses?.line2],
     ],
     [
-      ["City", user.addresses[0].city],
-      ["State", user.addresses[0].state],
+      ["City", currentAddresses?.city],
+      ["State", currentAddresses?.state],
     ],
     [
-      ["Zipcode", user.addresses[0].zipCode],
-      ["Country", user.addresses[0].country],
+      ["Zipcode", currentAddresses?.zipCode],
+      ["Country", currentAddresses?.country],
     ],
   ];
 
@@ -83,6 +87,35 @@ export default function ProfilePage() {
                         placeholder={key}
                         type={type}
                         disabled={!props.edit}
+                        onChange={(event) => {
+                          const tempAddress = newAddresses;
+                          console.log(key);
+                          if (tempAddress) {
+                            switch (key) {
+                              case "Line 1":
+                                tempAddress.line1 = event.target.value;
+                                break;
+                              case "Line 2":
+                                tempAddress.line2 = event.target.value;
+                                break;
+                              case "City":
+                                tempAddress.city = event.target.value;
+                                break;
+                              case "State":
+                                tempAddress.state = event.target.value;
+                                break;
+                              case "Zipcode":
+                                tempAddress.zipCode = event.target.value;
+                                break;
+                              case "Country":
+                                tempAddress.country = event.target.value;
+                                break;
+                            }
+
+                            console.log(tempAddress);
+                            setNewAddresses(tempAddress);
+                          }
+                        }}
                         InputProps={{
                           disableUnderline: !props.edit,
                         }}
@@ -112,7 +145,10 @@ export default function ProfilePage() {
   };
 
   const saveEdit = () => {
-    patchUser({ id: user.id, body: {} })
+    patchUser({
+      id: user.id,
+      body: { addresses: newAddresses ? [newAddresses] : [] },
+    })
       .unwrap()
       .then((user) => {
         console.log(user);
@@ -137,6 +173,7 @@ export default function ProfilePage() {
       <StyledButton
         size={"sm"}
         color={"seconday"}
+        type="submit"
         onClick={() => {
           saveEdit();
         }}
