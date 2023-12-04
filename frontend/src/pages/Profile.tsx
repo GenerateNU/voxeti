@@ -10,11 +10,16 @@ import TextField from "@mui/material/TextField";
 import { userApi } from "../api/api";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import useLogout from "../hooks/use-logout";
+import Auth from "../components/Auth/Auth";
 
 export default function ProfilePage() {
   const { user } = useStateSelector((state) => state.user);
-
-  return <Profile user={user} />;
+  return (
+    <Auth authRoute={true}>
+      <Profile user={user} />;
+    </Auth>
+  );
 }
 
 function Profile(props: { user: User }) {
@@ -284,6 +289,9 @@ function Profile(props: { user: User }) {
   };
 
   const DeactivateAccount = () => {
+    const [deleteUser] = userApi.useDeleteUserMutation();
+    const logout = useLogout();
+
     const startDeletion = () => {
       console.log("want to delete account");
       console.log("please confirm");
@@ -293,6 +301,20 @@ function Profile(props: { user: User }) {
     const confirmDeletion = () => {
       console.log("deleting account");
       console.log("logging out");
+
+      deleteUser(props.user.id)
+        .unwrap()
+        .then((user) => {
+          logout();
+          console.log(`succesfully deleted ${user}`);
+        })
+        .catch((error) => {
+          console.log(error);
+          setSectionEdit("");
+          addError(error.data.message);
+          setOpen(true);
+          setPageStatus(PageStatus.Error);
+        });
     };
 
     return (
