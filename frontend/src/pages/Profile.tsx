@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import DesignerInfo from "../components/Jobs/ProducerJobs/components/DesignerInfo";
 import { useStateSelector } from "../hooks/use-redux";
-import { Address, PageStatus } from "../main.types";
+import { Address, PageStatus, User } from "../main.types";
 import Loading from "../components/Jobs/ProducerJobs/components/Loading";
 import { Divider, IconButton } from "@mui/material";
 import StyledButton from "../components/Button/Button";
@@ -12,22 +12,29 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 export default function ProfilePage() {
+  const { user } = useStateSelector((state) => state.user);
+
+  return <Profile user={user} />;
+}
+
+function Profile(props: { user: User }) {
   const { addError, setOpen } = useApiError();
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
     PageStatus.Loading
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
-  const [currentEmail, setCurrentEmail] = React.useState("");
-  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newEmail, setNewEmail] = React.useState(props.user.email);
   const [addressIndex, setAddressIndex] = React.useState(0);
-  const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>([]);
-  const [newAddresses, setNewAddresses] = React.useState<Address[]>([]);
+  const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
+    props.user.addresses.map((a: Address) => ({ ...a }))
+  );
+  const [newAddresses, setNewAddresses] = React.useState<Address[]>(
+    props.user.addresses.map((a: Address) => ({ ...a }))
+  );
   const [patchUser] = userApi.usePatchUserMutation();
 
-  const { user } = useStateSelector((state) => state.user);
-
   const loginInfo: [string, string, string?][][] = [
-    [["Email", user.email]],
+    [["Email", newEmail]],
     [["Password", "••••••••••••••••", "password"]],
   ];
 
@@ -53,16 +60,9 @@ export default function ProfilePage() {
   }, []);
 
   React.useEffect(() => {
-    if (user) {
-      console.log(user);
-      setCurrentEmail(user.email);
-      setCurrentAddresses(user.addresses.map((a) => ({ ...a })));
-      setNewAddresses(user.addresses.map((a) => ({ ...a })));
+    if (props.user) {
       setPageStatus(PageStatus.Success);
-    } else {
-      addError("Not logged in");
     }
-
     document.addEventListener("keydown", escFunction, false);
 
     return () => {
@@ -76,25 +76,26 @@ export default function ProfilePage() {
 
   const saveEdit = () => {
     patchUser({
-      id: user.id,
-      body: { addresses: newAddresses },
+      id: props.user.id,
+      body: { email: newEmail, addresses: newAddresses },
     })
       .unwrap()
       .then((user) => {
-        setSectionEdit("");
         console.log(user);
+        setSectionEdit("");
+
         setCurrentAddresses(newAddresses.map((a) => ({ ...a })));
       })
       .catch((error) => {
-        setNewAddresses(currentAddresses.map((a) => ({ ...a })));
+        console.log(error);
         setSectionEdit("");
+
+        setNewAddresses(currentAddresses.map((a) => ({ ...a })));
+
         addError("Error saving your new info");
         setOpen(true);
-        console.log(error);
         setPageStatus(PageStatus.Error);
       });
-
-    setSectionEdit("");
   };
 
   const startEdit = (sectionName: string) => {
@@ -107,8 +108,10 @@ export default function ProfilePage() {
     );
   };
   const changeFieldValue = (key: string, value: string) => {
-    const tempAddress = { ...newAddresses[addressIndex] };
-    if (tempAddress) {
+    if (sectionEdit == "login") {
+      setNewEmail(value);
+    } else if (sectionEdit == "address") {
+      const tempAddress = { ...newAddresses[addressIndex] };
       switch (key) {
         case "Line 1":
           tempAddress.line1 = value;
@@ -129,9 +132,7 @@ export default function ProfilePage() {
           tempAddress.country = value;
           break;
       }
-
       console.log(tempAddress);
-
       newAddresses[addressIndex] = tempAddress;
     }
   };
@@ -149,25 +150,23 @@ export default function ProfilePage() {
                 return (
                   <div className=" pb-4">
                     <div>{key}</div>
-                    <div className=" ">
-                      <TextField
-                        id={`form-fields-${key.toLowerCase()}`}
-                        key={key.toLowerCase()}
-                        variant="standard"
-                        size="small"
-                        margin="none"
-                        defaultValue={value ? value : ""}
-                        placeholder={key}
-                        type={type}
-                        disabled={!props.edit}
-                        onChange={(event) => {
-                          changeFieldValue(key, event.target.value);
-                        }}
-                        InputProps={{
-                          disableUnderline: !props.edit,
-                        }}
-                      />
-                    </div>
+                    <TextField
+                      id={`form-fields-${key.toLowerCase()}`}
+                      key={key.toLowerCase()}
+                      variant="standard"
+                      size="small"
+                      margin="none"
+                      defaultValue={value ? value : ""}
+                      placeholder={key}
+                      type={type}
+                      disabled={!props.edit}
+                      onChange={(event) => {
+                        changeFieldValue(key, event.target.value);
+                      }}
+                      InputProps={{
+                        disableUnderline: !props.edit,
+                      }}
+                    />
                   </div>
                 );
               })}
@@ -217,16 +216,18 @@ export default function ProfilePage() {
       <div className=" pt-20 sm:pt-28 w-full flex flex-col items-center justify-center">
         <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
           <h1 className="py-8 text-lg">Profile</h1>
-          <DesignerInfo designerId={user.id} />
+          <DesignerInfo designerId={props.user.id} />
           <div className="py-2" />
           <CustomDivider />
           <div className="flex h-full flex-row justify-between">
             <FieldValuePairs
-              rows={user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]}
+              rows={
+                props.user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]
+              }
               edit={sectionEdit == "login"}
             />
             <div className=" flex items-center">
-              {user.socialProvider == "NONE" && (
+              {props.user.socialProvider == "NONE" && (
                 <EditSaveButton sectionName="login" />
               )}
             </div>
