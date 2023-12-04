@@ -157,19 +157,15 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		// get job ID
 		jobId := c.Param("id")
 
-		idRequest := schema.IdRequest{}
-
-		if err := c.Bind(&idRequest); err != nil {
-			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id data"))
-		}
+		producerId := c.QueryParam("producer")
 
 		// convert id to object id
-		producerId, err := primitive.ObjectIDFromHex(idRequest.Id)
+		producerObjId, err := primitive.ObjectIDFromHex(producerId)
 		if err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid producer id"))
 		}
 
-		errorResponse := job.DeclineJob(jobId, &producerId, dbClient)
+		errorResponse := job.DeclineJob(jobId, &producerObjId, dbClient)
 
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
@@ -182,19 +178,15 @@ func RegisterJobHandlers(e *echo.Group, dbClient *mongo.Client, logger *pterm.Lo
 		// get job ID
 		jobId := c.Param("id")
 
-		idRequest := schema.IdRequest{}
-
-		if err := c.Bind(&idRequest); err != nil {
-			return c.JSON(utilities.CreateErrorResponse(400, "Invalid id data"))
-		}
+		producerId := c.QueryParam("producer")
 
 		// convert id to object id
-		producerId, err := primitive.ObjectIDFromHex(idRequest.Id)
+		producerObjId, err := primitive.ObjectIDFromHex(producerId)
 		if err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "Invalid producer id"))
 		}
 
-		errorResponse := job.AcceptJob(jobId, &producerId, dbClient)
+		errorResponse := job.AcceptJob(jobId, &producerObjId, dbClient)
 
 		if errorResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errorResponse.Code, errorResponse.Message))
