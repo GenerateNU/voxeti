@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { CheckoutSessionData, CheckoutState } from "./api.types";
 
 // payment API:
 export const createPaymentApi = (baseUrl: string) =>
@@ -9,10 +10,11 @@ export const createPaymentApi = (baseUrl: string) =>
       credentials: "include",
     }),
     endpoints: (builder) => ({
-      createPayment: builder.mutation({
-        query: () => ({
+      createPayment: builder.mutation<CheckoutSessionData, CheckoutState>({
+        query: (body) => ({
+          body,
           method: "POST",
-          url: "/checkout-session",
+          url: "/create-checkout-session",
         }),
       }),
     }),

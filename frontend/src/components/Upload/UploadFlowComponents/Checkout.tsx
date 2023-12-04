@@ -5,6 +5,7 @@ import {
   EmbeddedCheckout
 } from '@stripe/react-stripe-js';
 import { Setters, States } from "../upload.types";
+import { paymentApi } from "../../../api/api";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
 
@@ -15,17 +16,30 @@ export interface CheckoutProps {
 
 export default function Checkout({states, setters}: CheckoutProps) {
     const [clientSecret, setClientSecret] = useState('');
-    const base = "http://localhost:3000/api/"
-
+    const [createCheckoutSession] = paymentApi.useCreatePaymentMutation();
+    // const base = "http://localhost:3000/api/"
+    
     useEffect(() => {
         // Create a Checkout Session as soon as the page loads
-        console.log("Doing the embedded stripe work")
-        fetch(base + "payment/create-checkout-session", {
-        method: "POST",
-        body: JSON.stringify({ prices: states.prices, quantities: states.quantities }),
-        })
-        .then((res) => res.json())
-        .then((data) => setClientSecret(data.client_secret));
+        // console.log("Doing the embedded stripe work")
+        // fetch(base + "payment/create-checkout-session", {
+        // method: "POST",
+        // body: JSON.stringify({ prices: states.prices, quantities: states.quantities }),
+        // })
+        // .then((res) => res.json())
+        // .then((data) => setClientSecret(data.client_secret));
+        async function makeCheckoutSession() {
+            if (!states.prices || !states.quantities || clientSecret !== '') {
+                return;
+            }
+            const response = await createCheckoutSession({
+                prices: states.prices,
+                quantities: states.quantities,
+            }).unwrap();
+            console.log(`response: ${JSON.stringify(response)}`)
+            setClientSecret(response.client_secret)
+        }
+        makeCheckoutSession();
     }, []);
 
     const handleComplete = () => {
@@ -40,7 +54,6 @@ export default function Checkout({states, setters}: CheckoutProps) {
 
     return (
         <div className="mt-32">
-            {/*message ? <Message message={message} /> : <ProductDisplay /> */}
             <div id="checkout">
                 {clientSecret && (
                     <EmbeddedCheckoutProvider
