@@ -22,6 +22,7 @@ function Profile(props: { user: User }) {
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
     PageStatus.Loading
   );
+  const [addressIndex, setAddressIndex] = React.useState(0);
   const [sectionEdit, setSectionEdit] = React.useState("None");
 
   const [patchUser] = userApi.usePatchUserMutation();
@@ -81,10 +82,10 @@ function Profile(props: { user: User }) {
     updateFields: (key: string, value: string) => void;
   }) => {
     return (
-      <div>
+      <div className=" w-full sm:w-2/3">
         {props.rows.map((section) => {
           return (
-            <div className="flex flex-row gap-4 pr-4">
+            <div className="flex flex-row justify-between flex-1 pr-4">
               {section.map(([key, value, type]) => {
                 return (
                   <div className=" pb-4">
@@ -162,7 +163,7 @@ function Profile(props: { user: User }) {
     ];
 
     return (
-      <div className="flex h-full flex-row justify-between">
+      <div className="flex h-full flex-row flex-wrap justify-center sm:justify-between">
         <FieldValuePairs
           rows={
             props.user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]
@@ -180,7 +181,6 @@ function Profile(props: { user: User }) {
   };
 
   const AddressInfo = () => {
-    const [addressIndex, setAddressIndex] = React.useState(0);
     const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
       props.user.addresses.map((a: Address) => ({ ...a }))
     );
@@ -218,29 +218,35 @@ function Profile(props: { user: User }) {
       }
     };
 
-    const shippingInfo: [string, string?, string?][][] = [
-      [
-        ["Line 1", currentAddresses[addressIndex]?.line1],
-        ["Line 2", currentAddresses[addressIndex]?.line2],
-      ],
-      [
-        ["City", currentAddresses[addressIndex]?.city],
-        ["State", currentAddresses[addressIndex]?.state],
-      ],
-      [
-        ["Zipcode", currentAddresses[addressIndex]?.zipCode],
-        ["Country", currentAddresses[addressIndex]?.country],
-      ],
-    ];
+    const AddressForm = (props: { index: number }) => {
+      const shippingInfo: [string, string?, string?][][] = [
+        [
+          ["Line 1", currentAddresses[props.index]?.line1],
+          ["Line 2", currentAddresses[props.index]?.line2],
+        ],
+        [
+          ["City", currentAddresses[props.index]?.city],
+          ["State", currentAddresses[props.index]?.state],
+        ],
+        [
+          ["Zipcode", currentAddresses[props.index]?.zipCode],
+          ["Country", currentAddresses[props.index]?.country],
+        ],
+      ];
+
+      return (
+        <FieldValuePairs
+          rows={shippingInfo}
+          edit={sectionEdit == "address"}
+          updateFields={changeFieldValue}
+        />
+      );
+    };
 
     return (
       <div>
-        <div className="flex h-full flex-row justify-between">
-          <FieldValuePairs
-            rows={shippingInfo}
-            edit={sectionEdit == "address"}
-            updateFields={changeFieldValue}
-          />
+        <div className="flex h-full flex-row items-center justify-center sm:justify-between flex-wrap">
+          <AddressForm index={addressIndex} />
           <div className=" flex items-center">
             <EditSaveButton
               sectionName="address"
