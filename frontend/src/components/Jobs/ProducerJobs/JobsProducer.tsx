@@ -13,11 +13,11 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Avatar } from "@mui/material";
 import Link from "@mui/material/Link";
-import { jobApi, userApi } from "../api/api";
-// import { useStateSelector } from "../hooks/use-redux";
-import { Job } from "../main.types";
-import Loading from "../components/JobAccept/Loading";
-import { PageStatus } from "../main.types";
+import { jobApi, userApi } from "../../../api/api";
+import { useStateSelector } from "../../../hooks/use-redux";
+import { Job } from "../../../main.types";
+import Loading from "./components/Loading";
+import { PageStatus } from "../../../main.types";
 
 export function JobFilesName(props: { designId: string }) {
   // const { data: data } = designApi.useGetDesignQuery(props.designId); Reinclude this once the design API works properly
@@ -25,7 +25,7 @@ export function JobFilesName(props: { designId: string }) {
   return <div>{props?.designId}</div>;
 }
 
-export default function JobAccept() {
+export default function JobsProducer() {
   const [jobFilter, setJobFilter] = React.useState("Pending");
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
     PageStatus.Loading
@@ -37,10 +37,23 @@ export default function JobAccept() {
     };
     const [rows, setRows] = React.useState<Job[]>([]);
 
-    // const { user } = useStateSelector((state) => state.user);
+    const { user } = useStateSelector((state) => state.user);
 
-    const useQueryResponse = jobApi.useGetProducerJobsFilteredQuery({
-      producerId: "", // Need to be changed to user.id when job schema is changed
+    const useQueryRecommendations = jobApi.useGetRecommendationsQuery({
+      producerId: user.id,
+      page: "1",
+      limit: "10",
+      filter: [
+        "DISTANCE",
+        "SUPPORTEDFILAMENTTYPES",
+        "AVAILABLEFILAMENTTYPES",
+        "AVAILABLECOLORS",
+      ],
+      sort: "PRICE",
+    });
+
+    const useQueryResponseOther = jobApi.useGetProducerJobsFilteredQuery({
+      producerId: user.id as string, // Need to be changed to user.id when job schema is changed
       status: props.filter.toUpperCase(),
       page: "0",
     });
@@ -105,7 +118,6 @@ export default function JobAccept() {
               <Avatar
                 className=" outline outline-3 outline-offset-2 outline-designer"
                 alt="Remy Sharp"
-                src="/static/images/avatar/1.jpg"
               />
               <div className="px-3">
                 <DesignerName designerId={props.row.designerId} />
@@ -125,20 +137,38 @@ export default function JobAccept() {
     };
 
     React.useEffect(() => {
-      if (useQueryResponse.isSuccess) {
-        setRows(useQueryResponse.data);
+      if (
+        jobFilter == "Pending" &&
+        useQueryRecommendations.isSuccess &&
+        useQueryRecommendations.data
+      ) {
+        console.log(useQueryRecommendations.data);
+        setRows(useQueryRecommendations.data);
         setPageStatus(PageStatus.Success);
-      } else if (useQueryResponse.isError) {
+      } else if (
+        jobFilter != "Pending" &&
+        useQueryResponseOther.isSuccess &&
+        useQueryResponseOther.data
+      ) {
+        setRows(useQueryResponseOther.data);
+        setPageStatus(PageStatus.Success);
+      } else if (
+        useQueryResponseOther.isError &&
+        useQueryRecommendations.isError
+      ) {
         setPageStatus(PageStatus.Error);
+      } else {
+        setPageStatus(PageStatus.Error);
+        console.log("Something else happened");
       }
-    }, [useQueryResponse]);
+    }, [useQueryResponseOther, useQueryRecommendations]);
 
     if (pageStatus == PageStatus.Loading) return <Loading />;
 
     return (
-      <div className="py-32 w-full h-screen flex flex-col items-center justify-center">
+      <div className="py-32 w-full h-screen flex flex-col items-center">
         <div className=" px-4 w-full sm:w-3/5">
-          <h2 className=" font-bold font-display text-2xl py-8">My Jobs</h2>
+          <h2 className="text-4xl font-bold py-5">My Jobs</h2>
           <FilterDropDown />
           <div className=" py-2"></div>
           <TableContainer component={Paper}>
@@ -158,7 +188,7 @@ export default function JobAccept() {
             </Table>
           </TableContainer>
           <div>
-            {!useQueryResponse.data && (
+            {!useQueryResponseOther.data && (
               <h2 className=" text-xl py-8 text-center">No Matching Jobs</h2>
             )}
           </div>

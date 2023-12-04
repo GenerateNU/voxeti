@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Job } from "../../main.types";
+import { Job } from "../../../../main.types";
 import { Button, createTheme, ThemeProvider } from "@mui/material";
-import { jobApi } from "../../api/api";
-import { useStateSelector } from "../../hooks/use-redux";
-import { useApiError } from "../../hooks/use-api-error";
+import { jobApi } from "../../../../api/api";
+import { useStateSelector } from "../../../../hooks/use-redux";
+import { useApiError } from "../../../../hooks/use-api-error";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -35,23 +35,24 @@ const theme = createTheme({
 
 export default function JobAcceptButtons(props: { currentJob: Job }) {
   const [jobStatus, setJobStatus] = React.useState(props.currentJob.status);
-  const [patchJob] = jobApi.usePatchJobMutation();
+  const [putDeclineJob] = jobApi.useDeclineJobMutation();
+  const [putAcceptJob] = jobApi.useAcceptJobMutation();
 
   const { addError, setOpen } = useApiError();
   const { user } = useStateSelector((state) => state.user);
 
   const acceptJob = () => {
-    console.log("accepting job");
-
     const jobId = props.currentJob.id;
+
     if (jobId) {
-      console.log("patching job");
-      patchJob({ id: jobId, body: { producerId: user.id } })
+      putAcceptJob({
+        id: jobId,
+        producerId: user.id,
+      })
         .unwrap()
-        .then((jobData: Job) => {
-          console.log("success");
-          console.log(jobData);
+        .then(() => {
           setJobStatus("ACCEPTED");
+          console.log("job successfully accepted");
         })
         .catch((error) => {
           addError("Error accepting the job");
@@ -62,7 +63,23 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
   };
 
   const declineJob = () => {
-    console.log(`declined job ${props.currentJob.id}`);
+    const jobId = props.currentJob.id;
+
+    if (jobId) {
+      putDeclineJob({
+        id: jobId,
+        producerId: user.id,
+      })
+        .unwrap()
+        .then(() => {
+          console.log("job successfully declined");
+        })
+        .catch((error) => {
+          addError("Error declining the job");
+          setOpen(true);
+          console.log(error);
+        });
+    }
 
     //Send to confirmation page that job has been decline
   };
@@ -83,7 +100,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
             variant="outlined"
             color="black"
             className=" w-32"
-            href="/job-accept"
+            href="/jobs"
             onClick={declineJob}
           >
             Decline
@@ -96,12 +113,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
       <ThemeProvider theme={theme}>
         <div className=" flex flex-row flex-wrap items-center justify-end gap-y-1 gap-x-4">
           <p className=" text-producer">JOB ACCEPTED</p>
-          <Button
-            href="/job-accept"
-            variant="outlined"
-            color="black"
-            className=""
-          >
+          <Button href="/jobs" variant="outlined" color="black" className="">
             Current Jobs
           </Button>
         </div>

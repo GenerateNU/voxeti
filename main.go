@@ -11,6 +11,7 @@ import (
 	"time"
 	"voxeti/backend/controller"
 	"voxeti/backend/database"
+	"voxeti/backend/schema/job"
 	"voxeti/frontend"
 
 	"github.com/joho/godotenv"
@@ -131,5 +132,9 @@ func configureServer(dbUri string, resetDb bool) (e *echo.Echo, dbDisconnect fun
 	spinnerSuccess, _ = pterm.DefaultSpinner.Start("Registering backend handlers...")
 	controller.RegisterHandlers(e, dbClient, logger)
 	spinnerSuccess.Success("Registered backend handlers")
+
+	go job.TransferPotentialToDeclined(dbClient, logger)
+	go job.DeleteMaxDeclinedJobs(dbClient, logger)
+
 	return
 }
