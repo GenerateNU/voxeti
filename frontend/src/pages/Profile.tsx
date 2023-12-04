@@ -7,6 +7,7 @@ import { Divider } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import { useApiError } from "../hooks/use-api-error";
 import TextField from "@mui/material/TextField";
+import { userApi } from "../api/api";
 
 export default function ProfilePage() {
   const { addError, setOpen } = useApiError();
@@ -14,6 +15,7 @@ export default function ProfilePage() {
     PageStatus.Loading
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
+  const [patchUser] = userApi.usePatchUserMutation();
 
   const { user } = useStateSelector((state) => state.user);
 
@@ -107,6 +109,18 @@ export default function ProfilePage() {
   };
 
   const saveEdit = () => {
+    patchUser({ id: user.id, body: {} })
+      .unwrap()
+      .then((user) => {
+        setSectionEdit("");
+      })
+      .catch((error) => {
+        addError("Job doesn't exist or you don't have permission");
+        setOpen(true);
+        console.log(error);
+        setPageStatus(PageStatus.Error);
+      });
+
     setSectionEdit("");
   };
 

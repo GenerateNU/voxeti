@@ -3,6 +3,10 @@ import { Job } from "../../../../main.types";
 import { Avatar } from "@mui/material";
 import JobAcceptButtons from "./JobAcceptButtons";
 
+function capitalize(str?: string) {
+  return str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : "";
+}
+
 export default function DesignerName(props: { designerId: string; job?: Job }) {
   const { data: data } = userApi.useGetUserQuery(props.designerId);
   return (
@@ -10,7 +14,11 @@ export default function DesignerName(props: { designerId: string; job?: Job }) {
       <div className=" flex flex-row items-center justify-between w-full">
         <div className=" flex flex-row">
           <Avatar
-            className=" outline outline-3 outline-offset-2 outline-designer"
+            className={` outline outline-3 outline-offset-2 ${
+              data?.userType == "DESIGNER"
+                ? "outline-designer"
+                : "outline-producer"
+            }`}
             alt={data ? `${data.firstName} ${data.lastName}` : ""}
             src="/static/images/avatar/1.jpg"
             sx={{ width: 64, height: 64 }}
@@ -19,7 +27,9 @@ export default function DesignerName(props: { designerId: string; job?: Job }) {
             <p className=" text-lg">
               {data && data.firstName} {data && data.lastName}
             </p>
-            <p className=" text-sm opacity-70">Designer</p>
+            <p className=" text-sm opacity-70">
+              {data && capitalize(data.userType)}
+            </p>
           </div>
         </div>
         {props.job && <JobAcceptButtons currentJob={props.job} />}
