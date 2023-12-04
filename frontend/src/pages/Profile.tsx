@@ -17,6 +17,8 @@ export default function ProfilePage() {
     PageStatus.Loading
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
+  const [currentEmail, setCurrentEmail] = React.useState("");
+  const [currentPassword, setCurrentPassword] = React.useState("");
   const [addressIndex, setAddressIndex] = React.useState(0);
   const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>([]);
   const [newAddresses, setNewAddresses] = React.useState<Address[]>([]);
@@ -53,6 +55,7 @@ export default function ProfilePage() {
   React.useEffect(() => {
     if (user) {
       console.log(user);
+      setCurrentEmail(user.email);
       setCurrentAddresses(user.addresses.map((a) => ({ ...a })));
       setNewAddresses(user.addresses.map((a) => ({ ...a })));
       setPageStatus(PageStatus.Success);
@@ -218,9 +221,14 @@ export default function ProfilePage() {
           <div className="py-2" />
           <CustomDivider />
           <div className="flex h-full flex-row justify-between">
-            <FieldValuePairs rows={loginInfo} edit={sectionEdit == "login"} />
+            <FieldValuePairs
+              rows={user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]}
+              edit={sectionEdit == "login"}
+            />
             <div className=" flex items-center">
-              <EditSaveButton sectionName="login" />
+              {user.socialProvider == "NONE" && (
+                <EditSaveButton sectionName="login" />
+              )}
             </div>
           </div>
           <CustomDivider />
