@@ -24,29 +24,7 @@ function Profile(props: { user: User }) {
   );
   const [sectionEdit, setSectionEdit] = React.useState("None");
 
-  const [addressIndex, setAddressIndex] = React.useState(0);
-  const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
-    props.user.addresses.map((a: Address) => ({ ...a }))
-  );
-  const [newAddresses, setNewAddresses] = React.useState<Address[]>(
-    props.user.addresses.map((a: Address) => ({ ...a }))
-  );
   const [patchUser] = userApi.usePatchUserMutation();
-
-  const shippingInfo: [string, string?, string?][][] = [
-    [
-      ["Line 1", currentAddresses[addressIndex]?.line1],
-      ["Line 2", currentAddresses[addressIndex]?.line2],
-    ],
-    [
-      ["City", currentAddresses[addressIndex]?.city],
-      ["State", currentAddresses[addressIndex]?.state],
-    ],
-    [
-      ["Zipcode", currentAddresses[addressIndex]?.zipCode],
-      ["Country", currentAddresses[addressIndex]?.country],
-    ],
-  ];
 
   const escFunction = useCallback((event: { key: string }) => {
     if (event.key === "Escape") {
@@ -79,13 +57,13 @@ function Profile(props: { user: User }) {
         console.log(user);
         setSectionEdit("");
 
-        setCurrentAddresses(newAddresses.map((a) => ({ ...a })));
+        //setCurrentAddresses(newAddresses.map((a) => ({ ...a })));
       })
       .catch((error) => {
         console.log(error);
         setSectionEdit("");
 
-        setNewAddresses(currentAddresses.map((a) => ({ ...a })));
+        //setNewAddresses(currentAddresses.map((a) => ({ ...a })));
 
         addError(error.data.message);
         setOpen(true);
@@ -95,39 +73,6 @@ function Profile(props: { user: User }) {
 
   const startEdit = (sectionName: string) => {
     setSectionEdit(sectionName);
-  };
-
-  const adjustAddressIndex = (delta: number) => {
-    setAddressIndex(
-      Math.min(Math.max(addressIndex + delta, 0), currentAddresses.length - 1)
-    );
-  };
-  const changeFieldValue = (key: string, value: string) => {
-    if (sectionEdit == "address") {
-      const tempAddress = { ...newAddresses[addressIndex] };
-      switch (key) {
-        case "Line 1":
-          tempAddress.line1 = value;
-          break;
-        case "Line 2":
-          tempAddress.line2 = value;
-          break;
-        case "City":
-          tempAddress.city = value;
-          break;
-        case "State":
-          tempAddress.state = value;
-          break;
-        case "Zipcode":
-          tempAddress.zipCode = value;
-          break;
-        case "Country":
-          tempAddress.country = value;
-          break;
-      }
-      console.log(tempAddress);
-      newAddresses[addressIndex] = tempAddress;
-    }
   };
 
   const FieldValuePairs = (props: {
@@ -234,6 +179,134 @@ function Profile(props: { user: User }) {
     );
   };
 
+  const AddressInfo = () => {
+    const [addressIndex, setAddressIndex] = React.useState(0);
+    const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
+      props.user.addresses.map((a: Address) => ({ ...a }))
+    );
+
+    const adjustAddressIndex = (delta: number) => {
+      setAddressIndex(
+        Math.min(Math.max(addressIndex + delta, 0), currentAddresses.length - 1)
+      );
+    };
+    const changeFieldValue = (key: string, value: string) => {
+      if (sectionEdit == "address") {
+        const tempAddress = { ...currentAddresses[addressIndex] };
+        switch (key) {
+          case "Line 1":
+            tempAddress.line1 = value;
+            break;
+          case "Line 2":
+            tempAddress.line2 = value;
+            break;
+          case "City":
+            tempAddress.city = value;
+            break;
+          case "State":
+            tempAddress.state = value;
+            break;
+          case "Zipcode":
+            tempAddress.zipCode = value;
+            break;
+          case "Country":
+            tempAddress.country = value;
+            break;
+        }
+        currentAddresses[addressIndex] = tempAddress;
+        setCurrentAddresses(currentAddresses);
+      }
+    };
+
+    const shippingInfo: [string, string?, string?][][] = [
+      [
+        ["Line 1", currentAddresses[addressIndex]?.line1],
+        ["Line 2", currentAddresses[addressIndex]?.line2],
+      ],
+      [
+        ["City", currentAddresses[addressIndex]?.city],
+        ["State", currentAddresses[addressIndex]?.state],
+      ],
+      [
+        ["Zipcode", currentAddresses[addressIndex]?.zipCode],
+        ["Country", currentAddresses[addressIndex]?.country],
+      ],
+    ];
+
+    return (
+      <div>
+        <div className="flex h-full flex-row justify-between">
+          <FieldValuePairs
+            rows={shippingInfo}
+            edit={sectionEdit == "address"}
+            updateFields={changeFieldValue}
+          />
+          <div className=" flex items-center">
+            <EditSaveButton
+              sectionName="address"
+              body={{ addresses: currentAddresses }}
+            />
+          </div>
+        </div>
+        <div className="flex h-full flex-row justify-between items-center">
+          <IconButton
+            aria-label="Previous Address"
+            disabled={addressIndex == 0}
+            onClick={() => {
+              cancelEdit();
+              adjustAddressIndex(-1);
+            }}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+          <div>{`${currentAddresses[addressIndex]?.name} (${
+            addressIndex + 1
+          })`}</div>
+          <IconButton
+            aria-label="Next Address"
+            disabled={addressIndex == currentAddresses.length - 1}
+            onClick={() => {
+              cancelEdit();
+              adjustAddressIndex(1);
+            }}
+          >
+            <ChevronRightIcon />
+          </IconButton>
+        </div>
+      </div>
+    );
+  };
+
+  const DeactivateAccount = () => {
+    const startDeletion = () => {
+      console.log("want to delete account");
+      console.log("please confirm");
+      setSectionEdit("deactivate");
+    };
+
+    const confirmDeletion = () => {
+      console.log("deleting account");
+      console.log("logging out");
+    };
+
+    return (
+      <div className="flex h-full flex-row justify-between items-center pb-2">
+        <div>Deactivate Account</div>
+        <StyledButton
+          size={"sm"}
+          color={"delete"}
+          onClick={() => {
+            {
+              sectionEdit == "deactivate" ? confirmDeletion() : startDeletion();
+            }
+          }}
+        >
+          {sectionEdit == "deactivate" ? "Confirm" : "Delete"}
+        </StyledButton>
+      </div>
+    );
+  };
+
   const Success = () => {
     return (
       <div className=" pt-20 sm:pt-28 w-full flex flex-col items-center justify-center">
@@ -244,49 +317,9 @@ function Profile(props: { user: User }) {
           <CustomDivider />
           <LoginInfo />
           <CustomDivider />
-          <div className="flex h-full flex-row justify-between">
-            <FieldValuePairs
-              rows={shippingInfo}
-              edit={sectionEdit == "address"}
-              updateFields={changeFieldValue}
-            />
-            <div className=" flex items-center">
-              <EditSaveButton
-                sectionName="address"
-                body={{ addresses: newAddresses }}
-              />
-            </div>
-          </div>
-          <div className="flex h-full flex-row justify-between items-center">
-            <IconButton
-              aria-label="Previous Address"
-              disabled={addressIndex == 0}
-              onClick={() => {
-                adjustAddressIndex(-1);
-              }}
-            >
-              <ChevronLeftIcon />
-            </IconButton>
-            <div>{`${currentAddresses[addressIndex]?.name} (${
-              addressIndex + 1
-            })`}</div>
-            <IconButton
-              aria-label="Next Address"
-              disabled={addressIndex == currentAddresses.length - 1}
-              onClick={() => {
-                adjustAddressIndex(1);
-              }}
-            >
-              <ChevronRightIcon />
-            </IconButton>
-          </div>
+          <AddressInfo />
           <CustomDivider />
-          <div className="flex h-full flex-row justify-between items-center pb-2">
-            <div>Deactivate Account</div>
-            <StyledButton size={"sm"} color={"delete"} onClick={() => {}}>
-              Delete
-            </StyledButton>
-          </div>
+          <DeactivateAccount />
           <CustomDivider />
         </div>
       </div>
