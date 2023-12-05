@@ -15,7 +15,8 @@ import { PageStatus } from "../../../main.types";
 import FilterDropDown from "../FilterDropDown";
 import JobRow from "../JobRow";
 import TableHeader from "../TableHeader";
-import { useStateDispatch } from "../../../hooks/use-redux";
+import { useStateSelector } from "../../../hooks/use-redux";
+import ErrorImage from "../../../assets/hero-image-2.png"
 
 export function JobFilesName(props: { designId: string }) {
   // const { data: data } = designApi.useGetDesignQuery(props.designId); Reinclude this once the design API works properly
@@ -29,7 +30,7 @@ export default function JobsProducer() {
     PageStatus.Loading
   );
 
-  const dispatch = useStateDispatch();
+  // const dispatch = useStateDispatch();
 
   const JobTable = (props: { filter: string }) => {
     const handleChange = (event: SelectChangeEvent) => {
@@ -59,7 +60,19 @@ export default function JobsProducer() {
     });
 
     useEffect(() => {
-      if (useQueryResponseOther.isSuccess) {
+      if (
+        jobFilter == "PENDING" &&
+        useQueryRecommendations.isSuccess &&
+        useQueryRecommendations.data
+      ) {
+        console.log(useQueryRecommendations.data);
+        setJobs(useQueryRecommendations.data);
+        setPageStatus(PageStatus.Success);
+      } else if (
+        jobFilter != "PENDING" &&
+        useQueryResponseOther.isSuccess &&
+        useQueryResponseOther.data
+      ) {
         setJobs(useQueryResponseOther.data);
         setPageStatus(PageStatus.Success);
       } else if (
@@ -126,8 +139,13 @@ export default function JobsProducer() {
             </Table>
           </TableContainer>
           <div>
-            {!useQueryResponseOther.data && (
-              <h2 className=" text-xl py-8 text-center">No Matching Jobs</h2>
+            {(!useQueryRecommendations.data && !useQueryResponseOther.data) && (
+              <div className="mt-16 self-center flex flex-col items-center">
+              <img className='w-64' src={ErrorImage}/>
+              <h1 className='mt-10 text-xl'>
+                {`No ${filterOptions.filter((filter) => filter.value === jobFilter)[0].title.toLowerCase()} jobs...`}
+              </h1>
+            </div>
             )}
           </div>
         </div>

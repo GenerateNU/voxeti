@@ -1,5 +1,6 @@
 import {
   Paper,
+  SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
@@ -15,39 +16,48 @@ import { resetUser } from "../../../store/userSlice";
 import FilterDropDown from "../FilterDropDown";
 import TableHeader from "../TableHeader";
 import JobRow from "../JobRow";
+import ErrorImage from "../../../assets/hero-image-2.png"
 
 export default function JobsDesigner() {
   // State setters:
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobsInView, setJobsInView] = useState<Job[]>([]);
   const [filter, setFilter] = useState<string>('PENDING');
   const [pageStatus, setPageStatus] = useState<PageStatus>(
     PageStatus.Loading
   );
-
-  console.log(pageStatus);
+  
+  const handleChange = (event: SelectChangeEvent) => {
+    setFilter(event.target.value as string);
+    
+    const tempJobs = jobs
+    const filteredJobs = tempJobs.filter((job) => job.status === event.target.value)
+    setJobsInView(filteredJobs)
+  };
 
   // Redux:
   const { user } = useStateSelector((state) => state.user);
   const dispatch = useStateDispatch();
 
   // API Requests:
-  const { data, error, isSuccess } = jobApi.useGetDesignerJobsFilteredQuery({
+  const jobsResponse = jobApi.useGetDesignerJobsQuery({
     designerId: user.id,
-    status: filter,
     page: "0",
   });
 
   useEffect(() => {
-    if (isSuccess) {
-      setJobs(data);
+    if (jobsResponse.isSuccess) {
+      setJobs(jobsResponse.data);
+      const filteredJobs = jobsResponse.data.filter((job) => job.status === filter)
+      setJobsInView(filteredJobs)
       setPageStatus(PageStatus.Success);
-    } else if (error) {
-      if ("status" in error && error.status == 401) {
+    } else if (jobsResponse.error) {
+      if ("status" in jobsResponse.error && jobsResponse.error.status == 401) {
         dispatch(resetUser());
       }
       setPageStatus(PageStatus.Error);
     }
-  }, [data, dispatch, error, isSuccess]);
+  }, [dispatch, filter, jobsResponse.data, jobsResponse.error, jobsResponse.isSuccess]);
 
   // Designer Filters:
   const filterOptions = [
@@ -75,11 +85,11 @@ export default function JobsDesigner() {
 
   return (
     <div className="py-32 w-full h-screen flex flex-col items-center">
-      <div className=" px-4 w-full sm:w-3/5">
+      <div className=" px-4 w-full sm:w-3/5 flex flex-col">
         <h2 className="text-3xl py-5">Job Submissions</h2>
         <FilterDropDown
           options={filterOptions}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={handleChange}
           value={filter}
         />
         <TableContainer component={Paper} sx={{boxShadow: 'none', marginTop: '40px'}}>
@@ -89,17 +99,25 @@ export default function JobsDesigner() {
                 <TableHeader title={'Producer'} />
                 <TableHeader title={'File Count'} />
                 <TableHeader title={'Price (USD)'} />
-                <TableHeader title={'Status'} />
+                <TableHeader title={'Date Created'} />
                 <TableCell/>
               </TableRow>
             </TableHead>
             <TableBody>
-              {jobs.map((job) =>
+              {jobsInView.map((job) =>
                 <JobRow job={job} type='producer' />
               )}
             </TableBody>
           </Table>
         </TableContainer>
+        {(jobsInView.length === 0 || pageStatus === PageStatus.Error) && 
+          <div className="mt-16 self-center flex flex-col items-center">
+            <img className='w-64' src={ErrorImage}/>
+            <h1 className='mt-10 text-xl'>
+              {`No ${filterOptions.filter((x) => x.value === filter)[0].title.toLowerCase()} jobs...`}
+            </h1>
+          </div>
+        }
       </div>
     </div>
   );

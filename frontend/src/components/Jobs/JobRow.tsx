@@ -52,6 +52,11 @@ export default function JobRow({ job, type }: JobRowProps) {
   // Retrieve the designer name:
   const name = designerName(type === 'producer' ? job.producerId as string : job.designerId as string)
 
+  const createdDate = new Date(job.createdAt)
+  if (type === 'designer') {
+    createdDate.setDate(createdDate.getDate() + 7)
+  }
+
   return (
     <TableRow
       key={job.id}
@@ -76,7 +81,7 @@ export default function JobRow({ job, type }: JobRowProps) {
         ${(job.price / 100).toFixed(2)}
       </JobTableCell>
       <JobTableCell size='md'>
-        {new Date().toDateString()}
+        {createdDate.toDateString()}
       </JobTableCell>
       <TableCell
         align='right'
