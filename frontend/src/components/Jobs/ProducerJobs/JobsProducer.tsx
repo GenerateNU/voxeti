@@ -25,7 +25,7 @@ export function JobFilesName(props: { designId: string }) {
 }
 
 export default function JobsProducer() {
-  const [jobFilter, setJobFilter] = useState("Pending");
+  const [jobFilter, setJobFilter] = useState("PENDING");
   const [pageStatus, setPageStatus] = useState<PageStatus>(
     PageStatus.Loading
   );
