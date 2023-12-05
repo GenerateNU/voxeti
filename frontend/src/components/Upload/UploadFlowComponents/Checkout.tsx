@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {loadStripe} from '@stripe/stripe-js';
 import {
   EmbeddedCheckoutProvider,
@@ -17,6 +17,7 @@ export interface CheckoutProps {
 export default function Checkout({states, setters}: CheckoutProps) {
     const [clientSecret, setClientSecret] = useState('');
     const [createCheckoutSession] = paymentApi.useCreatePaymentMutation();
+    const hasBeenEvaluated = useRef(false);
     // const base = "http://localhost:3000/api/"
     
     useEffect(() => {
@@ -38,8 +39,9 @@ export default function Checkout({states, setters}: CheckoutProps) {
             }).unwrap();
             console.log(`response: ${JSON.stringify(response)}`)
             setClientSecret(response.client_secret)
+            hasBeenEvaluated.current = true;
         }
-        makeCheckoutSession();
+        if (!hasBeenEvaluated.current) {makeCheckoutSession();}
     }, []);
 
     const handleComplete = () => {

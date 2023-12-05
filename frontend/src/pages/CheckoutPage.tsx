@@ -7,7 +7,7 @@ import {
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
 
-export default function Checkout() {
+export default function CheckoutPage() {
     const [clientSecret, setClientSecret] = useState('');
     const base = "http://localhost:3000/api/"
 

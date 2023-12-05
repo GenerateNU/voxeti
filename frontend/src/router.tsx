@@ -7,7 +7,7 @@ import { UploadDesign } from "./pages/UploadDesign.tsx";
 import { Login } from "./pages/Login.tsx";
 import Jobs from "./pages/Jobs.tsx";
 import JobInfo from "./pages/JobInfo.tsx";
-import Checkout from "./pages/Checkout.tsx";
+import CheckoutPage from "./pages/CheckoutPage.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -54,7 +54,7 @@ const jobInfoRoute = new Route({
 const checkoutRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "/checkout",
-  component: Checkout,
+  component: CheckoutPage,
 });
 
 const registrationRoute = new Route({

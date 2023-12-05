@@ -53,11 +53,16 @@ func createCheckoutSession(c echo.Context) (CheckoutSessionData, *schema.ErrorRe
 		return CheckoutSessionData{}, &schema.ErrorResponse{Code: 500, Message: "Checkout body could not be parsed"}
 	}
 
+  fmt.Println(checkoutBody)
+
 	lineItems := []*stripe.CheckoutSessionLineItemParams{}
+  shippingTotal := float32(0.0)
 
 	for i := 0; i < len(checkoutBody.Quantities); i++ {
 		product := checkoutBody.Prices[i]
 		quantity := int64(checkoutBody.Quantities[i])
+
+    shippingTotal = shippingTotal + product.ShippingCost
 
 		lineItem := &stripe.CheckoutSessionLineItemParams{
 			PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
@@ -65,12 +70,36 @@ func createCheckoutSession(c echo.Context) (CheckoutSessionData, *schema.ErrorRe
 				ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
 					Name: stripe.String(product.File),
 				},
-				UnitAmount: stripe.Int64(int64(product.Total)),
+				UnitAmount: stripe.Int64(int64(product.Total - product.ShippingCost - product.TaxCost) * 100),
 			},
 			Quantity: stripe.Int64(quantity),
+      TaxRates: []*string{stripe.String("txr_1OJLSCFGCspn0XMmhhjjiiD9")},
 		}
 		lineItems = append(lineItems, lineItem)
 	}
+
+  shippingOptions := []*stripe.CheckoutSessionShippingOptionParams{
+    &stripe.CheckoutSessionShippingOptionParams{
+      ShippingRateData: &stripe.CheckoutSessionShippingOptionShippingRateDataParams{
+        Type: stripe.String("fixed_amount"),
+        FixedAmount: &stripe.CheckoutSessionShippingOptionShippingRateDataFixedAmountParams{
+          Amount: stripe.Int64(int64(shippingTotal * 100)),
+          Currency: stripe.String(string(stripe.CurrencyUSD)),
+        },
+        DisplayName: stripe.String("Standard shipping"),
+        DeliveryEstimate: &stripe.CheckoutSessionShippingOptionShippingRateDataDeliveryEstimateParams{
+          Minimum: &stripe.CheckoutSessionShippingOptionShippingRateDataDeliveryEstimateMinimumParams{
+            Unit: stripe.String("business_day"),
+            Value: stripe.Int64(5),
+          },
+          Maximum: &stripe.CheckoutSessionShippingOptionShippingRateDataDeliveryEstimateMaximumParams{
+            Unit: stripe.String("business_day"),
+            Value: stripe.Int64(7),
+          },
+        },
+      },
+    },
+  }
 	// lineItems := []*stripe.CheckoutSessionLineItemParams{
 	// 	&stripe.CheckoutSessionLineItemParams{
 	// 		PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
@@ -89,6 +118,7 @@ func createCheckoutSession(c echo.Context) (CheckoutSessionData, *schema.ErrorRe
 		UIMode:               stripe.String("embedded"),
 		RedirectOnCompletion: stripe.String("never"),
 		LineItems:            lineItems,
+    ShippingOptions:         shippingOptions,
 	}
 
 	stripeSession, _ := session.New(params)
