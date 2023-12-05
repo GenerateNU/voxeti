@@ -41,11 +41,11 @@ export function UploadDesign() {
   const dispatch = useStateDispatch();
 
   const [sliceDesign] = slicerApi.useSliceDesignsMutation();
-  // const [estimatePrice] = priceEstimationApi.useEstimatePricesMutation();
+  const [estimatePrice] = priceEstimationApi.useEstimatePricesMutation();
   const [createJob] = jobApi.useCreateJobMutation();
 
   function handlePriceEstimation(priceEstimateRequest: PriceEstimation) {
-    /* estimatePrice(priceEstimateRequest)
+    estimatePrice(priceEstimateRequest)
       .unwrap()
       .then((response: EstimateBreakdown[]) => {
         setPrices(response);
@@ -56,27 +56,7 @@ export function UploadDesign() {
         ErrorHandler({ dispatch, addError, setOpen, error });
         setIsSlicing(false);
         return;
-    });*/
-    console.log(`WARNING, STUBBED OUT ${priceEstimateRequest}`);
-    const STUBBED: EstimateBreakdown[] = [
-      {
-        file: "test.stl",
-        baseCost: 40,
-        timeCost: 5,
-        filamentCost: 10,
-        shippingCost: 10,
-        producerSubtotal: 5,
-        producerFee: 5,
-        producerTotal: 10,
-        taxCost: 5,
-        stripeCost: 5,
-        voxetiCost: 5,
-        total: 100,
-      } as EstimateBreakdown,
-    ];
-    setPrices(STUBBED);
-    setIsSlicing(false);
-    return;
+      });
   }
 
   // Slice an uploaded design:
@@ -113,16 +93,7 @@ export function UploadDesign() {
 
   // Slice a list of uploaded designs:
   const handleSlicing = async () => {
-    const STUBBED: PriceEstimation = {
-      shipping: true,
-      filamentType: 'placeholder',
-      slices: [],
-    };
     setIsSlicing(true);
-    handlePriceEstimation(STUBBED);
-
-
-    /* setIsSlicing(true);
     Promise.all(
       file.map((file: File, index) => handleSliceDesign(file, quality, index))
     ).then((responses) => {
@@ -138,7 +109,7 @@ export function UploadDesign() {
         };
         handlePriceEstimation(priceEstimateRequest);
       }
-     });*/
+    });
   };
 
   const formSubmit = async () => {
