@@ -12,18 +12,22 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import useLogout from "../hooks/use-logout";
 import Auth from "../components/Auth/Auth";
+import { UserSliceState } from "../store/store.types";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/userSlice";
 
 export default function ProfilePage() {
-  const { user } = useStateSelector((state) => state.user);
+  const state = useStateSelector((state) => state.user);
   return (
     <Auth authRoute={true}>
-      <Profile user={user} />;
+      <Profile state={state} />;
     </Auth>
   );
 }
 
-function Profile(props: { user: User }) {
+function Profile(props: { state: UserSliceState }) {
   const { addError, setOpen } = useApiError();
+  const dispatch = useDispatch();
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
     PageStatus.Loading
   );
@@ -39,7 +43,7 @@ function Profile(props: { user: User }) {
   }, []);
 
   React.useEffect(() => {
-    if (props.user) {
+    if (props.state.user) {
       setPageStatus(PageStatus.Success);
     }
     document.addEventListener("keydown", escFunction, false);
@@ -47,7 +51,7 @@ function Profile(props: { user: User }) {
     return () => {
       document.removeEventListener("keydown", escFunction, false);
     };
-  }, [pageStatus, sectionEdit, escFunction, props.user]);
+  }, [pageStatus, sectionEdit, escFunction, props.state.user]);
 
   const cancelEdit = () => {
     setSectionEdit("");
@@ -55,12 +59,19 @@ function Profile(props: { user: User }) {
 
   const saveEdit = (body: Partial<User>) => {
     patchUser({
-      id: props.user.id,
+      id: props.state.user.id,
       body: body,
     })
       .unwrap()
       .then((user) => {
         console.log(user);
+        dispatch(
+          setUser({
+            csrfToken: props.state.csrfToken,
+            ssoAccessToken: props.state.ssoAccessToken,
+            user: user,
+          })
+        );
         setSectionEdit("");
       })
       .catch((error) => {
@@ -156,7 +167,7 @@ function Profile(props: { user: User }) {
   };
 
   const LoginInfo = () => {
-    const [newEmail, setNewEmail] = React.useState(props.user.email);
+    const [newEmail, setNewEmail] = React.useState(props.state.user.email);
 
     const loginInfo: [string, string, string?][][] = [
       [["Email", newEmail]],
@@ -167,7 +178,9 @@ function Profile(props: { user: User }) {
       <div className="flex h-full flex-row flex-wrap justify-center sm:justify-between">
         <FieldValuePairs
           rows={
-            props.user.socialProvider == "NONE" ? loginInfo : [loginInfo[0]]
+            props.state.user.socialProvider == "NONE"
+              ? loginInfo
+              : [loginInfo[0]]
           }
           edit={sectionEdit == "login"}
           updateFields={(key, value) => {
@@ -176,7 +189,7 @@ function Profile(props: { user: User }) {
           }}
         />
         <div className=" flex items-center">
-          {props.user.socialProvider == "NONE" && (
+          {props.state.user.socialProvider == "NONE" && (
             <EditSaveButton sectionName="login" body={{ email: newEmail }} />
           )}
         </div>
@@ -186,7 +199,7 @@ function Profile(props: { user: User }) {
 
   const AddressInfo = () => {
     const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
-      props.user.addresses.map((a: Address) => ({ ...a }))
+      props.state.user.addresses.map((a: Address) => ({ ...a }))
     );
 
     const adjustAddressIndex = (delta: number) => {
@@ -301,7 +314,7 @@ function Profile(props: { user: User }) {
       console.log("deleting account");
       console.log("logging out");
 
-      deleteUser(props.user.id)
+      deleteUser(props.state.user.id)
         .unwrap()
         .then((user) => {
           logout();
@@ -339,7 +352,7 @@ function Profile(props: { user: User }) {
       <div className=" pt-20 sm:pt-28 w-full flex flex-col items-center justify-center">
         <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
           <h1 className="py-8 text-lg">Profile</h1>
-          <DesignerInfo designerId={props.user.id} />
+          <DesignerInfo designerId={props.state.user.id} />
           <div className="py-2" />
           <CustomDivider />
           <LoginInfo />
