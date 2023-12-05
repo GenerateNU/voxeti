@@ -1,0 +1,182 @@
+{
+  "AnkerMake M5": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "AnkerMake M5C": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Anycubic Kobra 2 Neo": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Anycubic Kobra Neo": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Anycubic Kobra Max": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 400, "width": 400, "depth": 450 }
+  },
+  "Anycubic Kobra Go": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 220 }
+  },
+  "Anycubic Kobra": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Prusa MK4": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 210, "width": 210, "depth": 250 }
+  },
+  "Prusa MINI+": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 180, "width": 180, "depth": 180 }
+  },
+  "Prusa MK3S+": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 210, "width": 210, "depth": 250 }
+  },
+  "Creality CR-10 Max": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 450, "width": 450, "depth": 470 }
+  },
+  "Creality CR-M4": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 450, "width": 450, "depth": 470 }
+  },
+  "Creality Ender 3 Max Neo": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 320 }
+  },
+  "Creality Ender 3 V3 SE": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Creality Ender 3 S1": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 270 }
+  },
+  "Creality K1 Max": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 300 }
+  },
+  "Creality Ender 3 Max": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 340 }
+  },
+  "Creality CR-10 Smart": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 400 }
+  },
+  "Creality CR-10S Pro V2": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 400 }
+  },
+  "Creality Ender 3 V2": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Creality Ender 3 V2 Neo": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Creality Ender 5 S1": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 280 }
+  },
+  "Creality CR-10 Smart Pro": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 400 }
+  },
+  "Creality CR-6 Max": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 400, "width": 400, "depth": 400 }
+  },
+  "Creality Ender 3 S1 Plus": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 300 }
+  },
+  "Creality Ender 2 Pro": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 165, "width": 165, "depth": 180 }
+  },
+  "Creality Ender 3 S1 Pro": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 270 }
+  },
+  "Creality K1": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Creality CR-10 V3": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 300, "width": 300, "depth": 400 }
+  },
+  "Creality Ender 3 Neo": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 250 }
+  },
+  "Creality Ender 3 V3 KE": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 240 }
+  },
+  "Creality Ender 5 Plus": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 350, "width": 350, "depth": 400 }
+  },
+  "Bambu Lab P1P": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 256, "width": 256, "depth": 256 }
+  },
+  "Bambu Lab P1S": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 256, "width": 256, "depth": 256 }
+  },
+  "Bambu Lab X1 Carbon": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 256, "width": 256, "depth": 256 }
+  },
+  "Bambu Lab A1 Mini": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 180, "width": 180, "depth": 180 }
+  },
+  "Bambu Lab X1 Carbon Combo": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 256, "width": 256, "depth": 256 }
+  },
+  "Sovol SV06": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 220 }
+  },
+  "Sovol SV03": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 350, "width": 350, "depth": 350 }
+  },
+  "Sovol SV01": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 240, "width": 280, "depth": 240 }
+  },
+  "Sovol SV05": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 220 }
+  },
+  "Voxelab Aquila D1": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 220 }
+  },
+  "Voxelab Aquila C2": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 220 }
+  },
+  "Voxelab Aquila X2": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 220 }
+  },
+  "Voxelab Aquila S2": {
+    "supportedFilament": ["PLA", "ABS", "TPE"],
+    "dimensions": { "height": 220, "width": 220, "depth": 220 }
+  }
+}

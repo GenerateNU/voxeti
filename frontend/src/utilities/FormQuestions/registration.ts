@@ -9,7 +9,7 @@ export type FormQuestion = {
   rules?: object;
   type?: string;
   defaultOption?: string;
-  defaultValue?:string;
+  defaultValue?: string;
   gridPattern?: string;
   disabled?: boolean;
   menuItems?: Array<object>;
@@ -18,7 +18,7 @@ export type FormQuestion = {
     selectedColor?: string;
     choiceValue: string | number;
     choiceSubtitle?: string;
-    hoverColor?:string;
+    hoverColor?: string;
     default?: boolean;
   }[];
 };
@@ -59,13 +59,13 @@ export const allQuestions: MultiForm = {
                   choiceLabel: "I'm a producer",
                   choiceValue: "PRODUCER",
                   selectedColor: `!bg-producer`,
-                  hoverColor: 'hover:!bg-producer'
+                  hoverColor: "hover:!bg-producer",
                 },
                 {
                   choiceLabel: "I'm a designer",
                   choiceValue: "DESIGNER",
                   selectedColor: `!bg-designer`,
-                  hoverColor: 'hover:!bg-designer',
+                  hoverColor: "hover:!bg-designer",
                   default: true,
                 },
               ],
@@ -118,7 +118,7 @@ export const allQuestions: MultiForm = {
               format: "text",
               key: "firstName",
               rules: {
-                required: { value: true, message: "First name is required!" }
+                required: { value: true, message: "First name is required!" },
               },
               type: "text",
             },
@@ -127,7 +127,7 @@ export const allQuestions: MultiForm = {
               format: "text",
               key: "lastName",
               rules: {
-                required: { value: true, message: "Last name is required!" }
+                required: { value: true, message: "Last name is required!" },
               },
               type: "text",
             },
@@ -140,7 +140,7 @@ export const allQuestions: MultiForm = {
               format: "text",
               key: "address.line1",
               rules: {
-                required: { value: true, message: "Address is required!" }
+                required: { value: true, message: "Address is required!" },
               },
             },
           ],
@@ -161,7 +161,7 @@ export const allQuestions: MultiForm = {
               format: "text",
               key: "address.city",
               rules: {
-                required: { value: true, message: "City is required!" }
+                required: { value: true, message: "City is required!" },
               },
               type: "text",
             },
@@ -170,7 +170,7 @@ export const allQuestions: MultiForm = {
               format: "text",
               key: "address.state",
               rules: {
-                required: { value: true, message: "State is required!" }
+                required: { value: true, message: "State is required!" },
               },
               type: "text",
             },
@@ -245,7 +245,8 @@ export const allQuestions: MultiForm = {
                 required: true,
               },
               defaultOption: "1",
-              gridPattern: '!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-3 !gap-6',
+              gridPattern:
+                "!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-3 !gap-6",
               options: [
                 {
                   choiceLabel: "Beginner",
@@ -285,31 +286,32 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6',
+              gridPattern:
+                "!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6",
               options: [
                 {
-                  choiceLabel: "Bambu Lab P1S",
-                  choiceValue: "bambu",
-                },
-                {
-                  choiceLabel: "Creality K1",
-                  choiceValue: "creality",
-                },
-                {
-                  choiceLabel: "Sovol SV07",
-                  choiceValue: "sovol",
-                },
-                {
-                  choiceLabel: "Elegoo Mars 2",
-                  choiceValue: "elegoo",
+                  choiceLabel: "Creality Ender 3 V2",
+                  choiceValue: "Creality Ender 3 V2",
                 },
                 {
                   choiceLabel: "Prusa MK4",
-                  choiceValue: "prusa",
+                  choiceValue: "Prusa MK4",
                 },
                 {
-                  choiceLabel: "Other +",
-                  choiceValue: "other",
+                  choiceLabel: "Sovol SV01",
+                  choiceValue: "Sovol SV01",
+                },
+                {
+                  choiceLabel: "Creality K1 Max",
+                  choiceValue: "Creality K1 Max",
+                },
+                {
+                  choiceLabel: "Bambu Lab P1S",
+                  choiceValue: "Bambu Lab P1S",
+                },
+                {
+                  choiceLabel: "Add Later",
+                  choiceValue: "Add Later",
                   default: true,
                 },
               ],
@@ -331,27 +333,28 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6',
+              gridPattern:
+                "!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6",
               options: [
                 {
-                  choiceLabel: "Plastic",
-                  choiceValue: "plastic",
+                  choiceLabel: "PLA",
+                  choiceValue: "PLA",
                 },
                 {
-                  choiceLabel: "Powders",
-                  choiceValue: "powders",
+                  choiceLabel: "ABS",
+                  choiceValue: "ABS",
                 },
                 {
-                  choiceLabel: "Resin",
-                  choiceValue: "resin",
+                  choiceLabel: "TPE",
+                  choiceValue: "TPE",
                 },
                 {
-                  choiceLabel: "Carbon Fiber",
-                  choiceValue: "carbonFiber",
+                  choiceLabel: "Nylon",
+                  choiceValue: "NYLON",
                 },
                 {
                   choiceLabel: "Other",
-                  choiceValue: "other",
+                  choiceValue: "OTHER",
                   default: true,
                 },
               ],
@@ -374,7 +377,8 @@ export const allQuestions: MultiForm = {
                 required: true,
               },
               defaultOption: "shipping",
-              gridPattern: '!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-2 !gap-6',
+              gridPattern:
+                "!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-2 !gap-6",
               options: [
                 {
                   choiceLabel: "Pickup",
@@ -410,7 +414,8 @@ export const allQuestions: MultiForm = {
                 required: true,
               },
               defaultOption: "small",
-              gridPattern: '!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-3 !gap-6',
+              gridPattern:
+                "!grid !grid-cols-1 lg:!w-[40vw] !grid-rows-3 !gap-6",
               options: [
                 {
                   choiceLabel: "Small",
@@ -446,7 +451,8 @@ export const allQuestions: MultiForm = {
               type: "radio",
               rules: { required: true },
               defaultOption: "other",
-              gridPattern: '!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6',
+              gridPattern:
+                "!grid !grid-cols-2 md:!grid-cols-3 lg:!w-[40vw] !grid-rows-2 !gap-6",
               options: [
                 {
                   choiceLabel: "Technology",
