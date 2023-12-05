@@ -159,7 +159,7 @@ func validatePatchUser(id *primitive.ObjectID, user *schema.User, dbClient *mong
 		}
 	}
 
-	// Hash the user password: 
+	// Hash the user password:
 	if user.Password != "" {
 		password, _ := HashPassword(user.Password)
 		user.Password = *password

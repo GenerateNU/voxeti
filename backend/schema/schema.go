@@ -152,7 +152,7 @@ const (
 type SocialProvider string
 
 const (
-	None SocialProvider   = "NONE"
+	None   SocialProvider = "NONE"
 	Google SocialProvider = "GOOGLE"
 )
 
