@@ -26,10 +26,10 @@ export default function JobsDesigner() {
   const [pageStatus, setPageStatus] = useState<PageStatus>(
     PageStatus.Loading
   );
-  
+
   const handleChange = (event: SelectChangeEvent) => {
     setFilter(event.target.value as string);
-    
+
     const tempJobs = jobs
     const filteredJobs = tempJobs.filter((job) => job.status === event.target.value)
     setJobsInView(filteredJobs)
@@ -110,7 +110,7 @@ export default function JobsDesigner() {
             </TableBody>
           </Table>
         </TableContainer>
-        {(jobsInView.length === 0 || pageStatus === PageStatus.Error) && 
+        {(jobsInView.length === 0 || pageStatus === PageStatus.Error) &&
           <div className="mt-16 self-center flex flex-col items-center">
             <img className='w-64' src={ErrorImage}/>
             <h1 className='mt-10 text-xl'>
