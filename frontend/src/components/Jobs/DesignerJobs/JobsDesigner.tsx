@@ -1,4 +1,5 @@
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -6,72 +7,100 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useState } from "react";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useEffect, useState } from "react";
 import { jobApi } from "../../../api/api";
 import { useStateDispatch, useStateSelector } from "../../../hooks/use-redux";
-import { Job } from "../../../main.types";
+import { Job, PageStatus } from "../../../main.types";
 import { resetUser } from "../../../store/userSlice";
-import ProducerCell from "../../OrderStatus/ProducerCell";
-import FileCell from "../../OrderStatus/FileCell";
-import StatusCell from "../../OrderStatus/StatusCell";
+import FilterDropDown from "../FilterDropDown";
+import TableHeader from "../TableHeader";
+import JobRow from "../JobRow";
 
 export default function JobsDesigner() {
+  // State setters:
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [filter, setFilter] = useState<string>('PENDING');
+  const [pageStatus, setPageStatus] = useState<PageStatus>(
+    PageStatus.Loading
+  );
+
+  console.log(pageStatus);
+
+  // Redux:
   const { user } = useStateSelector((state) => state.user);
   const dispatch = useStateDispatch();
 
-  const { data: data, error } = jobApi.useGetDesignerJobsQuery({
+  // API Requests:
+  const { data, error, isSuccess } = jobApi.useGetDesignerJobsFilteredQuery({
     designerId: user.id,
+    status: filter,
     page: "0",
   });
-  if (data && jobs.length == 0) {
-    setJobs(data);
-  }
 
-  if (error && "status" in error && error.status == 401) {
-    dispatch(resetUser());
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      setJobs(data);
+      setPageStatus(PageStatus.Success);
+    } else if (error) {
+      if ("status" in error && error.status == 401) {
+        dispatch(resetUser());
+      }
+      setPageStatus(PageStatus.Error);
+    }
+  }, [data, dispatch, error, isSuccess]);
+
+  // Designer Filters:
+  const filterOptions = [
+    {
+      title: "Pending",
+      value: "PENDING"
+    },
+    {
+      title: "Accepted",
+      value: "ACCEPTED"
+    },
+    {
+      title: "In Production",
+      value: "INPROGRESS"
+    },
+    {
+      title: "Shipped",
+      value: "INSHIPPING"
+    },
+    {
+      title: "Delivered",
+      value: "COMPLETE"
+    },
+  ]
 
   return (
-    <div className="flex flex-col justify-center items-center w-[50%] mx-auto mt-16">
-      <div className="text-left w-full pt-10 pb-5 mt-8">
-        <h1 className="text-4xl font-bold py-5">Job Submissions</h1>
-      </div>
-      <div className="text-left w-full pb-10">
-        Approved Jobs
-        <ArrowDropDownIcon />
-      </div>
-      {jobs.length > 0 ? (
-        <TableContainer>
+    <div className="py-32 w-full h-screen flex flex-col items-center">
+      <div className=" px-4 w-full sm:w-3/5">
+        <h2 className="text-3xl py-5">Job Submissions</h2>
+        <FilterDropDown
+          options={filterOptions}
+          onChange={(e) => setFilter(e.target.value)}
+          value={filter}
+        />
+        <TableContainer component={Paper} sx={{boxShadow: 'none', marginTop: '40px'}}>
           <Table aria-label="simple table">
             <TableHead>
-              <TableRow>
-                <TableCell align="left">Producer</TableCell>
-                <TableCell align="left">File Name</TableCell>
-                <TableCell align="left">Status</TableCell>
+              <TableRow sx={{ fontSize: '200px'}}>
+                <TableHeader title={'Producer'} />
+                <TableHeader title={'File Count'} />
+                <TableHeader title={'Price (USD)'} />
+                <TableHeader title={'Status'} />
+                <TableCell/>
               </TableRow>
             </TableHead>
             <TableBody>
-              {jobs.map((job) => (
-                <TableRow>
-                  <TableCell className="w-1/3" align="left">
-                    <ProducerCell />
-                  </TableCell>
-                  <TableCell className="w-1/3" align="left">
-                    <FileCell job={job} />
-                  </TableCell>
-                  <TableCell className="w-1/3" align="left">
-                    <StatusCell job={job} />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {jobs.map((job) =>
+                <JobRow job={job} type='producer' />
+              )}
             </TableBody>
           </Table>
         </TableContainer>
-      ) : (
-        <p>No jobs {user.id}</p>
-      )}
+      </div>
     </div>
   );
 }
