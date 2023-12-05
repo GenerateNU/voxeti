@@ -23,7 +23,7 @@ export default function StyledButton({
     seconday: ["!bg-[#F5F5F5]", "!text-primary", "hover:!bg-[#D3D3D3]"],
     producer: ["!bg-producer", "!text-background", "hover:!bg-[#565656]"],
     designer: ["!bg-designer", "!text-background", "hover:!bg-[#565656]"],
-    delete: ["!bg-[#F5F5F5]", "!text-primary", "hover:!bg-[#FFCCCB]"],
+    delete: ["!bg-[#F5F5F5]", "!text-error", "hover:!bg-[#FFCCCB]"],
   };
 
   return (

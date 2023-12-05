@@ -18,17 +18,8 @@ export default function Checkout({states, setters}: CheckoutProps) {
     const [clientSecret, setClientSecret] = useState('');
     const [createCheckoutSession] = paymentApi.useCreatePaymentMutation();
     const hasBeenEvaluated = useRef(false);
-    // const base = "http://localhost:3000/api/"
     
     useEffect(() => {
-        // Create a Checkout Session as soon as the page loads
-        // console.log("Doing the embedded stripe work")
-        // fetch(base + "payment/create-checkout-session", {
-        // method: "POST",
-        // body: JSON.stringify({ prices: states.prices, quantities: states.quantities }),
-        // })
-        // .then((res) => res.json())
-        // .then((data) => setClientSecret(data.client_secret));
         async function makeCheckoutSession() {
             if (!states.prices || !states.quantities || clientSecret !== '') {
                 return;
