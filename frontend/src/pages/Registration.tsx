@@ -4,6 +4,7 @@ import { authApi, userApi } from "../api/api.ts";
 import {
   ExperienceLevel,
   Filament,
+  FilamentType,
   SSOQueryParams,
   User,
 } from "../main.types.ts";
@@ -71,16 +72,29 @@ const QuestionForm = () => {
 
     const printers: Printer[] = !data.printers
       ? []
-      : data.printers.map((name: string) => {
-          return presets[name as keyof typeof presets];
-        });
+      : data.printers
+          .map((name: string) => {
+            return presets[name as keyof typeof presets];
+          })
+          .filter((element: Printer | undefined) => {
+            return element !== undefined;
+          });
     console.log("printers:", printers);
 
     const filaments: Filament[] = !data.materials
       ? []
-      : data.materials.map((type: string) => {
-          return { type: type, color: "White", pricePerUnit: 2000 };
-        });
+      : data.materials
+          .map((type: string) => {
+            if (["PLA", "ABS", "TPE"].includes(type))
+              return {
+                type: type,
+                color: "White",
+                pricePerUnit: 2000,
+              };
+          })
+          .filter((element: Filament | undefined) => {
+            return element !== undefined;
+          });
     console.log("filaments:", filaments);
 
     // create new user object
