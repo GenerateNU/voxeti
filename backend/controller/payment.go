@@ -70,7 +70,7 @@ func createCheckoutSession(c echo.Context) (CheckoutSessionData, *schema.ErrorRe
 				ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
 					Name: stripe.String(product.File),
 				},
-				UnitAmount: stripe.Int64(int64(product.Total - product.ShippingCost - product.TaxCost) * 100),
+				UnitAmount: stripe.Int64(int64((product.Total - product.ShippingCost - product.TaxCost) * 100) / quantity),
 			},
 			Quantity: stripe.Int64(quantity),
       TaxRates: []*string{stripe.String("txr_1OJLSCFGCspn0XMmhhjjiiD9")},

@@ -32,6 +32,7 @@ export default function PriceEstimation({
   const [shippings, setShippings] = useState<number[]>([]);
 
   useEffect(() => {
+    console.log(states.prices);
     setPrices(
       states.prices.map((breakdown: EstimateBreakdown, index) => {
         return {

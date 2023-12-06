@@ -91,7 +91,7 @@ export default function QuantityStep({
                 orbitControls
                 style={style}
                 modelProps={{
-                  color: "#0057FF",
+                  color: "#EFAF00",
                 }}
                 shadows
               />
