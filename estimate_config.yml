@@ -3,7 +3,7 @@ basecost          : 1.00
 hourlycost        : 3.00
 filamentcost: {PLA: 0.09, ABS: 0.07, TPE: 0.12}
 shippingrate : {rates: {100:  10.20, 250:  13.35, 650:  16.05, 1050: 21.05, 1728: 26.05}, oversizedrate: 0.015}
-taxrate         : 0.0625
+taxrate         : 0.065
 producerfee       : 0.20
 stripefee         : 0.03
 voxetifee         : 0.05
