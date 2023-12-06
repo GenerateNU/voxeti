@@ -1,9 +1,9 @@
-import { Job, Coordinates } from "../../main.types"
+import { Address, Geometry } from "../../main.types"
 
-export default function ShippingInfo(props: { job: Job }) {
+export default function ShippingInfo(props: { shippingAddress: Address }) {
 
-    const getStaticMapUrl = (coordinates: Coordinates) => {
-        const G_MAPS_API_KEY = "AIzaSyAP5_5mbMLn34q2B_UHDM4MHsbfb82ZTZM"
+    const getStaticMapUrl = (geometry: Geometry) => {
+        const G_MAPS_API_KEY = import.meta.env.VITE_G_MAPS_API_KEY
         const ZOOM_LEVEL = 17
         const ZOOM = `zoom=${ZOOM_LEVEL}`
         const WIDTH = 400
@@ -12,7 +12,7 @@ export default function ShippingInfo(props: { job: Job }) {
         const TYPE = 'roadmap'
         const MAPTYPE = `maptype=${TYPE}`
         const MARKER_COLOR = 'red'
-        const MARKERS = `markers=color:${MARKER_COLOR}%7C${coordinates.latitude},${coordinates.longitude}`
+        const MARKERS = `markers=color:${MARKER_COLOR}%7C${geometry.coordinates[1]},${geometry.coordinates[0]}`
         const KEY = `key=${G_MAPS_API_KEY}`
 
         return `https://maps.googleapis.com/maps/api/staticmap?${ZOOM}&${SIZE}&${MAPTYPE}&${MARKERS}&${KEY}`
@@ -22,9 +22,9 @@ export default function ShippingInfo(props: { job: Job }) {
         return (
             <div className="flex flex-col">
                 <p className="text-base pb-1">Delivery Location</p>
-                <p className="text-base opacity-50">{props.job.shippingAddress.line1}</p>
-                <p className="text-base opacity-50">{props.job.shippingAddress.line2}</p>
-                <p className="text-base opacity-50">{props.job.shippingAddress.city}, {props.job.shippingAddress.state} {props.job.shippingAddress.zipCode}</p>
+                <p className="text-base opacity-50">{props.shippingAddress.line1}</p>
+                <p className="text-base opacity-50">{props.shippingAddress.line2}</p>
+                <p className="text-base opacity-50">{props.shippingAddress.city}, {props.shippingAddress.state} {props.shippingAddress.zipCode}</p>
             </div>
         )
     }
@@ -45,7 +45,7 @@ export default function ShippingInfo(props: { job: Job }) {
                 <EstimatedDelivery />
             </div>
             <div>
-                {props.job.shippingAddress.location && <img src={getStaticMapUrl(props.job.shippingAddress.location)} />}
+                {props.shippingAddress.location && <img src={getStaticMapUrl(props.shippingAddress.location)} />}
             </div>
         </div>
     );
