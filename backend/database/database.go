@@ -156,17 +156,17 @@ func CreateUserCollection(dbClient *mongo.Client, logger *pterm.Logger) {
 							"required": []string{"height", "width", "depth"},
 							"properties": bson.M{
 								"height": bson.M{
-									"bsonType":    "long",
+									"bsonType":    "double",
 									"minimum":     0,
 									"description": "must be a positive integer, measured in meters",
 								},
 								"width": bson.M{
-									"bsonType":    "long",
+									"bsonType":    "double",
 									"minimum":     0,
 									"description": "must be a positive integer, measured in meters",
 								},
 								"depth": bson.M{
-									"bsonType":    "long",
+									"bsonType":    "double",
 									"minimum":     0,
 									"description": "must be a positive integer, measured in meters",
 								},
