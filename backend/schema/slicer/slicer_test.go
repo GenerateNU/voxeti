@@ -26,7 +26,7 @@ func TestLoadConfig(t *testing.T) {
 			1050: 21.05,
 			1728: 26.05,
 		}, OversizedRate: 0.015},
-		TaxRate:     0.065,
+		TaxRate:     0.0625,
 		ProducerFee: 0.20,
 		StripeFee:   0.03,
 		VoxetiFee:   0.05,
