@@ -32,6 +32,7 @@ export interface Job {
   filament: FilamentType;
   layerHeight: number;
   shippingAddress: Address;
+  trackingNumber: string;
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding

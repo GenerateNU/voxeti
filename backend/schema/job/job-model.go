@@ -374,7 +374,7 @@ func updatePotentialProducers(producerId *primitive.ObjectID, jobs *[]schema.Job
 
 func TransferPotentialToDeclined(dbClient *mongo.Client, logger *pterm.Logger) {
 	for {
-		const TIME_INTERVAL = 12 * time.Minute
+		const TIME_INTERVAL = 12 * time.Hour
 		const MAX_INACTIVE = 12 * time.Hour
 		const TRANSFER_NUM = 5
 

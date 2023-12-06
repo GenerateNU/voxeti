@@ -8,6 +8,7 @@ import { Login } from "./pages/Login.tsx";
 import Jobs from "./pages/Jobs.tsx";
 import JobInfo from "./pages/JobInfo.tsx";
 import ProfilePage from "./pages/Profile.tsx";
+import PurchaseDetails from "./pages/PurchaseDetails.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -69,6 +70,13 @@ const uploadDesignRoute = new Route({
   component: UploadDesign,
 });
 
+// is this jobId or transactionId?
+const purchaseDetailsRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/purchase-history/$jobId",
+  component: PurchaseDetails,
+});
+
 // Add routes to the route tree here
 const routeTree = rootRoute.addChildren([
   error404Route,
@@ -79,6 +87,7 @@ const routeTree = rootRoute.addChildren([
   uploadDesignRoute,
   jobsRoute,
   jobInfoRoute,
+  purchaseDetailsRoute,
 ]);
 
 const router = new Router({ routeTree });
