@@ -152,8 +152,8 @@ const (
 type SocialProvider string
 
 const (
-	None   = "NONE"
-	Google = "GOOGLE"
+	None   SocialProvider = "NONE"
+	Google SocialProvider = "GOOGLE"
 )
 
 type UserType string

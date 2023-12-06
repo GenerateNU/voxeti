@@ -60,8 +60,6 @@ const QuestionForm = () => {
   }, [temp]);
 
   const onSubmit = (data: FieldValues) => {
-    console.log("errors:", errors);
-
     // create new user object
     const newUser: User = {
       id: "",
