@@ -67,6 +67,7 @@ function Profile(props: { state: UserSliceState }) {
         dispatch(
           setUser({
             csrfToken: props.state.csrfToken,
+            ssoAccessToken: props.state.ssoAccessToken,
             user: user,
           })
         );
