@@ -33,6 +33,7 @@ export default function Checkout({states, setters}: CheckoutProps) {
             hasBeenEvaluated.current = true;
         }
         if (!hasBeenEvaluated.current) {makeCheckoutSession();}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleComplete = () => {
