@@ -60,11 +60,10 @@ function Profile(props: { state: UserSliceState }) {
   const saveEdit = (body: Partial<User>) => {
     patchUser({
       id: props.state.user.id,
-      body: body,
+      body: {...body, socialProvider: props.state.user.socialProvider},
     })
       .unwrap()
       .then((user) => {
-        console.log(user);
         dispatch(
           setUser({
             csrfToken: props.state.csrfToken,
@@ -75,7 +74,6 @@ function Profile(props: { state: UserSliceState }) {
         setSectionEdit("");
       })
       .catch((error) => {
-        console.log(error);
         setSectionEdit("");
 
         addError(error.data.message);
@@ -168,10 +166,11 @@ function Profile(props: { state: UserSliceState }) {
 
   const LoginInfo = () => {
     const [newEmail, setNewEmail] = React.useState(props.state.user.email);
+    const [newPassword, setNewPassword] = React.useState('')
 
     const loginInfo: [string, string, string?][][] = [
       [["Email", newEmail]],
-      [["Password", "••••••••••••••••", "password"]],
+      [["Password", "", "password"]],
     ];
 
     return (
@@ -184,13 +183,12 @@ function Profile(props: { state: UserSliceState }) {
           }
           edit={sectionEdit == "login"}
           updateFields={(key, value) => {
-            console.log(key);
-            setNewEmail(value);
+            key === 'Password' ? setNewPassword(value) : setNewEmail(value);
           }}
         />
         <div className=" flex items-center">
           {props.state.user.socialProvider == "NONE" && (
-            <EditSaveButton sectionName="login" body={{ email: newEmail }} />
+            <EditSaveButton sectionName="login" body={{ email: newEmail, ...(newPassword !== "" ? {password: newPassword} : {})}} />
           )}
         </div>
       </div>
