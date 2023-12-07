@@ -32,9 +32,9 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	authMiddleware := func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			nonAuthRoutes := map[string]string{
-				"/api/users":                "POST",
-				"/api/auth/login":           "POST",
-				"/api/auth/google-provider": "POST",
+				"/api/users":                           "POST",
+				"/api/auth/login":                      "POST",
+				"/api/auth/google-provider":            "POST",
 				"/api/payment/create-checkout-session": "POST",
 			}
 

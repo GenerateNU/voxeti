@@ -77,7 +77,7 @@ export type Filament = {
 
 // A 3D printer
 export type Printer = {
-  name?: string;
+  name: string;
   supportedFilament: FilamentType[];
   dimensions: Dimensions;
 };
@@ -126,4 +126,4 @@ export type SSOQueryParams = {
   provider: SocialProvider;
 };
 
-export const NEW_USER_ID = "000000000000000000000000"
+export const NEW_USER_ID = "000000000000000000000000";

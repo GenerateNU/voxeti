@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { useForm, FieldValues } from "react-hook-form";
 import { authApi, userApi } from "../api/api.ts";
-import { ExperienceLevel, SSOQueryParams, User } from "../main.types.ts";
+import {
+  ExperienceLevel,
+  Filament,
+  SSOQueryParams,
+  User,
+} from "../main.types.ts";
 import router from "../router.tsx";
 import { useStateDispatch, useStateSelector } from "../hooks/use-redux.ts";
 import { setUser } from "../store/userSlice.ts";
@@ -15,10 +20,12 @@ import MultiQuestion from "../components/Registration/MultiQuestion.tsx";
 import TextQuestion from "../components/Registration/TextQuestion.tsx";
 import StyledButton from "../components/Button/Button.tsx";
 import DropdownQuestion from "../components/Registration/DropdownQuestion.tsx";
+import presets from "../../../presets.json";
+import { Printer } from "../main.types.ts";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
-  (section) => section.userType !== "producer"
+  (section) => section.userType?.toLowerCase() !== "producer"
 );
 
 const QuestionForm = () => {
@@ -50,7 +57,7 @@ const QuestionForm = () => {
   const temp: string = watch("userType");
 
   useEffect(() => {
-    if (temp === "producer") {
+    if (temp === "PRODUCER") {
       setQuestions(producerQuestions);
       setTotalSections(producerQuestions.length);
     } else {
@@ -60,6 +67,35 @@ const QuestionForm = () => {
   }, [temp]);
 
   const onSubmit = (data: FieldValues) => {
+    console.log("submit: errors:", errors);
+
+    const printers: Printer[] = !data.printers
+      ? []
+      : data.printers
+          .map((name: string) => {
+            return presets[name as keyof typeof presets];
+          })
+          .filter((element: Printer | undefined) => {
+            return element !== undefined;
+          });
+    console.log("printers:", printers);
+
+    const filaments: Filament[] = !data.materials
+      ? []
+      : data.materials
+          .map((type: string) => {
+            if (["PLA", "ABS", "TPE"].includes(type))
+              return {
+                type: type,
+                color: "White",
+                pricePerUnit: 2000,
+              };
+          })
+          .filter((element: Filament | undefined) => {
+            return element !== undefined;
+          });
+    console.log("filaments:", filaments);
+
     // create new user object
     const newUser: User = {
       id: "",
@@ -85,8 +121,11 @@ const QuestionForm = () => {
       },
       experience: parseInt(data.experience, 10) as ExperienceLevel,
       socialProvider: provider ?? "NONE",
+      printers: printers ?? [],
+      availableFilament: filaments ?? [],
     };
 
+    console.log("creating user");
     createUser(newUser)
       .unwrap()
       .then(() => {
@@ -196,7 +235,7 @@ const QuestionForm = () => {
 
   // Go to next section
   const handleNext = () => {
-    console.log("errors:", errors);
+    console.log("next: errors:", errors);
     if (currentSectionIndex < totalSections - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
 
