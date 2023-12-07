@@ -1,6 +1,6 @@
 import { useParams } from "@tanstack/react-router";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { Box, Container, IconButton } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { Link } from "@mui/material";
 import * as React from "react";
 import { jobApi } from "../api/api";
@@ -43,18 +43,18 @@ export default function JobInfo() {
 
   const BackButton = () => {
     return (
-      <IconButton href="/jobs" aria-label="delete" size="small">
+      <div aria-label="delete" className='flex items-center w-[75px] text-[gray] hover:text-[black]'>
         <ArrowBackIosIcon fontSize="inherit" />
         <Link
           href="/jobs"
           underline="none"
-          color="black"
+          color="gray"
           sx={{ cursor: "pointer" }}
-          className="!hidden md:!flex"
+          className="!hidden md:!flex hover:text-[black]"
         >
           My Jobs
         </Link>
-      </IconButton>
+      </div>
     );
   };
 
@@ -93,7 +93,7 @@ export default function JobInfo() {
       <div className="py-32 w-full flex flex-col items-center justify-center">
         <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
           <BackButton />
-          <div className=" py-3" />
+          <h1 className='text-2xl mt-6 mb-12'>Job Request</h1>
           <div className=" flex flex-row justify-between">
             {currentJob && (
               <DesignerName
