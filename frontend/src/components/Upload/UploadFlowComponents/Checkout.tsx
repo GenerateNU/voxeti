@@ -18,7 +18,7 @@ export default function Checkout({states, setters}: CheckoutProps) {
     const [clientSecret, setClientSecret] = useState('');
     const [createCheckoutSession] = paymentApi.useCreatePaymentMutation();
     const hasBeenEvaluated = useRef(false);
-    
+
     useEffect(() => {
         async function makeCheckoutSession() {
             if (!states.prices || !states.quantities || clientSecret !== '') {
