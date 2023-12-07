@@ -11,16 +11,16 @@ export default function EditLogin(props: {
   saveEdit: (body: Partial<User>) => void;
 }) {
   const [newEmail, setNewEmail] = React.useState(props.email);
-  const [_, setNewPassword] = React.useState("");
-
-  const loginInfo: [string, string, string?][][] = [
-    [["Email", newEmail]],
-    [["Password", "", "password"]],
-  ];
+  const [newPassword, setNewPassword] = React.useState("");
 
   const section: string = "login";
   const nonSSO: boolean = props.socialProvider == "NONE";
   const editing: boolean = props.currentSection == section;
+
+  const loginInfo: [string, string, string?][][] = [
+    [["Email", newEmail]],
+    [["Password", editing ? "" : "****************", "password"]],
+  ];
 
   return (
     <div className="flex h-full flex-row flex-wrap justify-center sm:justify-between">
@@ -35,7 +35,13 @@ export default function EditLogin(props: {
         {nonSSO && (
           <EditSaveButton
             edit={editing}
-            onSave={() => props.saveEdit({ email: newEmail })}
+            onSave={() =>
+              props.saveEdit(
+                newPassword !== ""
+                  ? { email: newEmail, password: newPassword }
+                  : { email: newEmail }
+              )
+            }
             onStart={() => props.setSection(section)}
           />
         )}
