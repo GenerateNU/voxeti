@@ -5,8 +5,8 @@ import AvatarCell from "./AvatarCell";
 import StyledButton from "../Button/Button";
 import { userApi } from "../../api/api";
 
-export type JobExtended = 
-  Job & { 
+export type JobExtended =
+  Job & {
     designerFirstName: string
     designerLastName: string
     producerFirstName: string

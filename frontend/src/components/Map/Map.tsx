@@ -19,7 +19,7 @@ export default function Map({ zoom, latitude, longitude } : MapProps) {
     lat: latitude,
     lng: longitude,
   };
-  
+
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: "AIzaSyAP5_5mbMLn34q2B_UHDM4MHsbfb82ZTZM"
@@ -36,12 +36,12 @@ export default function Map({ zoom, latitude, longitude } : MapProps) {
       zoom={zoom}
       onLoad={onLoad}
     >
-      {!selected 
-        ? <MarkerF 
+      {!selected
+        ? <MarkerF
             position={center}
             onClick={() => setSelected(true)}
           />
-        : <InfoWindowF 
+        : <InfoWindowF
             position={center}
             zIndex={1}
             onCloseClick={() => setSelected(false)}

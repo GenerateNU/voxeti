@@ -72,7 +72,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
 
   const JobStatusTag = ({ status } : JobStatusTagProps) => {
     console.log(status)
-    
+
     const infoMappings = {
       PENDING: {title: 'Pending', styles: 'bg-background !text-primary'},
       ACCEPTED: {title: 'Accepted', styles: 'bg-producer'},
@@ -80,7 +80,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
       INSHIPPING: {title: 'Shipped', styles: 'bg-[designer]'},
       COMPLETE: {title: 'Complete', styles: 'bg-[#14AE5C'}
     }
-    
+
     return (
         <div className={`mt-5 p-3 pr-8 pl-8 text-background shadow-md rounded-lg ${infoMappings[status].styles} w-fit`}>
           {infoMappings[status].title}
@@ -88,7 +88,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
     )
   }
 
-  // Job information: 
+  // Job information:
   const address = (
     <>
       {job?.shippingAddress.line1},
@@ -109,7 +109,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
   return (
     <div className='flex flex-col w-full'>
       <section className='flex items-center justify-between h-32 mt-10'>
-        {job?.status !== 'PENDING' 
+        {job?.status !== 'PENDING'
           ? <div>
               <h2 className='text-3xl'>
                 Your purchase with
@@ -121,7 +121,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
           : <h1 className='animate-pulse text-3xl'>
               Searching for a producer...
             </h1>
-        } 
+        }
         <AvatarCell
           firstName='Alder'
           lastName='Whiteford'
@@ -133,7 +133,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
       <GridItem title='Job Status'>
         {job && <JobStatusTag status={job?.status as JobStatus} /> }
       </GridItem>
-      <Divider 
+      <Divider
         className='!m-0 !mt-10'
       />
       <div className='flex flex-wrap justify-between items-center mt-10'>
@@ -153,10 +153,10 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
         </div>
         {job &&
           <div className='w-full md:w-[50%]'>
-            <Map 
+            <Map
               latitude={job?.shippingAddress.location?.coordinates[1] as number}
               longitude={job?.shippingAddress.location?.coordinates[0] as number}
-              zoom={15} 
+              zoom={15}
             />
           </div>
         }
@@ -178,9 +178,9 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
           {orderDate}
         </GridItem>
       </div>
-      <Divider 
+      <Divider
         className='!m-0 !mt-10'
       />
     </div>
   )
-} 
+}
