@@ -27,7 +27,7 @@ export default function Map({ zoom, latitude, longitude } : MapProps) {
 
   const onLoad = useCallback(function callback(map: google.maps.Map) {
     map.setZoom(zoom)
-  }, [])
+  }, [zoom])
 
   return isLoaded ? (
     <GoogleMap

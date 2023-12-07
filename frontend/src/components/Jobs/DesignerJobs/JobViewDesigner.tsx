@@ -82,7 +82,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
     }
 
     return (
-        <div className={`mt-5 p-3 pr-8 pl-8 text-background shadow-md rounded-lg ${infoMappings[status].styles} w-fit`}>
+        <div className={`p-2 pr-6 pl-6 text-background shadow-md rounded-lg ${infoMappings[status].styles} w-fit`}>
           {infoMappings[status].title}
         </div>
     )
@@ -130,9 +130,12 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
           size={120}
         />
       </section>
-      <GridItem title='Job Status'>
+      <div className='flex flex-row gap-x-5 items-center'>
+        <h1 className='text-2xl'>
+          Status
+        </h1>
         {job && <JobStatusTag status={job?.status as JobStatus} /> }
-      </GridItem>
+      </div>
       <Divider
         className='!m-0 !mt-10'
       />
