@@ -18,7 +18,12 @@ func RegisterPaymentHandlers(e *echo.Group, dbClient *mongo.Client, logger *pter
 	// This is a public sample test API key.
 	// Don’t submit any personally identifiable information in requests made with this key.
 	// Sign in to see your own test API key embedded in code samples.
-	godotenv.Load(".env")
+	err := godotenv.Load(".env")
+	if err != nil {
+		pterm.Info.Println("Failed to load environment variables, shutting down...")
+		pterm.Fatal.WithFatal(false).Println(err)
+		os.Exit(1)
+	}
 	stripe.Key = os.Getenv("STRIPE_API_SECRET_KEY")
 	api := e.Group("/payment")
 
