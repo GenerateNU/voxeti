@@ -11,7 +11,7 @@ export default function EditLogin(props: {
   saveEdit: (body: Partial<User>) => void;
 }) {
   const [newEmail, setNewEmail] = React.useState(props.email);
-  const [newPassword, setNewPassword] = React.useState("");
+  const [_, setNewPassword] = React.useState("");
 
   const loginInfo: [string, string, string?][][] = [
     [["Email", newEmail]],
