@@ -6,7 +6,6 @@ import Loading from "../components/Jobs/ProducerJobs/components/Loading";
 import { Divider, IconButton } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import { useApiError } from "../hooks/use-api-error";
-import TextField from "@mui/material/TextField";
 import { userApi } from "../api/api";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -15,6 +14,8 @@ import Auth from "../components/Auth/Auth";
 import { UserSliceState } from "../store/store.types";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/userSlice";
+import EditPrinters from "../components/Profile/EditPrinters";
+import FieldValuePairs from "../components/Profile/FieldValuePairs";
 
 export default function ProfilePage() {
   const state = useStateSelector((state) => state.user);
@@ -32,6 +33,7 @@ function Profile(props: { state: UserSliceState }) {
     PageStatus.Loading
   );
   const [addressIndex, setAddressIndex] = React.useState(0);
+  const [printerIndex, setPrinterIndex] = React.useState(0);
   const [sectionEdit, setSectionEdit] = React.useState("None");
 
   const [patchUser] = userApi.usePatchUserMutation();
@@ -86,47 +88,6 @@ function Profile(props: { state: UserSliceState }) {
 
   const startEdit = (sectionName: string) => {
     setSectionEdit(sectionName);
-  };
-
-  const FieldValuePairs = (props: {
-    rows: [string, string?, string?][][];
-    edit?: boolean;
-    updateFields: (key: string, value: string) => void;
-  }) => {
-    return (
-      <div className=" w-full sm:w-2/3">
-        {props.rows.map((section) => {
-          return (
-            <div className="flex flex-row justify-between flex-1 pr-4">
-              {section.map(([key, value, type]) => {
-                return (
-                  <div className=" pb-4">
-                    <div>{key}</div>
-                    <TextField
-                      id={`form-fields-${key.toLowerCase()}`}
-                      key={key.toLowerCase()}
-                      variant="standard"
-                      size="small"
-                      margin="none"
-                      defaultValue={value ? value : ""}
-                      placeholder={key}
-                      type={type}
-                      disabled={!props.edit}
-                      onChange={(event) => {
-                        props.updateFields(key, event.target.value);
-                      }}
-                      InputProps={{
-                        disableUnderline: !props.edit,
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-    );
   };
 
   const CustomDivider = () => {
@@ -358,6 +319,15 @@ function Profile(props: { state: UserSliceState }) {
           <LoginInfo />
           <CustomDivider />
           <AddressInfo />
+          <CustomDivider />
+          <EditPrinters
+            setSection={setSectionEdit}
+            currentSection={sectionEdit}
+            printers={props.state.user.printers}
+            index={printerIndex}
+            setIndex={setPrinterIndex}
+            saveEdit={saveEdit}
+          />
           <CustomDivider />
           <DeactivateAccount />
           <CustomDivider />

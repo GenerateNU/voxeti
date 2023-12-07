@@ -111,6 +111,7 @@ const (
 
 // A 3D printer
 type Printer struct {
+	Name              string         `bson:"name,omitempty" json:"name,omitempty"`
 	SupportedFilament []FilamentType `bson:"supportedFilament,omitempty" json:"supportedFilament,omitempty"`
 	Dimensions        Dimensions     `bson:"dimensions,omitempty" json:"dimensions,omitempty"`
 }

@@ -10,7 +10,7 @@ printers = {}
 
 for e in soup.find_all("div", class_="printerEntry"):
     dimensions = [int(d) for d in e.find_all("div")[-3].text[:-3].split(' x ')]
-    printers[e.find_all("a")[1].text] = { 'supportedFilament' : ['PLA', 'ABS', 'TPE'], 'dimensions': {'height' : dimensions[0], 'width' : dimensions[1], 'depth' : dimensions[2] }}
+    printers[e.find_all("a")[1].text] = { 'name' : e.find_all("a")[1].text, 'supportedFilament' : ['PLA', 'ABS', 'TPE'], 'dimensions': {'height' : dimensions[0], 'width' : dimensions[1], 'depth' : dimensions[2] }}
 
 
 with open('presets.json', 'w') as f:
