@@ -5,8 +5,16 @@ import AvatarCell from "./AvatarCell";
 import StyledButton from "../Button/Button";
 import { userApi } from "../../api/api";
 
+export type JobExtended = 
+  Job & { 
+    designerFirstName: string
+    designerLastName: string
+    producerFirstName: string
+    producerLastName: string
+  }
+
 type JobRowProps = {
-  job: Job;
+  job: JobExtended;
   type: 'designer' | 'producer';
 }
 
@@ -50,7 +58,10 @@ export default function JobRow({ job, type }: JobRowProps) {
   };
 
   // Retrieve the designer name:
-  const name = designerName(type === 'producer' ? job.producerId as string : job.designerId as string)
+  let name
+  if (type === 'designer' && !job.designerFirstName) {
+    name = designerName(job.designerId as string)
+  }
 
   const createdDate = new Date(job.createdAt)
   if (type === 'designer') {
@@ -70,8 +81,10 @@ export default function JobRow({ job, type }: JobRowProps) {
       <JobTableCell size='lg'>
         <AvatarCell
           userType={type}
-          firstName={name?.firstName}
-          lastName={name?.lastName}
+          firstName={name ? name.firstName : type === "producer" ? job.producerFirstName : job.designerFirstName}
+          lastName={name ? name.lastName : type === "producer" ? job.producerLastName : job.designerLastName}
+          imageOnly={false}
+          size={85}
         />
       </JobTableCell>
       <JobTableCell size='md'>
@@ -89,7 +102,7 @@ export default function JobRow({ job, type }: JobRowProps) {
         <StyledButton
           color='primary'
           size='sm'
-          href={`/job-accept/${job.id}`}
+          href={(job.status === "PENDING" && type === "designer") ? `/job-accept/${job.id}` : `/jobs/${job.id}`}
         >
           View Job
         </StyledButton>

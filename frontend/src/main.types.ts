@@ -45,8 +45,7 @@ export interface Design {
 
 // Address coordinates
 export type Coordinates = {
-  latitude: number;
-  longitude: number;
+  coordinates: number[]
 };
 
 // An address

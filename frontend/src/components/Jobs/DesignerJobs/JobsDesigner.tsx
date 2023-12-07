@@ -15,7 +15,7 @@ import { Job, PageStatus } from "../../../main.types";
 import { resetUser } from "../../../store/userSlice";
 import FilterDropDown from "../FilterDropDown";
 import TableHeader from "../TableHeader";
-import JobRow from "../JobRow";
+import JobRow, { JobExtended } from "../JobRow";
 import ErrorImage from "../../../assets/hero-image-2.png"
 
 export default function JobsDesigner() {
@@ -105,7 +105,7 @@ export default function JobsDesigner() {
             </TableHead>
             <TableBody>
               {jobsInView.map((job) =>
-                <JobRow job={job} type='producer' />
+                <JobRow job={job as JobExtended} type='producer' />
               )}
             </TableBody>
           </Table>
