@@ -6,6 +6,7 @@ import QuantityStep from "./UploadFlowComponents/QuantityStep";
 import ConfirmationPage from "./UploadFlowComponents/ConfirmationPage";
 import { Setters, States } from "./upload.types";
 import JobSubmitting from "./UploadFlowComponents/JobSubmitting";
+import Checkout from "./UploadFlowComponents/Checkout";
 
 export interface UploadFlowProps {
     states: States,
@@ -42,11 +43,15 @@ export default function UploadFlow({
                             editFilter={() => setters.currentStep(3)}
                             slice={setters.slice}
                             />,
-                    5: <Notes
+                    5: <Checkout
+                            states={states}
+                            setters={setters}
+                        />,
+                    6: <Notes
                             states={states}
                         />,
-                    6: <JobSubmitting />,
-                    7: <ConfirmationPage
+                    7: <JobSubmitting />,
+                    8: <ConfirmationPage
                             states={states}
                         />
                 }[states.currentStep]

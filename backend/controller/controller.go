@@ -35,6 +35,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 				"/api/users":                "POST",
 				"/api/auth/login":           "POST",
 				"/api/auth/google-provider": "POST",
+				"/api/payment/create-checkout-session": "POST",
 			}
 
 			// Check if the current request is an auth route:
@@ -83,6 +84,7 @@ func RegisterHandlers(e *echo.Echo, dbClient *mongo.Client, logger *pterm.Logger
 	RegisterDesignHandlers(api, dbClient, logger)
 	RegisterUserHandlers(api, dbClient, logger)
 	RegisterJobHandlers(api, dbClient, logger)
+	RegisterPaymentHandlers(api, dbClient, logger)
 	RegisterSlicerHandlers(api, configuration, logger)
 
 	// catch any invalid endpoints with a 404 error

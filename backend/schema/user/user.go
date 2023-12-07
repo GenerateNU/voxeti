@@ -95,7 +95,6 @@ func UpdateUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.C
 }
 
 func PatchUserById(id *primitive.ObjectID, user *schema.User, dbClient *mongo.Client) (*schema.User, *schema.ErrorResponse) {
-
 	// validate request body
 	if reqError := validatePatchUser(id, user, dbClient); reqError != nil {
 		return nil, reqError
@@ -158,6 +157,12 @@ func validatePatchUser(id *primitive.ObjectID, user *schema.User, dbClient *mong
 			Code:    400,
 			Message: "Bad request: " + errors,
 		}
+	}
+
+	// Hash the user password:
+	if user.Password != "" {
+		password, _ := HashPassword(user.Password)
+		user.Password = *password
 	}
 
 	return nil

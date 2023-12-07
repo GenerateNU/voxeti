@@ -19,6 +19,8 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@react-oauth/google": "^0.11.1",
     "@reduxjs/toolkit": "^1.9.7",
+    "@stripe/react-stripe-js": "^2.4.0",
+    "@stripe/stripe-js": "^2.2.0",
     "@tanstack/react-router": "0.0.1-beta.168",
     "@tanstack/router-devtools": "0.0.1-beta.168",
     "class-variance-authority": "^0.7.0",
