@@ -9,7 +9,6 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import presets from "../../../../presets.json";
 import StyledButton from "../Button/Button";
-import { Button } from "@mui/material";
 
 export default function EditPrinters(props: {
   currentSection: string;

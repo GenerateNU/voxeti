@@ -4,7 +4,6 @@ import { authApi, userApi } from "../api/api.ts";
 import {
   ExperienceLevel,
   Filament,
-  FilamentType,
   SSOQueryParams,
   User,
 } from "../main.types.ts";
