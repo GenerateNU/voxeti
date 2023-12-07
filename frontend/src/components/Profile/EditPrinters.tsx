@@ -41,7 +41,8 @@ export default function EditPrinters(props: {
         ]
       : [];
 
-  const editing = props.currentSection === "printers";
+  const section: string = "printers";
+  const editing = props.currentSection === section;
 
   const updatePrinter = (key: string, value: string) => {
     const tempPrinter = { ...printers[props.index] };
@@ -104,7 +105,7 @@ export default function EditPrinters(props: {
           <EditSaveButton
             edit={editing}
             onSave={() => props.saveEdit({ printers: printers })}
-            onStart={() => props.setSection("printers")}
+            onStart={() => props.setSection(section)}
           />
         </div>
       ) : (
@@ -150,7 +151,7 @@ export default function EditPrinters(props: {
         display={printers[props.index]?.name || "Add New Printer"}
         onChange={(delta: number) => {
           props.setSection(
-            props.index + delta === printers.length ? "printers" : ""
+            props.index + delta === printers.length ? section : ""
           );
           props.setIndex(props.index + delta);
         }}
