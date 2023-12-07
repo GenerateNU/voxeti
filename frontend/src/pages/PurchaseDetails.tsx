@@ -31,7 +31,7 @@ const PurchaseDetails = (props: {jobId: string}) => {
     const [pageStatus, setPageStatus] = useState<PageStatus>(
         PageStatus.Loading
     );
-    const { data: job } = jobApi.useGetJobIdQuery(props.jobId);
+    const { data: job } = jobApi.useGetJobByIdQuery(props.jobId);
 
     useEffect(() => {
         if (job && job.producerId && job.trackingNumber) {

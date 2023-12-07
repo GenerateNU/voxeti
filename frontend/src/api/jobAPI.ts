@@ -24,7 +24,7 @@ export const createJobApi = (baseUrl: string) =>
           url: `/${jobId}`,
         }),
       }),
-      getJobId: builder.query<Job, string>({
+      getJobById: builder.query<Job, string>({
         query: (id) => `/${id}`,
       }),
       deleteJob: builder.mutation<Design, string>({

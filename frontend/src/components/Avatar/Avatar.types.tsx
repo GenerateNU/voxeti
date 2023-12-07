@@ -1,5 +1,5 @@
 export interface StyledAvatarProps {
-    userType: string | undefined;
+    userType?: string;
     firstName: string;
     lastName: string;
     height: number;
