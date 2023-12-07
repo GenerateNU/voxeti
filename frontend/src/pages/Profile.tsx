@@ -1,21 +1,18 @@
 import React, { useCallback } from "react";
 import DesignerInfo from "../components/Jobs/ProducerJobs/components/DesignerInfo";
 import { useStateSelector } from "../hooks/use-redux";
-import { Address, PageStatus, User } from "../main.types";
+import { PageStatus, User } from "../main.types";
 import Loading from "../components/Jobs/ProducerJobs/components/Loading";
-import { Divider, IconButton } from "@mui/material";
+import { Divider } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import { useApiError } from "../hooks/use-api-error";
 import { userApi } from "../api/api";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import useLogout from "../hooks/use-logout";
 import Auth from "../components/Auth/Auth";
 import { UserSliceState } from "../store/store.types";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/userSlice";
 import EditPrinters from "../components/Profile/EditPrinters";
-import FieldValuePairs from "../components/Profile/FieldValuePairs";
 import EditLogin from "../components/Profile/EditLogin";
 import EditAddresses from "../components/Profile/EditAddresses";
 
@@ -86,44 +83,12 @@ function Profile(props: { state: UserSliceState }) {
       });
   };
 
-  const startEdit = (sectionName: string) => {
-    setSectionEdit(sectionName);
-  };
-
   const CustomDivider = () => {
     return (
       <div>
         <Divider className="pt-3" />
         <div className="py-3"></div>
       </div>
-    );
-  };
-
-  const EditSaveButton = (props: {
-    sectionName: string;
-    body: Partial<User>;
-  }) => {
-    return sectionEdit == props.sectionName ? (
-      <StyledButton
-        size={"sm"}
-        color={"seconday"}
-        type="submit"
-        onClick={() => {
-          saveEdit(props.body);
-        }}
-      >
-        Save
-      </StyledButton>
-    ) : (
-      <StyledButton
-        size={"sm"}
-        color={"seconday"}
-        onClick={() => {
-          startEdit(props.sectionName);
-        }}
-      >
-        Edit
-      </StyledButton>
     );
   };
 

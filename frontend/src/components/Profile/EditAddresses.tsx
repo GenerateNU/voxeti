@@ -3,11 +3,6 @@ import React from "react";
 import FieldValuePairs from "./FieldValuePairs";
 import EditSaveButton from "./EditSaveButton";
 import SelectionButton from "./SelectionButton";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import presets from "../../../../presets.json";
 import StyledButton from "../Button/Button";
 
 export default function EditAddresses(props: {
