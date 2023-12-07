@@ -33,6 +33,7 @@ export interface Job {
   layerHeight: number;
   shippingAddress: Address;
   trackingNumber?: string;
+  estimatedDelivery?: Date;
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding

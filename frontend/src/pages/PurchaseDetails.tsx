@@ -34,7 +34,7 @@ const PurchaseDetails = (props: {jobId: string}) => {
     const { data: job } = jobApi.useGetJobByIdQuery(props.jobId);
 
     useEffect(() => {
-        if (job && job.producerId && job.trackingNumber) {
+        if (job && job.producerId && job.trackingNumber && job.estimatedDelivery) {
             setPageStatus(PageStatus.Success);
         } else {
             setPageStatus(PageStatus.Error);
@@ -42,13 +42,13 @@ const PurchaseDetails = (props: {jobId: string}) => {
     }, [job]);
 
     const PageSuccess = () => {
-        return job && job.producerId && job.trackingNumber && (
+        return job && job.producerId && job.trackingNumber && job.estimatedDelivery && (
             <div className="py-32 w-full h-screen flex flex-col items-center">
                 <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
                     <BackButton />
                     <ProducerInfo producerId={job.producerId} />
                     <CustomDivider />
-                    <ShippingInfo shippingAddress={job.shippingAddress} />
+                    <ShippingInfo shippingAddress={job.shippingAddress} estimatedDelivery={job.estimatedDelivery} />
                     <CustomDivider />
                     <TrackingNumber trackingNumber={job.trackingNumber} />
                     <CustomDivider />

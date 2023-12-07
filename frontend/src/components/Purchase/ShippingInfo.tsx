@@ -1,6 +1,6 @@
 import { Address, Geometry } from "../../main.types"
 
-export default function ShippingInfo(props: { shippingAddress: Address }) {
+export default function ShippingInfo(props: { shippingAddress: Address, estimatedDelivery: Date }) {
 
     const getStaticMapUrl = (geometry: Geometry) => {
         const G_MAPS_API_KEY = import.meta.env.VITE_G_MAPS_API_KEY
@@ -29,11 +29,17 @@ export default function ShippingInfo(props: { shippingAddress: Address }) {
         )
     }
 
+    const FormatDate = (date: Date): string => {
+        const dateObj = new Date(date);
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+        return dateObj.toLocaleDateString('en-US', options);
+    };
+
     const EstimatedDelivery = () => {
         return (
             <div className="flex flex-col">
                 <p className="text-base pb-1">Estimated Delivery</p>
-                <p className="text-base opacity-50">September 30, 2021</p>
+                <p className="text-base opacity-50">{FormatDate(props.estimatedDelivery)}</p>
             </div>
         )
     }
