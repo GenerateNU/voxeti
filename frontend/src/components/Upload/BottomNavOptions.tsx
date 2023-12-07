@@ -14,7 +14,7 @@ export default function BottomNavOptions({
     step,
     enabled
 }: BottomNavProps) {
-    if (step === 5) return null;
+    if (step === 6 || step === 7) return null;
     return (
         <Box className='flex flex-row justify-center gap-x-6 mt-6 mb-8'>
             {step !== 8 ?
@@ -32,7 +32,7 @@ export default function BottomNavOptions({
                         onClick={nextPage}
                         disabled={!enabled}
                     >
-                        { step === 6 ? 'Submit' : 'Continue' }
+                        Continue
                     </StyledButton>
                 </>
                 :

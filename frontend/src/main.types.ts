@@ -3,7 +3,7 @@
 // A Voxeti User, can be both a Designer and a Producer
 export interface User {
   id: string;
-  userType?: "DESIGNER" | "PRODUCER" | "HYBRID";
+  userType?: UserType,
   firstName: string;
   lastName: string;
   email: string;
@@ -105,6 +105,8 @@ export type FilamentType = "PLA" | "ABS" | "TPE";
 export type ExperienceLevel = 1 | 2 | 3;
 
 export type SocialProvider = "NONE" | "GOOGLE";
+
+export type UserType = "DESIGNER" | "PRODUCER" | "HYBRID"
 
 // 4. Extra Types:
 

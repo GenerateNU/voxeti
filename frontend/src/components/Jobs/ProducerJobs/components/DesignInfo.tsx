@@ -1,8 +1,8 @@
 import { designApi } from "../../../../api/api";
 import Divider from "@mui/material/Divider";
 import DownloadIcon from "@mui/icons-material/Download";
-import IconButton from "@mui/material/IconButton";
 import { saveAs } from "file-saver";
+import StyledButton from "../../../Button/Button";
 
 export default function DesignInfo(props: {
   designId: string;
@@ -12,22 +12,23 @@ export default function DesignInfo(props: {
 
   return (
     <div>
-      <Divider variant="middle" className=" py-3" />
+      <Divider variant="middle" className="py-3 !m-0"/>
       <div className=" py-3" />
-      <div className=" flex justify-between py-1">
-        <p>Filename (temp designId)</p>
-        <div className=" flex flex-row">
-          <p>{props.designId}</p>
+      <div className="flex justify-between py-1 items-center">
+        <p>Files</p>
+        <div className="flex flex-row items-center">
           {data && (
-            <IconButton
+            <StyledButton
+              color="seconday"
+              size='sm'
               onClick={() => saveAs(data, `voxeti-${props.designId}.stl`)}
             >
               <DownloadIcon fontSize="small" />
-            </IconButton>
+            </StyledButton>
           )}
         </div>
       </div>
-      <div className=" flex justify-between py-1">
+      <div className=" flex justify-between py-1 mt-6">
         <p>Quantity</p>
         <p>{props.quantity} piece(s)</p>
       </div>

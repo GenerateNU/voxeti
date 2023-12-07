@@ -5,7 +5,7 @@ export default function FieldValueRow(props: {
 }) {
   return (
     <div className=" flex flex-col">
-      <Divider variant="middle" className=" py-3" />
+      <Divider variant="middle" className="!m-0 py-3" />
       <div className=" py-3" />
       {props.section.map((row) => (
         <div className=" flex justify-between py-1">
