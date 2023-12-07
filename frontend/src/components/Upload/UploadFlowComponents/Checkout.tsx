@@ -37,7 +37,8 @@ export default function Checkout({states, setters}: CheckoutProps) {
     }, []);
 
     const handleComplete = () => {
-        setters.currentStep(states.currentStep + 1);
+        // setters.currentStep(states.currentStep + 1);
+        setters.formSubmit();
     }
 
     const options = {
