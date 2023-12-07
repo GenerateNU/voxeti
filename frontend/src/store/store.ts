@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
-import { authApi, designApi, jobApi, priceEstimationApi, slicerApi, userApi } from "../api/api";
+import { authApi, designApi, jobApi, priceEstimationApi, slicerApi, userApi, paymentApi } from "../api/api";
 import {
   FLUSH,
   PAUSE,
@@ -22,6 +22,7 @@ const combinedReducers = combineReducers({
   [priceEstimationApi.reducerPath]: priceEstimationApi.reducer,
   [designApi.reducerPath]: designApi.reducer,
   [jobApi.reducerPath]: jobApi.reducer,
+  [paymentApi.reducerPath]: paymentApi.reducer,
 });
 
 type RootReducer = ReturnType<typeof combinedReducers>;
@@ -37,6 +38,7 @@ const persistConfig = {
     priceEstimationApi.reducerPath,
     designApi.reducerPath,
     jobApi.reducerPath,
+    paymentApi.reducerPath,
   ],
 };
 
@@ -57,7 +59,8 @@ export const store = configureStore({
       .concat(slicerApi.middleware)
       .concat(priceEstimationApi.middleware)
       .concat(designApi.middleware)
-      .concat(jobApi.middleware),
+      .concat(jobApi.middleware)
+      .concat(paymentApi.middleware),
   reducer: persistedReducer,
 });
 

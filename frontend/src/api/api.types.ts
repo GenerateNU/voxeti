@@ -55,3 +55,12 @@ export type VoxetiJob = {
   id: string,
   job: Job,
 }
+
+export type CheckoutState = {
+  prices: EstimateBreakdown[];
+  quantities: number[];
+};
+
+export type CheckoutSessionData = {
+  client_secret: string;
+};

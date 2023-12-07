@@ -152,10 +152,12 @@ export function UploadDesign() {
     };
 
     setters.currentStep((states.currentStep += 1));
+	console.log("In the form submit")
     // Submit the job:
     createJob(job)
       .unwrap()
       .then(() => {
+		console.log("completed the call")
         setters.currentStep((states.currentStep += 1));
       })
       .catch((error) => {
@@ -233,8 +235,8 @@ export function UploadDesign() {
     ["6", true],
   ]);
 
-  const isSubmitStep = currentStep === 5;
-  const isFinalStep = currentStep === 7;
+  const isSubmitStep = currentStep === 6;
+  const isFinalStep = currentStep === 8;
 
   console.log(currentStep);
 
