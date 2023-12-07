@@ -18,6 +18,11 @@ export default function NavDropDown({ navOpen } : NavDropDownProps) {
       text: 'Jobs',
       icon: <ConstructionIcon />
     },
+    {
+      href: '/purchase-history',
+      text: 'Purchase History',
+      icon: <ConstructionIcon />
+    }
   ]
 
   const user = [
