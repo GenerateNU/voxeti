@@ -15,7 +15,6 @@ export default function PurchaseDetailsPage() {
     const params = useParams()
     const jobId = params.jobId as string;
 
-
     return jobId ? (
         <>
             <Auth authRoute={true}>
@@ -23,9 +22,7 @@ export default function PurchaseDetailsPage() {
             </Auth>
         </>
     ) : (
-        <div>
-            <p>Job not found</p>
-        </div>
+        <PageError />
     );
 }
 
@@ -37,7 +34,7 @@ const PurchaseDetails = (props: {jobId: string}) => {
     const { data: job } = jobApi.useGetJobIdQuery(props.jobId);
 
     useEffect(() => {
-        if (job) {
+        if (job && job.producerId && job.trackingNumber) {
             setPageStatus(PageStatus.Success);
         } else {
             setPageStatus(PageStatus.Error);
@@ -45,34 +42,30 @@ const PurchaseDetails = (props: {jobId: string}) => {
     }, [job]);
 
     const PageSuccess = () => {
-        if (job && job.producerId) {
-            return (
-                <div className="py-32 w-full h-screen flex flex-col items-center">
-                    <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
-                        <BackButton />
-                        <ProducerInfo producerId={job.producerId} />
-                        <CustomDivider />
-                        <ShippingInfo shippingAddress={job.shippingAddress} />
-                        <CustomDivider />
-                        <TrackingNumber trackingNumber={job.trackingNumber} />
-                        <CustomDivider />
-                        <Price price={job.price}/>
-                        <CustomDivider />
-                    </div>
+        return job && job.producerId && job.trackingNumber && (
+            <div className="py-32 w-full h-screen flex flex-col items-center">
+                <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
+                    <BackButton />
+                    <ProducerInfo producerId={job.producerId} />
+                    <CustomDivider />
+                    <ShippingInfo shippingAddress={job.shippingAddress} />
+                    <CustomDivider />
+                    <TrackingNumber trackingNumber={job.trackingNumber} />
+                    <CustomDivider />
+                    <Price price={job.price}/>
+                    <CustomDivider />
                 </div>
-            );
-        } else {
-            setPageStatus(PageStatus.Error)
-        }
+            </div>
+        );
     }
 
     switch (pageStatus) {
         case PageStatus.Success:
-          return <PageSuccess />;
+            return <PageSuccess />;
         case PageStatus.Error:
-          return <PageError />;
+            return <PageError />;
         case PageStatus.Loading:
-          return <Loading />;
+            return <Loading />;
       }
 }
 

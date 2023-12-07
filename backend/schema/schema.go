@@ -49,6 +49,7 @@ type Job struct {
 	PotentialProducers []primitive.ObjectID `bson:"potentialProducers,omitempty" json:"potentialProducers"`
 	LastUpdated        time.Time            `bson:"lastUpdated,omitempty" json:"lastUpdated"`
 	// lastUpdated represents last time a potential producer was added
+	TrackingNumber string `bson:"trackingNumber,omitempty" json:"trackingNumber"`
 }
 
 type JobView struct {
