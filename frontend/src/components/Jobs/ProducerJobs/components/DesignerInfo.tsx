@@ -16,19 +16,21 @@ export default function DesignerName(props: { designerId: string; job?: Job }) {
         <div className=" flex flex-row">
           {data ? (
             <Avatar
-              className={` outline outline-3 outline-offset-2 ${
+              className={`outline outline-4 outline-offset-2 !w-24 !h-24 ${
                 data.userType == "DESIGNER"
                   ? "outline-designer"
                   : "outline-producer"
               }`}
               alt={`${data.firstName} ${data.lastName}`}
               sx={{ width: 64, height: 64 }}
-            />
+            >
+              {data.firstName.charAt(0)}
+            </Avatar>
           ) : (
             <Skeleton variant="circular" width={64} height={64} />
           )}
           {data ? (
-            <div className=" px-4 flex flex-col justify-center">
+            <div className="ml-5 px-4 flex flex-col justify-center">
               <p className=" text-lg">
                 {data && data.firstName} {data && data.lastName}
               </p>
