@@ -26,6 +26,7 @@ export interface Job {
   quantity: number[];
   status: JobStatus;
   price: number;
+  tracking: string;
   shipping: number;
   taxes: number;
   color: string;

@@ -19,7 +19,7 @@ export default function JobView() {
           underline="none"
           color="gray"
           sx={{ cursor: "pointer" }}
-          className="!hidden md:!flex hover:text-[black]"
+          className="=!flex hover:text-[black]"
         >
           My Jobs
         </Link>

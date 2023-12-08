@@ -41,6 +41,7 @@ type Job struct {
 	Price              int                  `bson:"price,omitempty" json:"price"`
 	Shipping           int                  `bson:"shipping,omitempty" json:"shipping"`
 	Taxes              int                  `bson:"taxes,omitempty" json:"taxes"`
+	Tracking					 string								`bson:"tracking,omitempty" json:"tracking"`
 	Color              string               `bson:"color,omitempty" json:"color"`
 	Filament           FilamentType         `bson:"filament,omitempty" json:"filament"`
 	LayerHeight        float64              `bson:"layerHeight,omitempty" json:"layerHeight"`
