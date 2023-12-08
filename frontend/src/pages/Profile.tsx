@@ -29,7 +29,7 @@ function Profile(props: { state: UserSliceState }) {
   const { addError, setOpen } = useApiError();
   const dispatch = useDispatch();
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
-    PageStatus.Loading,
+    PageStatus.Loading
   );
   const [addressIndex, setAddressIndex] = React.useState(0);
   const [printerIndex, setPrinterIndex] = React.useState(0);
@@ -70,7 +70,7 @@ function Profile(props: { state: UserSliceState }) {
             csrfToken: props.state.csrfToken,
             ssoAccessToken: props.state.ssoAccessToken,
             user: user,
-          }),
+          })
         );
         setSectionEdit("");
       })
@@ -118,6 +118,7 @@ function Profile(props: { state: UserSliceState }) {
       <div className="flex h-full flex-row justify-between items-center pb-2">
         <div>Deactivate Account</div>
         <StyledButton
+          disabled
           size={"sm"}
           color={"delete"}
           onClick={() => {
