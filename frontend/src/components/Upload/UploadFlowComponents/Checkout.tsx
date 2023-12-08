@@ -48,7 +48,7 @@ export default function Checkout({states, setters}: CheckoutProps) {
     console.log(JSON.stringify(options));
 
     return (
-        <div className="mt-32">
+        <div className="">
             <div id="checkout">
                 {clientSecret && (
                     <EmbeddedCheckoutProvider

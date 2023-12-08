@@ -246,7 +246,7 @@ export function UploadDesign() {
   return (
     <Auth authRoute={true}>
       <div className="container mx-auto mt-16 grow h-[100%]">
-        <div className="z-0 min-h-[84vh] flex flex-col">
+        <div className="z-0 min-h-[84vh] flex flex-col mt-12">
           <VoxetiStepper currentStep={currentStep} />
           <UploadFlow states={states} setters={setters} />
           <BottomNavOptions
