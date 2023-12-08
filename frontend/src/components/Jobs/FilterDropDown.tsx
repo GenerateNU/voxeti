@@ -1,19 +1,29 @@
-import { Box, FormControl, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
 type FilterOption = {
-  title: string,
-  value: string,
-}
+  title: string;
+  value: string;
+};
 
 type FilterDropDownProps = {
   options: Array<FilterOption>;
   onChange: (event: SelectChangeEvent) => void;
   value: string;
-}
+};
 
-export default function FilterDropDown({ options, onChange, value }: FilterDropDownProps) {
+export default function FilterDropDown({
+  options,
+  onChange,
+  value,
+}: FilterDropDownProps) {
   return (
-    <Box sx={{ minWidth: 120, marginTop: '20px' }}>
+    <Box sx={{ minWidth: 120, marginTop: "20px" }}>
       <FormControl className=" py-4 w-48">
         <Select
           labelId="demo-simple-select-label"
@@ -25,16 +35,16 @@ export default function FilterDropDown({ options, onChange, value }: FilterDropD
           variant="standard"
           sx={{
             width: 120,
-            ':before': {
+            ":before": {
               borderBottom: 0,
-            }
+            },
           }}
         >
-          {options.map((option) =>
+          {options.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.title}
             </MenuItem>
-          )}
+          ))}
         </Select>
       </FormControl>
     </Box>

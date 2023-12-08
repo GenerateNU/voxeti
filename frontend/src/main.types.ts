@@ -3,7 +3,7 @@
 // A Voxeti User, can be both a Designer and a Producer
 export interface User {
   id: string;
-  userType?: UserType,
+  userType?: UserType;
   firstName: string;
   lastName: string;
   email: string;
@@ -45,7 +45,7 @@ export interface Design {
 
 // Address coordinates
 export type Coordinates = {
-  coordinates: number[]
+  coordinates: number[];
 };
 
 // An address
@@ -105,7 +105,7 @@ export type ExperienceLevel = 1 | 2 | 3;
 
 export type SocialProvider = "NONE" | "GOOGLE";
 
-export type UserType = "DESIGNER" | "PRODUCER" | "HYBRID"
+export type UserType = "DESIGNER" | "PRODUCER" | "HYBRID";
 
 // 4. Extra Types:
 

@@ -28,33 +28,33 @@ export type SlicerData = {
   maxy: number;
   maxz: number;
   targetMachineName: string;
-}
+};
 
 export type PriceEstimation = {
-  shipping: boolean,
-  filamentType: string,
-  slices: SlicerData[],
-}
+  shipping: boolean;
+  filamentType: string;
+  slices: SlicerData[];
+};
 
 export type EstimateBreakdown = {
-  file: string,
-  baseCost: number,
-  timeCost: number,
-  filamentCost: number,
-  shippingCost: number,
-  producerSubtotal: number,
-  producerFee: number,
-  producerTotal: number,
-  taxCost: number,
-  stripeCost: number,
-  voxetiCost: number,
-  total: number,
-}
+  file: string;
+  baseCost: number;
+  timeCost: number;
+  filamentCost: number;
+  shippingCost: number;
+  producerSubtotal: number;
+  producerFee: number;
+  producerTotal: number;
+  taxCost: number;
+  stripeCost: number;
+  voxetiCost: number;
+  total: number;
+};
 
 export type VoxetiJob = {
-  id: string,
-  job: Job,
-}
+  id: string;
+  job: Job;
+};
 
 export type CheckoutState = {
   prices: EstimateBreakdown[];

@@ -7,8 +7,7 @@ export default function useGoogle({
   setProviderUser,
   googleSSO,
 }: UseGoogleProps) {
-
-  const { addError, setOpen } = useApiError()
+  const { addError, setOpen } = useApiError();
 
   // Google login succeeds:
   function onSuccess(response: GoogleSSOResponse) {
@@ -19,11 +18,14 @@ export default function useGoogle({
     googleSSO(response.access_token as string)
       .unwrap()
       .then((res) => {
-        setProviderUser({...res, ssoAccessToken: response.access_token as string});
+        setProviderUser({
+          ...res,
+          ssoAccessToken: response.access_token as string,
+        });
       })
       .catch(() => {
-        addError('Something went wrong, please try again')
-        setOpen(true)
+        addError("Something went wrong, please try again");
+        setOpen(true);
       });
   }
 

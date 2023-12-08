@@ -39,7 +39,7 @@ export default function EditLogin(props: {
               props.saveEdit(
                 newPassword !== ""
                   ? { email: newEmail, password: newPassword }
-                  : { email: newEmail }
+                  : { email: newEmail },
               )
             }
             onStart={() => props.setSection(section)}

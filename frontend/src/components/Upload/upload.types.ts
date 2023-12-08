@@ -1,32 +1,32 @@
-import { EstimateBreakdown } from "../../api/api.types"
-import { Dimensions } from "../../main.types"
+import { EstimateBreakdown } from "../../api/api.types";
+import { Dimensions } from "../../main.types";
 
 export type PriceEstimate = {
-  prices: PriceObject[],
-  taxRate: number,
-  shippingCost: number
-}
+  prices: PriceObject[];
+  taxRate: number;
+  shippingCost: number;
+};
 
 export type PriceObject = {
-  file: string,
-  total: number,
-  quantity: number,
-}
+  file: string;
+  total: number;
+  quantity: number;
+};
 
 export type States = {
-  currentStep: number,
-  uploadedFiles: File[],
-  quantities: number[],
-  color: string,
-  quantity: number,
-  delivery: string,
-  expirationDate: string
-  prices: EstimateBreakdown[],
-  filament: string,
-  quality: string,
-  address: number,
-  isLoading: boolean,
-}
+  currentStep: number;
+  uploadedFiles: File[];
+  quantities: number[];
+  color: string;
+  quantity: number;
+  delivery: string;
+  expirationDate: string;
+  prices: EstimateBreakdown[];
+  filament: string;
+  quality: string;
+  address: number;
+  isLoading: boolean;
+};
 
 export type Setters = {
   currentStep: React.Dispatch<React.SetStateAction<number>>;

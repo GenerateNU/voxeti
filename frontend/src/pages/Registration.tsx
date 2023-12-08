@@ -26,7 +26,7 @@ import { useApiError } from "../hooks/use-api-error.tsx";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
-  (section) => section.userType?.toLowerCase() !== "producer"
+  (section) => section.userType?.toLowerCase() !== "producer",
 );
 
 const QuestionForm = () => {
@@ -49,13 +49,13 @@ const QuestionForm = () => {
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
   const [totalSections, setTotalSections] = useState<number>(
-    allQuestions.sections.length
+    allQuestions.sections.length,
   );
   const [questions, setQuestions] = useState<FormSection[]>(
-    allQuestions.sections
+    allQuestions.sections,
   );
 
-  const { addError, setOpen } = useApiError()
+  const { addError, setOpen } = useApiError();
 
   const temp: string = watch("userType");
 
@@ -135,8 +135,8 @@ const QuestionForm = () => {
               router.navigate({ to: "/" });
             })
             .catch(() => {
-              addError("Something went wrong, please try again")
-              setOpen(true)
+              addError("Something went wrong, please try again");
+              setOpen(true);
             });
         } else {
           googleSSO(ssoAccessToken)
@@ -146,14 +146,14 @@ const QuestionForm = () => {
               router.navigate({ to: "/" });
             })
             .catch((err) => {
-              addError(err)
-              setOpen(true)
+              addError(err);
+              setOpen(true);
             });
         }
       })
       .catch((err) => {
-        addError(err)
-        setOpen(true)
+        addError(err);
+        setOpen(true);
       });
   };
 

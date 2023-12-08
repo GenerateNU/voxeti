@@ -1,9 +1,7 @@
 type JobViewProducerProps = {
-  jobId: string
-}
+  jobId: string;
+};
 
-export default function JobViewProducer({ jobId } : JobViewProducerProps) {
-  return (
-    <h1>Producer Job View {jobId}</h1>
-  )
+export default function JobViewProducer({ jobId }: JobViewProducerProps) {
+  return <h1>Producer Job View {jobId}</h1>;
 }

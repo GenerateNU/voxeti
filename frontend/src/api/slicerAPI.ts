@@ -27,12 +27,12 @@ export const createPriceEstimationApi = (baseUrl: string) =>
       baseUrl: `${baseUrl}/slicer`,
       credentials: "include",
       prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as RootState).user.csrfToken
+        const token = (getState() as RootState).user.csrfToken;
         if (token) {
-          headers.set("Csrftoken", token)
+          headers.set("Csrftoken", token);
         }
-        return headers
-      }
+        return headers;
+      },
     }),
     endpoints: (builder) => ({
       estimatePrices: builder.mutation<EstimateBreakdown[], PriceEstimation>({

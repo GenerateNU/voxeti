@@ -42,22 +42,22 @@ export type GoogleSSOResponse = Omit<
 };
 
 export type BackendErrorData = {
-  error: Error,
-}
+  error: Error;
+};
 
 export type BackendError = {
-  status: number,
-  data: BackendErrorData,
-}
+  status: number;
+  data: BackendErrorData;
+};
 
 export type ErrorContext = {
-  error: string,
-  open: boolean,
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  addError: (message : string) => void,
-  removeError: () => void,
-}
+  error: string;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  addError: (message: string) => void;
+  removeError: () => void;
+};
 
 export type ApiErrorContextProps = {
-  children: ReactNode,
-}
+  children: ReactNode;
+};
