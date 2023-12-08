@@ -10,6 +10,7 @@ import DesignerName from "../components/Jobs/ProducerJobs/components/DesignerInf
 import { useApiError } from "../hooks/use-api-error";
 import Loading from "../components/Jobs/ProducerJobs/components/Loading";
 import FieldValueRow from "../components/Jobs/ProducerJobs/components/FieldValueRow";
+import NextSteps from "../components/Jobs/ProducerJobs/components/NextSteps";
 
 export default function JobInfo() {
   const [jobDetails] = jobApi.useGetJobMutation();
@@ -43,7 +44,10 @@ export default function JobInfo() {
 
   const BackButton = () => {
     return (
-      <div aria-label="delete" className='flex items-center w-[75px] text-[gray] hover:text-[black]'>
+      <div
+        aria-label="delete"
+        className="flex items-center w-[75px] text-[gray] hover:text-[black]"
+      >
         <ArrowBackIosIcon fontSize="inherit" />
         <Link
           href="/jobs"
@@ -93,7 +97,14 @@ export default function JobInfo() {
       <div className="py-32 w-full flex flex-col items-center justify-center">
         <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
           <BackButton />
-          <h1 className='text-2xl mt-6 mb-12'>Job Request</h1>
+          {currentJob?.id && (
+            <NextSteps
+              jobId={currentJob?.id}
+              jobStatus={currentJob.status}
+              designerName="Nate Sawant"
+            />
+          )}
+          <h1 className="text-2xl mt-6 mb-12">Job Request</h1>
           <div className=" flex flex-row justify-between">
             {currentJob && (
               <DesignerName

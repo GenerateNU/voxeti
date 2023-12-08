@@ -89,11 +89,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
     return (
       <ThemeProvider theme={theme}>
         <div className="flex flex-row items-center justify-end gap-y-1 gap-x-2">
-          <StyledButton
-            color="primary"
-            onClick={acceptJob}
-            size="md"
-          >
+          <StyledButton color="primary" onClick={acceptJob} size="md">
             Accept
           </StyledButton>
           <StyledButton
@@ -110,8 +106,10 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
   } else {
     return (
       <ThemeProvider theme={theme}>
-        <div className=" flex flex-row items-center justify-end gap-y-1 gap-x-2">
-          <StyledButton color="success" size="md">Job Accepted</StyledButton>
+        <div className=" flex flex-col items-center justify-end gap-y-1 gap-x-2">
+          <StyledButton color="success" size="md">
+            Job Accepted
+          </StyledButton>
           <StyledButton href="/jobs" color="seconday" size="md">
             Current Jobs
           </StyledButton>
