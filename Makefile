@@ -18,6 +18,11 @@ backend-dev: db-dev
 backend-dev-reset: db-dev
 	wgo -exit clear :: go run -tags dev . -db mongodb://administrator:Welcome1234@127.0.0.1:27017 -reset
 
+# Start the backend dev server but connect to cloud database
+.PHONY: backend-dev-cloud
+backend-dev-cloud:
+	wgo -exit clear :: go run -tags dev . -db mongodb+srv://administrator:Welcome1234@voxeti.gcfimfv.mongodb.net/?retryWrites=true&w=majority
+
 # Start the dev database
 .PHONY: db-dev
 db-dev:

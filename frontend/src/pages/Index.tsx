@@ -16,7 +16,7 @@ export default function Index() {
         </h1>
         <p className="text-lg max-w-3xl p-8 mx-auto text-center">
           Whether you are looking to utilize your 3D-printer or connect with
-          someone, join Voxeti today and have all of your 3D-printing needs
+          someone, join voxeti today and have all of your 3D-printing needs
           satisfied
         </p>
         <a href="/register">
@@ -53,7 +53,7 @@ export default function Index() {
 
       <div id="process" className="px-10 max-w-7xl w-full mx-auto">
         <h1 className="font-bold font-display text-4xl text-center p-10">
-          Printing with Voxeti is easier than ever
+          Printing with voxeti is easier than ever
         </h1>
         <div
           id="process-steps"
@@ -71,8 +71,7 @@ export default function Index() {
               Create a job request
             </h2>
             <p className="max-w-xs text-center text-primary/50">
-              Browse and request a job with your desired producer Browse and
-              request a job with your
+              Browse and request a job based on your filters and printing needs
             </p>
           </div>
           <div
@@ -87,8 +86,7 @@ export default function Index() {
               Connect with a Producer
             </h2>
             <p className="max-w-xs text-center text-primary/50">
-              Browse and request a job with your desired producer Browse and
-              request a job with your
+              Find a producer who will help turn your vision into reality
             </p>
           </div>
           <div
@@ -101,8 +99,8 @@ export default function Index() {
             />
             <h2 className="text-center font-bold font-display">Production</h2>
             <p className="max-w-xs text-center text-primary/50">
-              Browse and request a job with your desired producer Browse and
-              request a job with your
+              The experts transform blueprints into products with precision and
+              efficiency
             </p>
           </div>
           <div
@@ -115,8 +113,8 @@ export default function Index() {
             />
             <h2 className="text-center font-bold font-display">Delivery</h2>
             <p className="max-w-xs text-center text-primary/50">
-              Browse and request a job with your desired producer Browse and
-              request a job with your
+              Have the final printed product delivered to your doorstep within
+              days
             </p>
           </div>
         </div>
@@ -160,7 +158,7 @@ export default function Index() {
               No hidden fees.
             </h1>
             <p className="my-4 text-lg text-primary/50">
-              Voxeti offers transparent and affordable pricing. Our pricing is
+              voxeti offers transparent and affordable pricing. Our pricing is
               based on factors such as the complexity of your design, the size
               of your object, and the type of printer you choose. There are no
               hidden fees or surprises, and our instant quotes make it easy for
@@ -180,7 +178,7 @@ export default function Index() {
           className="my-auto p-10 grow flex flex-col text-center max-w-5xl"
         >
           <h1 className="font-bold font-display text-4xl">
-            Already have a printer? Join Voxeti as a Producer.
+            Already have a printer? Join voxeti as a Producer.
           </h1>
           <p className="my-4 text-lg text-primary/50 max-w-2xl w-full mx-auto">
             Access a network of skilled 3D printer owners who are passionate
