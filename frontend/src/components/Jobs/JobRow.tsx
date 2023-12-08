@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@mui/material";
 import { Job } from "../../main.types";
 import { ReactNode } from "react";
-import AvatarCell from "./AvatarCell";
+import ProducerCell from "./ProducerCell";
 import StyledButton from "../Button/Button";
 import { userApi } from "../../api/api";
 
@@ -68,7 +68,7 @@ export default function JobRow({ job, type }: JobRowProps) {
       }}
     >
       <JobTableCell size='lg'>
-        <AvatarCell
+        <ProducerCell
           userType={type}
           firstName={name?.firstName}
           lastName={name?.lastName}

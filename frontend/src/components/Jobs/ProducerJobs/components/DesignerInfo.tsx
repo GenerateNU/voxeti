@@ -1,8 +1,8 @@
 import { userApi } from "../../../../api/api";
 import { Job } from "../../../../main.types";
-import { Avatar } from "@mui/material";
 import JobAcceptButtons from "./JobAcceptButtons";
 import { Skeleton } from "@mui/material";
+import StyledAvatar from "../../../Avatar/Avatar";
 
 function capitalize(str?: string) {
   return str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : "";
@@ -15,17 +15,16 @@ export default function DesignerName(props: { designerId: string; job?: Job }) {
       <div className=" flex flex-row items-center justify-between w-full">
         <div className=" flex flex-row">
           {data ? (
-            <Avatar
-              className={`outline outline-4 outline-offset-2 !w-24 !h-24 ${
-                data.userType == "DESIGNER"
-                  ? "outline-designer"
-                  : "outline-producer"
-              }`}
-              alt={`${data.firstName} ${data.lastName}`}
-              sx={{ width: 64, height: 64 }}
-            >
-              {data.firstName.charAt(0)}
-            </Avatar>
+            <StyledAvatar
+              userType={data.userType}
+              firstName={data.firstName}
+              lastName={data.lastName}
+              innerWidth={80}
+              innerHeight={80}
+              outerHeight={96}
+              outerWidth={96}
+              offset={8}
+            />
           ) : (
             <Skeleton variant="circular" width={64} height={64} />
           )}

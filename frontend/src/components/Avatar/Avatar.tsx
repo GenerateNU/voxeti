@@ -1,7 +1,7 @@
 import { Avatar } from "@mui/material"
 import { StyledAvatarProps } from "./Avatar.types"
 
-export default function CustomAvatar({ userType, firstName, lastName, innerHeight, innerWidth, outerWidth, outerHeight, offset }: StyledAvatarProps) {
+export default function StyledAvatar({ userType, firstName, lastName, innerHeight, innerWidth, outerWidth, outerHeight, offset }: StyledAvatarProps) {
 
     const colors = {
         "outer": "",

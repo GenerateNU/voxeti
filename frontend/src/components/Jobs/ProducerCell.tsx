@@ -1,4 +1,4 @@
-import CustomAvatar from "../Avatar/Avatar";
+import StyledAvatar from "../Avatar/Avatar";
 
 type ProducerCellProps = {
   avatar?: string,
@@ -7,11 +7,11 @@ type ProducerCellProps = {
   userType: 'designer' | 'producer'
 }
 
-export default function AvatarCell({ firstName, lastName, userType } : ProducerCellProps) {
+export default function ProducerCell({ firstName, lastName, userType } : ProducerCellProps) {
 
   return (
     <div className="flex items-center text-base">
-      <CustomAvatar userType={userType} firstName={firstName} lastName={lastName} outerWidth={48} outerHeight={48} innerHeight={40} innerWidth={40} offset={4} />
+      <StyledAvatar userType={userType} firstName={firstName} lastName={lastName} outerWidth={48} outerHeight={48} innerHeight={40} innerWidth={40} offset={4} />
       <div className=" pl-4">
         {(firstName && lastName)
           ? firstName + " " + lastName

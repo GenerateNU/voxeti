@@ -1,4 +1,4 @@
-import CustomAvatar from "../Avatar/Avatar";
+import StyledAvatar from "../Avatar/Avatar";
 import  { userApi } from "../../api/api";
 
 export default function ProducerInfo(props: {producerId?: string}) {
@@ -17,7 +17,7 @@ export default function ProducerInfo(props: {producerId?: string}) {
                 <h1 className="text-3xl font-bold">{producer.firstName} {producer.lastName}</h1>
             </div>
             <div>
-                <CustomAvatar userType={"PRODUCER"} firstName={producer.firstName} lastName={producer.lastName} innerWidth={52} innerHeight={52} outerHeight={64} outerWidth={64} offset={6} />
+                <StyledAvatar userType={"PRODUCER"} firstName={producer.firstName} lastName={producer.lastName} innerWidth={52} innerHeight={52} outerHeight={64} outerWidth={64} offset={6} />
             </div>
         </div>
     );

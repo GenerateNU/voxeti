@@ -6,5 +6,6 @@ export interface StyledAvatarProps {
     innerWidth: number;
     outerWidth: number;
     outerHeight: number;
+    // offset represents the amount of whitespace going outwards from the inner avatar
     offset: number;
 }
