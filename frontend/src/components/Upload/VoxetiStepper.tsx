@@ -41,7 +41,7 @@ export default function VoxetiStepper({currentStep}: StepperProps) {
             alternativeLabel
             activeStep={currentStep}
             connector={<VoxetiConnector />}
-            className='mb-16'
+            className='mb-16 !mt-20'
         >
             {steps.map((label) => (
                 <Step key={label}>

@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import StyledButton from '../Button/Button';
+import router from '../../router';
 
 export type BottomNavProps = {
     cancel: () => void,
@@ -15,6 +16,11 @@ export default function BottomNavOptions({
     enabled
 }: BottomNavProps) {
     if (step === 6 || step === 7) return null;
+
+    const returnHome = () => {
+        router.navigate({ to: '/jobs' })
+    }
+
     return (
         <Box className='flex flex-row justify-center gap-x-6 mt-6 mb-8'>
             {step !== 8 ?
@@ -22,7 +28,7 @@ export default function BottomNavOptions({
                     <StyledButton
                         color={'primary'}
                         size={'md'}
-                        onClick={cancel}
+                        onClick={step === 1 ? returnHome : cancel}
                     >
                         Cancel
                     </StyledButton>
