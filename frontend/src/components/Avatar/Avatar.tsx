@@ -8,7 +8,7 @@ export default function StyledAvatar({ userType, firstName, lastName, innerHeigh
         "inner": "#FFFFFF"
     }
 
-    if (userType == "PRODUCER") {
+    if (userType == "PRODUCER" || userType == "producer") {
         colors["outer"] = "#00baef"
     } else {
         colors["outer"] = "#efaf00"
