@@ -118,7 +118,6 @@ export function UploadDesign() {
 
     // Check if there was an error:
     if ("code" in uploadResponse) {
-      console.log(uploadResponse);
       return;
     }
 
@@ -152,12 +151,10 @@ export function UploadDesign() {
     };
 
     setters.currentStep((states.currentStep += 1));
-	console.log("In the form submit")
     // Submit the job:
     createJob(job)
       .unwrap()
       .then(() => {
-		console.log("completed the call")
         setters.currentStep((states.currentStep += 1));
       })
       .catch((error) => {
@@ -240,8 +237,6 @@ export function UploadDesign() {
 
   const isSubmitStep = currentStep === 6;
   const isFinalStep = currentStep === 8;
-
-  console.log(currentStep);
 
   return (
     <Auth authRoute={true}>

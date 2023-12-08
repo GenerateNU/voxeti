@@ -22,6 +22,7 @@ import StyledButton from "../components/Button/Button.tsx";
 import DropdownQuestion from "../components/Registration/DropdownQuestion.tsx";
 import presets from "../../../presets.json";
 import { Printer } from "../main.types.ts";
+import { useApiError } from "../hooks/use-api-error.tsx";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
@@ -54,6 +55,8 @@ const QuestionForm = () => {
     allQuestions.sections
   );
 
+  const { addError, setOpen } = useApiError()
+
   const temp: string = watch("userType");
 
   useEffect(() => {
@@ -67,8 +70,6 @@ const QuestionForm = () => {
   }, [temp]);
 
   const onSubmit = (data: FieldValues) => {
-    console.log("submit: errors:", errors);
-
     const printers: Printer[] = !data.printers
       ? []
       : data.printers
@@ -78,7 +79,6 @@ const QuestionForm = () => {
           .filter((element: Printer | undefined) => {
             return element !== undefined;
           });
-    console.log("printers:", printers);
 
     const filaments: Filament[] = !data.materials
       ? []
@@ -94,7 +94,6 @@ const QuestionForm = () => {
           .filter((element: Filament | undefined) => {
             return element !== undefined;
           });
-    console.log("filaments:", filaments);
 
     // create new user object
     const newUser: User = {
@@ -125,7 +124,6 @@ const QuestionForm = () => {
       availableFilament: filaments ?? [],
     };
 
-    console.log("creating user");
     createUser(newUser)
       .unwrap()
       .then(() => {
@@ -136,8 +134,9 @@ const QuestionForm = () => {
               dispatch(setUser(res));
               router.navigate({ to: "/" });
             })
-            .catch((err) => {
-              console.log(err);
+            .catch(() => {
+              addError("Something went wrong, please try again")
+              setOpen(true)
             });
         } else {
           googleSSO(ssoAccessToken)
@@ -147,12 +146,14 @@ const QuestionForm = () => {
               router.navigate({ to: "/" });
             })
             .catch((err) => {
-              console.log(err);
+              addError(err)
+              setOpen(true)
             });
         }
       })
       .catch((err) => {
-        console.log(err);
+        addError(err)
+        setOpen(true)
       });
   };
 
@@ -235,7 +236,6 @@ const QuestionForm = () => {
 
   // Go to next section
   const handleNext = () => {
-    console.log("next: errors:", errors);
     if (currentSectionIndex < totalSections - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
 

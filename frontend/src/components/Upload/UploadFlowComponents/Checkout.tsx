@@ -28,7 +28,6 @@ export default function Checkout({states, setters}: CheckoutProps) {
                 prices: states.prices,
                 quantities: states.quantities,
             }).unwrap();
-            console.log(`response: ${JSON.stringify(response)}`)
             setClientSecret(response.client_secret)
             hasBeenEvaluated.current = true;
         }
@@ -45,7 +44,6 @@ export default function Checkout({states, setters}: CheckoutProps) {
         clientSecret,
         onComplete: handleComplete,
     };
-    console.log(JSON.stringify(options));
 
     return (
         <div className="mt-32">
