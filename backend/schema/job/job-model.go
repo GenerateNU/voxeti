@@ -323,8 +323,8 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 type RecommendationSorter string
 
 const (
-	Price   = "PRICE"
-	DateASC = "DATEASC"
+	Price    = "PRICE"
+	DateDESC = "DATEDESC"
 )
 
 func sortJobs(jobs *[]schema.Job, sorter RecommendationSorter) *[]schema.Job {
@@ -342,7 +342,7 @@ func sortJobs(jobs *[]schema.Job, sorter RecommendationSorter) *[]schema.Job {
 
 func sortJobViews(jobViews *[]schema.JobView, sorter RecommendationSorter) *[]schema.JobView {
 	switch sorter {
-	case DateASC:
+	case DateDESC:
 		s := func(jobView1 schema.JobView, jobView2 schema.JobView) int {
 			duration := jobView2.CreatedAt.Time().Sub(jobView1.CreatedAt.Time())
 			return int(duration.Seconds())
@@ -382,8 +382,8 @@ func getRecommendationSorter(sort string) (RecommendationSorter, *schema.ErrorRe
 	switch sort {
 	case "PRICE":
 		return Price, nil
-	case "DATEASC":
-		return DateASC, nil
+	case "DATEDESC":
+		return DateDESC, nil
 	default:
 		return "", &schema.ErrorResponse{Code: 400, Message: "Invalid sort"}
 	}
