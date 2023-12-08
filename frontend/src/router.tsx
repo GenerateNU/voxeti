@@ -1,5 +1,4 @@
 import { Outlet, Router, Route, RootRoute } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import Layout from "./components/Layout/Layout.tsx";
 import Index from "./pages/Index.tsx";
 import QuestionForm from "./pages/Registration.tsx";
@@ -16,7 +15,10 @@ const rootRoute = new RootRoute({
       <Layout>
         <Outlet />
       </Layout>
-      {import.meta.env.DEV && <TanStackRouterDevtools />}
+      {
+        import.meta.env.DEV
+        // && <TanStackRouterDevtools />
+      }
     </>
   ),
 });
