@@ -21,8 +21,23 @@ func GetJobById(jobId string, dbClient *mongo.Client) (schema.Job, *schema.Error
 }
 
 // Find a specified job by either a producer or designer ID
-func GetJobsByDesignerOrProducerId(designerId primitive.ObjectID, producerId primitive.ObjectID, status string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.JobView, *schema.ErrorResponse) {
-	return getJobsByDesignerOrProducerIdDb(designerId, producerId, status, limit, skip, dbClient)
+func GetJobsByDesignerOrProducerId(designerId primitive.ObjectID, producerId primitive.ObjectID, status string, sort string, limit int64, skip int64, dbClient *mongo.Client) ([]schema.JobView, *schema.ErrorResponse) {
+	jobs, err := getJobsByDesignerOrProducerIdDb(designerId, producerId, status, limit, skip, dbClient)
+	if err != nil {
+		return nil, err
+	}
+
+	if sort != "" {
+		sorter, err := getRecommendationSorter(sort)
+		if err != nil {
+			return nil, err
+		}
+
+		sortedJobs := sortJobViews(&jobs, sorter)
+		return *sortedJobs, nil
+	}
+
+	return jobs, nil
 }
 
 // Delete a job
@@ -308,7 +323,8 @@ func filterJobs(producer *schema.User, filters []RecommendationFilter, dbClient 
 type RecommendationSorter string
 
 const (
-	Price = "PRICE"
+	Price   = "PRICE"
+	DateASC = "DATEASC"
 )
 
 func sortJobs(jobs *[]schema.Job, sorter RecommendationSorter) *[]schema.Job {
@@ -321,6 +337,20 @@ func sortJobs(jobs *[]schema.Job, sorter RecommendationSorter) *[]schema.Job {
 		return jobs
 	default:
 		return jobs
+	}
+}
+
+func sortJobViews(jobViews *[]schema.JobView, sorter RecommendationSorter) *[]schema.JobView {
+	switch sorter {
+	case DateASC:
+		s := func(jobView1 schema.JobView, jobView2 schema.JobView) int {
+			duration := jobView2.CreatedAt.Time().Sub(jobView1.CreatedAt.Time())
+			return int(duration.Seconds())
+		}
+		slices.SortFunc(*jobViews, s)
+		return jobViews
+	default:
+		return jobViews
 	}
 }
 
@@ -352,6 +382,8 @@ func getRecommendationSorter(sort string) (RecommendationSorter, *schema.ErrorRe
 	switch sort {
 	case "PRICE":
 		return Price, nil
+	case "DATEASC":
+		return DateASC, nil
 	default:
 		return "", &schema.ErrorResponse{Code: 400, Message: "Invalid sort"}
 	}

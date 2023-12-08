@@ -910,7 +910,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		mt.AddMockResponses(res, end)
 
 		// Assertions
-		foundJob, err := GetJobsByDesignerOrProducerId(jobIdHex, producerId, "", 10, 0, mt.Client)
+		foundJob, err := GetJobsByDesignerOrProducerId(jobIdHex, producerId, "", "", 10, 0, mt.Client)
 
 		assert.Nil(err)
 		assert.Equal(foundJob, []schema.JobView{expectedJob})
@@ -967,7 +967,7 @@ func TestGetJobsByDesignerOrProducerId(t *testing.T) {
 		mt.AddMockResponses(res, end)
 
 		// Assertions
-		foundJob, err := GetJobsByDesignerOrProducerId(designerId, jobIdHex, "", 10, 0, mt.Client)
+		foundJob, err := GetJobsByDesignerOrProducerId(designerId, jobIdHex, "", "", 10, 0, mt.Client)
 
 		assert.Nil(err)
 		assert.Equal(foundJob, []schema.JobView{expectedJob})

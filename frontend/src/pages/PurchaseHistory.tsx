@@ -38,6 +38,7 @@ const PurchaseHistory = (props: { designerId: string }) => {
     const { data: jobs, error } = jobApi.useGetDesignerJobsQuery({
         designerId: props.designerId,
         page: "0",
+        sort: "DATEASC"
     });
 
     useEffect(() => {

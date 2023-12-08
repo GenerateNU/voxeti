@@ -43,6 +43,7 @@ export default function JobsDesigner() {
   const jobsResponse = jobApi.useGetDesignerJobsQuery({
     designerId: user.id,
     page: "0",
+    sort: ""
   });
 
   useEffect(() => {
