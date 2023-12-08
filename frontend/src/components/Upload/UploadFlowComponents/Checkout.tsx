@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout
@@ -19,20 +19,21 @@ export default function Checkout({states, setters}: CheckoutProps) {
     const [createCheckoutSession] = paymentApi.useCreatePaymentMutation();
     const hasBeenEvaluated = useRef(false);
 
-    useEffect(() => {
-        async function makeCheckoutSession() {
-            if (!states.prices || !states.quantities || clientSecret !== '') {
-                return;
-            }
-            const response = await createCheckoutSession({
-                prices: states.prices,
-                quantities: states.quantities,
-            }).unwrap();
-            console.log(`response: ${JSON.stringify(response)}`)
-            setClientSecret(response.client_secret)
-            hasBeenEvaluated.current = true;
-        }
-        if (!hasBeenEvaluated.current) {makeCheckoutSession();}
+  useEffect(() => {
+    async function makeCheckoutSession() {
+      if (!states.prices || !states.quantities || clientSecret !== "") {
+        return;
+      }
+      const response = await createCheckoutSession({
+        prices: states.prices,
+        quantities: states.quantities,
+      }).unwrap();
+      setClientSecret(response.client_secret);
+      hasBeenEvaluated.current = true;
+    }
+    if (!hasBeenEvaluated.current) {
+      makeCheckoutSession();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -45,7 +46,6 @@ export default function Checkout({states, setters}: CheckoutProps) {
         clientSecret,
         onComplete: handleComplete,
     };
-    console.log(JSON.stringify(options));
 
     return (
         <div className="">

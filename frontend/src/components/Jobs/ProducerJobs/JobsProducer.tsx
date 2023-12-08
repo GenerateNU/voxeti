@@ -13,10 +13,10 @@ import { Job } from "../../../main.types";
 import Loading from "./components/Loading";
 import { PageStatus } from "../../../main.types";
 import FilterDropDown from "../FilterDropDown";
-import JobRow from "../JobRow";
+import JobRow, { JobExtended } from "../JobRow";
 import TableHeader from "../TableHeader";
 import { useStateSelector } from "../../../hooks/use-redux";
-import ErrorImage from "../../../assets/hero-image-2.png"
+import ErrorImage from "../../../assets/hero-image-2.png";
 
 export function JobFilesName(props: { designId: string }) {
   // const { data: data } = designApi.useGetDesignQuery(props.designId); Reinclude this once the design API works properly
@@ -26,9 +26,7 @@ export function JobFilesName(props: { designId: string }) {
 
 export default function JobsProducer() {
   const [jobFilter, setJobFilter] = useState("PENDING");
-  const [pageStatus, setPageStatus] = useState<PageStatus>(
-    PageStatus.Loading
-  );
+  const [pageStatus, setPageStatus] = useState<PageStatus>(PageStatus.Loading);
 
   // const dispatch = useStateDispatch();
 
@@ -65,7 +63,6 @@ export default function JobsProducer() {
         useQueryRecommendations.isSuccess &&
         useQueryRecommendations.data
       ) {
-        console.log(useQueryRecommendations.data);
         setJobs(useQueryRecommendations.data);
         setPageStatus(PageStatus.Success);
       } else if (
@@ -82,32 +79,31 @@ export default function JobsProducer() {
         setPageStatus(PageStatus.Error);
       } else {
         setPageStatus(PageStatus.Error);
-        console.log("Something else happened");
       }
     }, [useQueryResponseOther, useQueryRecommendations]);
 
     const filterOptions = [
       {
         title: "Pending",
-        value: "PENDING"
+        value: "PENDING",
       },
       {
         title: "Accepted",
-        value: "ACCEPTED"
+        value: "ACCEPTED",
       },
       {
         title: "In Progress",
-        value: "INPROGRESS"
+        value: "INPROGRESS",
       },
       {
         title: "In Shipping",
-        value: "INSHIPPING"
+        value: "INSHIPPING",
       },
       {
         title: "Complete",
-        value: "COMPLETE"
+        value: "COMPLETE",
       },
-    ]
+    ];
 
     if (pageStatus == PageStatus.Loading) return <Loading />;
 
@@ -120,32 +116,37 @@ export default function JobsProducer() {
             onChange={handleChange}
             value={jobFilter}
           />
-          <TableContainer component={Paper} sx={{boxShadow: 'none', marginTop: '40px'}}>
+          <TableContainer
+            component={Paper}
+            sx={{ boxShadow: "none", marginTop: "40px" }}
+          >
             <Table aria-label="simple table">
               <TableHead>
-                <TableRow sx={{ fontSize: '200px'}}>
-                  <TableHeader title={'Designer'} />
-                  <TableHeader title={'File Count'} />
-                  <TableHeader title={'Price (USD)'} />
-                  <TableHeader title={'Ship By'} />
-                  <TableCell/>
+                <TableRow sx={{ fontSize: "200px" }}>
+                  <TableHeader title={"Designer"} />
+                  <TableHeader title={"File Count"} />
+                  <TableHeader title={"Price (USD)"} />
+                  <TableHeader title={"Ship By"} />
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>
-                {jobs.map((job) =>
-                  <JobRow job={job} type='designer' />
-                )}
+                {jobs.map((job) => (
+                  <JobRow job={job as JobExtended} type="designer" />
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
           <div>
-            {(!useQueryRecommendations.data && !useQueryResponseOther.data) && (
+            {!useQueryRecommendations.data && !useQueryResponseOther.data && (
               <div className="mt-16 self-center flex flex-col items-center">
-              <img className='w-64' src={ErrorImage}/>
-              <h1 className='mt-10 text-xl'>
-                {`No ${filterOptions.filter((filter) => filter.value === jobFilter)[0].title.toLowerCase()} jobs...`}
-              </h1>
-            </div>
+                <img className="w-64" src={ErrorImage} />
+                <h1 className="mt-10 text-xl">
+                  {`No ${filterOptions
+                    .filter((filter) => filter.value === jobFilter)[0]
+                    .title.toLowerCase()} jobs...`}
+                </h1>
+              </div>
             )}
           </div>
         </div>

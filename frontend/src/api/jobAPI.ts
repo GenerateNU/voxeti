@@ -95,7 +95,7 @@ export const createJobApi = (baseUrl: string) =>
       >({
         query: ({ producerId, page, limit, filter, sort }) =>
           `/recommendations/${producerId}?page=${page}&limit=${limit}&filter=${filter.join(
-            ","
+            ",",
           )}&sort=${sort}`,
       }),
 

@@ -1,17 +1,28 @@
-import { Stepper, Step, StepLabel} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
+import { Stepper, Step, StepLabel } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import StepConnector, {
+  stepConnectorClasses,
+} from "@mui/material/StepConnector";
 
 export interface StepperProps {
   currentStep: number;
 }
 
-export default function VoxetiStepper({currentStep}: StepperProps) {
-    const emptyIcon = () => {
-        return (null);
-    }
+export default function VoxetiStepper({ currentStep }: StepperProps) {
+  const emptyIcon = () => {
+    return null;
+  };
 
-    const steps: string[] = ["start", "upload", "preview", "options", "notes", "checkout", "submit", "confirmation"];
+  const steps: string[] = [
+    "start",
+    "upload",
+    "preview",
+    "options",
+    "notes",
+    "checkout",
+    "submit",
+    "confirmation",
+  ];
 
     const VoxetiConnector = styled(StepConnector)(({ theme }) => ({
         [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -50,5 +61,4 @@ export default function VoxetiStepper({currentStep}: StepperProps) {
             ))}
         </Stepper>
     );
-
 }

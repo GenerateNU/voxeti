@@ -17,7 +17,7 @@ export interface UploadFileProps {
 
 export type onDropTypeGen<T extends File> = (
   acceptedFiles: T[],
-  fileRejections: FileRejection[]
+  fileRejections: FileRejection[],
 ) => void;
 export type onDropType = onDropTypeGen<File>;
 
@@ -41,7 +41,7 @@ export default function UploadFile({
         setFiles(files.concat(acceptedFiles));
         setQuantities((quantities) => quantities.concat(1));
         setDimensions((dimensions) =>
-          dimensions.concat({ width: 0, height: 0, depth: 0 })
+          dimensions.concat({ width: 0, height: 0, depth: 0 }),
         );
       } else {
         setFiles(acceptedFiles);
@@ -58,7 +58,7 @@ export default function UploadFile({
       setOpen,
       setPrices,
       setQuantities,
-    ]
+    ],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

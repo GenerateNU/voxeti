@@ -13,18 +13,16 @@ export default function useDesignUpload(files : File[], dimensions : Dimensions[
     })
 
     dimensions.forEach((dimension) => {
-      console.log(JSON.stringify(dimension));
-      formData.append('dimensions', JSON.stringify(dimension))
-    })
+      formData.append("dimensions", JSON.stringify(dimension));
+    });
 
     try {
-      const response = await uploadDesigns(formData).unwrap()
-      console.log(response);
+      const response = await uploadDesigns(formData).unwrap();
       return response;
     } catch (error : unknown) {
       return (error as BackendError)?.data?.error;
     }
-  }
+  };
 
   return uploadJobDesigns;
 }

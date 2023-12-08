@@ -53,12 +53,10 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
         .unwrap()
         .then(() => {
           setJobStatus("ACCEPTED");
-          console.log("job successfully accepted");
         })
-        .catch((error) => {
+        .catch(() => {
           addError("Error accepting the job");
           setOpen(true);
-          console.log(error);
         });
     }
   };
@@ -72,13 +70,9 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
         producerId: user.id,
       })
         .unwrap()
-        .then(() => {
-          console.log("job successfully declined");
-        })
-        .catch((error) => {
+        .catch(() => {
           addError("Error declining the job");
           setOpen(true);
-          console.log(error);
         });
     }
 
@@ -89,11 +83,7 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
     return (
       <ThemeProvider theme={theme}>
         <div className="flex flex-row items-center justify-end gap-y-1 gap-x-2">
-          <StyledButton
-            color="primary"
-            onClick={acceptJob}
-            size="md"
-          >
+          <StyledButton color="primary" onClick={acceptJob} size="md">
             Accept
           </StyledButton>
           <StyledButton
@@ -111,7 +101,9 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
     return (
       <ThemeProvider theme={theme}>
         <div className=" flex flex-row items-center justify-end gap-y-1 gap-x-2">
-          <StyledButton color="success" size="md">Job Accepted</StyledButton>
+          <StyledButton color="success" size="md">
+            Job Accepted
+          </StyledButton>
           <StyledButton href="/jobs" color="seconday" size="md">
             Current Jobs
           </StyledButton>

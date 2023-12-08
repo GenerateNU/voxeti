@@ -94,7 +94,7 @@ export default function EditAddresses(props: {
         <div className="flex h-full flex-col items-center justify-center">
           <div className=" py-8">
             <StyledButton
-              size={"sm"}
+              size={"md"}
               color={"seconday"}
               type="submit"
               onClick={() => {

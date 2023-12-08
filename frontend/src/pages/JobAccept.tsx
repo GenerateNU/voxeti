@@ -16,7 +16,7 @@ export default function JobInfo() {
   const { addError, setOpen } = useApiError();
 
   const [pageStatus, setPageStatus] = React.useState<PageStatus>(
-    PageStatus.Loading
+    PageStatus.Loading,
   );
   const [currentJob, setCurrentJob] = React.useState<Job>();
 
@@ -43,7 +43,10 @@ export default function JobInfo() {
 
   const BackButton = () => {
     return (
-      <div aria-label="delete" className='flex items-center w-[75px] text-[gray] hover:text-[black]'>
+      <div
+        aria-label="delete"
+        className="flex items-center w-[75px] text-[gray] hover:text-[black]"
+      >
         <ArrowBackIosIcon fontSize="inherit" />
         <Link
           href="/jobs"
@@ -93,7 +96,7 @@ export default function JobInfo() {
       <div className="py-32 w-full flex flex-col items-center justify-center">
         <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
           <BackButton />
-          <h1 className='text-2xl mt-6 mb-12'>Job Request</h1>
+          <h1 className="text-2xl mt-6 mb-12">Job Request</h1>
           <div className=" flex flex-row justify-between">
             {currentJob && (
               <DesignerName
@@ -110,7 +113,7 @@ export default function JobInfo() {
                     designId={designId}
                     quantity={currentJob.quantity[index]}
                   />
-                )
+                ),
             )}
           {jobInfo.slice(0, -1).map((section) => (
             <FieldValueRow section={section} />
@@ -146,10 +149,9 @@ export default function JobInfo() {
 
           setPageStatus(PageStatus.Success);
         })
-        .catch((error) => {
+        .catch(() => {
           addError("Job doesn't exist or you don't have permission");
           setOpen(true);
-          console.log(error);
           setPageStatus(PageStatus.Error);
         });
     }

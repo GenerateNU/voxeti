@@ -1,50 +1,59 @@
 import { Avatar } from "@mui/material";
 
 type ProducerCellProps = {
-  avatar?: string,
-  firstName?: string,
-  lastName?: string,
-  userType: 'designer' | 'producer'
-}
+  avatar?: string;
+  firstName?: string;
+  lastName?: string;
+  userType: "designer" | "producer";
+  imageOnly: boolean;
+  size: number;
+};
 
-export default function AvatarCell({ firstName, lastName, userType } : ProducerCellProps) {
+export default function AvatarCell({
+  firstName,
+  lastName,
+  userType,
+  imageOnly,
+  size,
+}: ProducerCellProps) {
   const avatarOutlineColor = {
-    designer: '!bg-designer',
-    producer: '!bg-producer',
-  }
+    designer: "!bg-designer",
+    producer: "!bg-producer",
+  };
 
   return (
     <div className="flex items-center text-base">
       <Avatar
         sx={{
-          width: 85,
-          height: 85,
-          marginRight: '20px'
+          width: size,
+          height: size,
+          marginRight: "20px",
         }}
         className={avatarOutlineColor[userType]}
       >
         <Avatar
           sx={{
-            width: 80,
-            height: 80,
+            width: size - 5,
+            height: size - 5,
             backgroundColor: "#FFFFFF",
           }}
         >
           <Avatar
             sx={{
-              width: 70,
-              height: 70
+              width: size - 15,
+              height: size - 15,
             }}
           >
-            {firstName?.charAt(0)}
+            {firstName && lastName ? firstName.charAt(0) : undefined}
           </Avatar>
         </Avatar>
       </Avatar>
-      {(firstName && lastName)
-        ? firstName + " " + lastName
-        : userType === "producer"
+      {!imageOnly &&
+        (firstName && lastName
+          ? firstName + " " + lastName
+          : userType === "producer"
           ? "Awaiting Acceptance"
-          : "User Not Found"}
+          : "User Not Found")}
     </div>
   );
 }

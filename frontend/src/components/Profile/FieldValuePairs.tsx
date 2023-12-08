@@ -5,8 +5,6 @@ export default function FieldValuePairs(props: {
   edit?: boolean;
   updateFields: (key: string, value: string) => void;
 }) {
-  console.log(props.rows);
-
   return (
     <div className=" w-full sm:w-2/3">
       {props.rows.map((section) => {

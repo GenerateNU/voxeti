@@ -97,23 +97,16 @@ function Profile(props: { state: UserSliceState }) {
     const logout = useLogout();
 
     const startDeletion = () => {
-      console.log("want to delete account");
-      console.log("please confirm");
       setSectionEdit("deactivate");
     };
 
     const confirmDeletion = () => {
-      console.log("deleting account");
-      console.log("logging out");
-
       deleteUser(props.state.user.id)
         .unwrap()
-        .then((user) => {
+        .then(() => {
           logout();
-          console.log(`succesfully deleted ${user}`);
         })
         .catch((error) => {
-          console.log(error);
           setSectionEdit("");
           addError(error.data.message);
           setOpen(true);
@@ -125,6 +118,7 @@ function Profile(props: { state: UserSliceState }) {
       <div className="flex h-full flex-row justify-between items-center pb-2">
         <div>Deactivate Account</div>
         <StyledButton
+          disabled
           size={"sm"}
           color={"delete"}
           onClick={() => {

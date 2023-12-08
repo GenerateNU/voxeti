@@ -10,12 +10,12 @@ export const createUserApi = (baseUrl: string) =>
       baseUrl: `${baseUrl}/users`,
       credentials: "include",
       prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as RootState).user.csrfToken
+        const token = (getState() as RootState).user.csrfToken;
         if (token) {
-          headers.set("Csrftoken", token)
+          headers.set("Csrftoken", token);
         }
-        return headers
-      }
+        return headers;
+      },
     }),
     endpoints: (builder) => ({
       createUser: builder.mutation<User, User>({

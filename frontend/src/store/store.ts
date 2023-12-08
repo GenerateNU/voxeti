@@ -1,6 +1,14 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
-import { authApi, designApi, jobApi, priceEstimationApi, slicerApi, userApi, paymentApi } from "../api/api";
+import {
+  authApi,
+  designApi,
+  jobApi,
+  priceEstimationApi,
+  slicerApi,
+  userApi,
+  paymentApi,
+} from "../api/api";
 import {
   FLUSH,
   PAUSE,

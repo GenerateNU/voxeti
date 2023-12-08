@@ -3,17 +3,17 @@ import StyledButton from '../Button/Button';
 import router from '../../router';
 
 export type BottomNavProps = {
-    cancel: () => void,
-    nextPage: () => void,
-    step?: number,
-    enabled: boolean
+  cancel: () => void;
+  nextPage: () => void;
+  step?: number;
+  enabled: boolean;
 };
 
 export default function BottomNavOptions({
-    cancel,
-    nextPage,
-    step,
-    enabled
+  cancel,
+  nextPage,
+  step,
+  enabled,
 }: BottomNavProps) {
     if (step === 6 || step === 7) return null;
 
@@ -52,5 +52,4 @@ export default function BottomNavOptions({
             }
         </Box>
     )
-
 }

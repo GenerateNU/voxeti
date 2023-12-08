@@ -12,7 +12,7 @@ export default function DesignInfo(props: {
 
   return (
     <div>
-      <Divider variant="middle" className="py-3 !m-0"/>
+      <Divider variant="middle" className="py-3 !m-0" />
       <div className=" py-3" />
       <div className="flex justify-between py-1 items-center">
         <p>Files</p>
@@ -20,7 +20,7 @@ export default function DesignInfo(props: {
           {data && (
             <StyledButton
               color="seconday"
-              size='sm'
+              size="sm"
               onClick={() => saveAs(data, `voxeti-${props.designId}.stl`)}
             >
               <DownloadIcon fontSize="small" />

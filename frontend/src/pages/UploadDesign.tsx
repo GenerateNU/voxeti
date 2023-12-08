@@ -118,7 +118,6 @@ export function UploadDesign() {
 
     // Check if there was an error:
     if ("code" in uploadResponse) {
-      console.log(uploadResponse);
       return;
     }
 
@@ -142,6 +141,7 @@ export function UploadDesign() {
       designId: designIds,
       quantity: quantities,
       status: "PENDING",
+      tracking: "",
       price: Math.round(totalPrice * 100),
       shipping: Math.round(shipping * 100),
       taxes: Math.round(taxes * 100),
@@ -152,12 +152,10 @@ export function UploadDesign() {
     };
 
     setters.currentStep((states.currentStep += 1));
-	console.log("In the form submit")
     // Submit the job:
     createJob(job)
       .unwrap()
       .then(() => {
-		console.log("completed the call")
         setters.currentStep((states.currentStep += 1));
       })
       .catch((error) => {
@@ -241,12 +239,10 @@ export function UploadDesign() {
   const isSubmitStep = currentStep === 6;
   const isFinalStep = currentStep === 8;
 
-  console.log(currentStep);
-
   return (
     <Auth authRoute={true}>
       <div className="container mx-auto mt-16 grow h-[100%]">
-        <div className="z-0 min-h-[84vh] flex flex-col">
+        <div className="z-0 min-h-[84vh] flex flex-col mt-12">
           <VoxetiStepper currentStep={currentStep} />
           <UploadFlow states={states} setters={setters} />
           <BottomNavOptions

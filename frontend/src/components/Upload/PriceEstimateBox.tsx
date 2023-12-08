@@ -16,15 +16,15 @@ export default function PriceEstimateBox({
 }: PriceEstimateBoxProps) {
   const totalBasePrice = prices.reduce(
     (accum: number, currentValue: PriceObject) => accum + currentValue.total,
-    0
+    0,
   );
   const totalTaxAmount = taxes.reduce(
     (accum: number, currentValue: number) => accum + currentValue,
-    0
+    0,
   );
   const totalShippingAmount = shippingCost.reduce(
     (accum: number, currentValue: number) => accum + currentValue,
-    0
+    0,
   );
   const taxRate =
     (totalTaxAmount / (totalBasePrice + totalShippingAmount)) * 100;
