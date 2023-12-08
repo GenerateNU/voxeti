@@ -1,7 +1,6 @@
 import { Fab, Link } from "@mui/material";
 import { useState } from "react";
 import NavDropDown from "./Dropdown/NavDropDown";
-import NotifactionIcon from "../../assets/navbar/notifaction.png";
 import ProfileIcon from "../../assets/navbar/profile.png";
 import { useStateSelector } from "../../hooks/use-redux";
 import router from "../../router";
