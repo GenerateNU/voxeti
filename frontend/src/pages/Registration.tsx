@@ -26,7 +26,7 @@ import { useApiError } from "../hooks/use-api-error.tsx";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
-  (section) => section.userType?.toLowerCase() !== "producer",
+  (section) => section.userType?.toLowerCase() !== "producer"
 );
 
 const QuestionForm = () => {
@@ -49,10 +49,10 @@ const QuestionForm = () => {
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
   const [totalSections, setTotalSections] = useState<number>(
-    allQuestions.sections.length,
+    allQuestions.sections.length
   );
   const [questions, setQuestions] = useState<FormSection[]>(
-    allQuestions.sections,
+    allQuestions.sections
   );
 
   const { addError, setOpen } = useApiError();
@@ -214,6 +214,15 @@ const QuestionForm = () => {
                       key={question.key + "master"}
                       question={question}
                       control={control}
+                    />
+                  );
+                case "password":
+                  return (
+                    <TextQuestion
+                      key={question.key + "master"}
+                      question={question}
+                      control={control}
+                      password
                     />
                   );
                 case "dropdown":

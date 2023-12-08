@@ -93,7 +93,7 @@ export const allQuestions: MultiForm = {
           questions: [
             {
               prompt: "Password",
-              format: "text",
+              format: "password",
               key: "password",
               rules: {
                 required: true,
