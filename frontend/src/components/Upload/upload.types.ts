@@ -32,7 +32,7 @@ export type Setters = {
   currentStep: React.Dispatch<React.SetStateAction<number>>;
   uploadedFiles: React.Dispatch<React.SetStateAction<File[]>>;
   quantities: React.Dispatch<React.SetStateAction<number[]>>;
-  dimensions: React.Dispatch<React.SetStateAction<Dimensions[]>>,
+  dimensions: React.Dispatch<React.SetStateAction<Dimensions[]>>;
   color: React.Dispatch<React.SetStateAction<string>>;
   quantity: React.Dispatch<React.SetStateAction<number>>;
   delivery: React.Dispatch<React.SetStateAction<string>>;
@@ -42,4 +42,5 @@ export type Setters = {
   slice: () => void;
   prices: React.Dispatch<React.SetStateAction<EstimateBreakdown[]>>;
   address: React.Dispatch<React.SetStateAction<number>>;
-}
+  formSubmit: () => Promise<void>;
+};

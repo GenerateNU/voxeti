@@ -3,7 +3,7 @@
 // A Voxeti User, can be both a Designer and a Producer
 export interface User {
   id: string;
-  userType?: 'DESIGNER' | 'PRODUCER' | 'HYBRID',
+  userType?: UserType,
   firstName: string;
   lastName: string;
   email: string;
@@ -77,7 +77,7 @@ export type Filament = {
 
 // A 3D printer
 export type Printer = {
-  name?: string;
+  name: string;
   supportedFilament: FilamentType[];
   dimensions: Dimensions;
 };
@@ -106,6 +106,8 @@ export type ExperienceLevel = 1 | 2 | 3;
 
 export type SocialProvider = "NONE" | "GOOGLE";
 
+export type UserType = "DESIGNER" | "PRODUCER" | "HYBRID"
+
 // 4. Extra Types:
 
 export type Error = {
@@ -124,4 +126,4 @@ export type SSOQueryParams = {
   provider: SocialProvider;
 };
 
-export const NEW_USER_ID = "000000000000000000000000"
+export const NEW_USER_ID = "000000000000000000000000";

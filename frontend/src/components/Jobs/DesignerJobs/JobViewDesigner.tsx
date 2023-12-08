@@ -59,6 +59,7 @@ export default function JobViewDesigner({ jobId } : JobViewDesignerProps) {
       {job?.shippingAddress.city}, {job?.shippingAddress.state}
     </>
   )
+
   const trackingNumber = job?.tracking === "" ? 'No Information' : job?.tracking
   const estimatedDelivery = () => {
     const date = new Date(job?.createdAt as Date)
