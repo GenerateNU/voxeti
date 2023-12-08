@@ -129,7 +129,7 @@ export default function JobViewProducer({ jobId } : JobViewProducerProps) {
     const statusNum = statusOrder[status]
     const complete = (statusNum < statusOrder[jobState as JobStatus]) || (status === 'INSHIPPING' && (tracking || job?.tracking))
     const incomplete = statusNum > statusOrder[jobState as JobStatus]
-    
+
     return (
       <section className='pt-10 pb-10 flex flex-col md:flex-row justify-between md:items-center gap-y-5'>
         <h2 className='text-md'>
@@ -147,8 +147,8 @@ export default function JobViewProducer({ jobId } : JobViewProducerProps) {
           disabled={incomplete || status === 'COMPLETE'}
         >
           {(loading && jobState === status)
-            ? <CircularProgress /> 
-            : complete 
+            ? <CircularProgress />
+            : complete
               ? <>
                   Completed
                   <CheckIcon sx={{ marginLeft: '10px'}}/>
@@ -242,7 +242,7 @@ export default function JobViewProducer({ jobId } : JobViewProducerProps) {
       {job?.shippingAddress.city}, {job?.shippingAddress.state}
     </>
   )
-  
+
   return (
     <div>
       <div className='text-2xl mt-10 mb-10 flex flex-col md:flex-row gap-x-2'>
@@ -263,12 +263,12 @@ export default function JobViewProducer({ jobId } : JobViewProducerProps) {
       <div className='relative'>
         {jobState === 'ACCEPTED' ?
           <JobConfirmModal />
-          : trackingOpen 
+          : trackingOpen
             ? <JobTrackingNumberModal />
             : <></>
         }
-        <ActionBar 
-          title='1. Print' 
+        <ActionBar
+          title='1. Print'
           description='Print the requested items.'
           buttonText='Mark Complete'
           status={'INPROGRESS'}
@@ -277,8 +277,8 @@ export default function JobViewProducer({ jobId } : JobViewProducerProps) {
         <Divider
           className='!m-0'
         />
-        <ActionBar 
-          title='2. Ship' 
+        <ActionBar
+          title='2. Ship'
           description='Package the items and drop them off at post office.'
           status='INSHIPPING'
           buttonText='Add Tracking'
@@ -287,8 +287,8 @@ export default function JobViewProducer({ jobId } : JobViewProducerProps) {
         <Divider
           className='!m-0'
         />
-        <ActionBar 
-          title='3. Deliver' 
+        <ActionBar
+          title='3. Deliver'
           buttonText='Complete'
           description='Your work is done! When this order has been delivered, the job will automatically be marked complete.'
           status='COMPLETE'
