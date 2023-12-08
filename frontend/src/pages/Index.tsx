@@ -1,3 +1,5 @@
+import router from "../router";
+
 export default function Index() {
   return (
     <>
@@ -185,7 +187,10 @@ export default function Index() {
             about bringing your designs to life. You can choose from a variety
             of printers, each with its own unique capabilities and specialties.
           </p>
-          <button className="bg-primary/90 mt-4 p-4 rounded-md text-background font-bold font-display mx-auto">
+          <button
+            className="bg-primary/90 mt-4 p-4 rounded-md text-background font-bold font-display mx-auto"
+            onClick={() => router.navigate({ to: '/register' })}
+          >
             Sign Up Now
           </button>
         </div>

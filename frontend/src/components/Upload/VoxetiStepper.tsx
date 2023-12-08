@@ -24,42 +24,41 @@ export default function VoxetiStepper({ currentStep }: StepperProps) {
     "confirmation",
   ];
 
-  const VoxetiConnector = styled(StepConnector)(({ theme }) => ({
-    [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 10,
-      left: "calc(-50% + 10px)",
-      right: "calc(50% + 10px)",
-    },
-    [`&.${stepConnectorClasses.active}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: "#EFAF00",
-      },
-    },
-    [`&.${stepConnectorClasses.completed}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: "#EFAF00",
-      },
-    },
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor:
-        theme.palette.mode === "dark" ? theme.palette.grey[800] : "#eaeaf0",
-      borderTopWidth: 3,
-      borderRadius: 1,
-    },
-  }));
+    const VoxetiConnector = styled(StepConnector)(({ theme }) => ({
+        [`&.${stepConnectorClasses.alternativeLabel}`]: {
+            top: 10,
+            left: 'calc(-50% + 10px)',
+            right: 'calc(50% + 10px)',
+        },
+        [`&.${stepConnectorClasses.active}`]: {
+            [`& .${stepConnectorClasses.line}`]: {
+            borderColor: '#EFAF00',
+            },
+        },
+        [`&.${stepConnectorClasses.completed}`]: {
+            [`& .${stepConnectorClasses.line}`]: {
+            borderColor: '#EFAF00',
+            },
+        },
+        [`& .${stepConnectorClasses.line}`]: {
+            borderColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
+            borderTopWidth: 3,
+            borderRadius: 1,
+        },
+    }));
 
-  return (
-    <Stepper
-      alternativeLabel
-      activeStep={currentStep}
-      connector={<VoxetiConnector />}
-      className="mb-16"
-    >
-      {steps.map((label) => (
-        <Step key={label}>
-          <StepLabel StepIconComponent={emptyIcon}></StepLabel>
-        </Step>
-      ))}
-    </Stepper>
-  );
+    return(
+        <Stepper
+            alternativeLabel
+            activeStep={currentStep}
+            connector={<VoxetiConnector />}
+            className='mb-16 !mt-10'
+        >
+            {steps.map((label) => (
+                <Step key={label}>
+                    <StepLabel StepIconComponent={emptyIcon}></StepLabel>
+                </Step>
+            ))}
+        </Stepper>
+    );
 }
