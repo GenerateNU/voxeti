@@ -30,9 +30,7 @@ export default function NavBar() {
                 Create a Job
               </Link>
             )}
-            <Fab size="small" className="!shadow-none !bg-transparent">
-              <img className="h-6" src={NotifactionIcon} />
-            </Fab>
+
             <Fab
               size="small"
               className="!shadow-none !bg-transparent"
