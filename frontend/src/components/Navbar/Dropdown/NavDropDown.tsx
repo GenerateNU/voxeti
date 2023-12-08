@@ -56,6 +56,7 @@ export default function NavDropDown({ navOpen } : NavDropDownProps) {
           {currentUser.userType==="DESIGNER" ? designerPages.map((item) => {
             return (
               <Link
+                key={item.text}
                 href={item.href}
                 className='flex flex-row gap-x-2 w-full pt-5 pl-6 !text-base items-center !text-primary !font-base ease-in-out cursor-pointer !transition-all hover:!text-[#7A7A7A]'
                 underline='none'
@@ -66,6 +67,7 @@ export default function NavDropDown({ navOpen } : NavDropDownProps) {
           }) : producerPages.map((item) => {
             return (
               <Link
+                key={item.text}
                 href={item.href}
                 className='flex flex-row gap-x-2 w-full pt-5 pl-6 !text-base items-center !text-primary !font-base ease-in-out cursor-pointer !transition-all hover:!text-[#7A7A7A]'
                 underline='none'
@@ -79,6 +81,7 @@ export default function NavDropDown({ navOpen } : NavDropDownProps) {
           {user.map((item) => {
             return (
               <Link
+                key={item.text}
                 onClick={item.onClick}
                 className='flex flex-row gap-x-2 w-full pt-5 pl-6 !text-base items-center !font-base ease-in-out cursor-pointer !text-[#7A7A7A] hover:!text-primary transition-all'
                 underline='none'

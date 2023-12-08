@@ -1,6 +1,6 @@
 import { Address, Geometry } from "../../main.types"
 
-export default function ShippingInfo(props: { shippingAddress: Address, estimatedDelivery: Date }) {
+export default function ShippingInfo(props: { shippingAddress: Address, estimatedDelivery?: string }) {
 
     const getStaticMapUrl = (geometry: Geometry) => {
         const G_MAPS_API_KEY = import.meta.env.VITE_G_MAPS_API_KEY
@@ -29,17 +29,23 @@ export default function ShippingInfo(props: { shippingAddress: Address, estimate
         )
     }
 
-    const FormatDate = (date: Date): string => {
-        const dateObj = new Date(date);
+    const FormatDateString = (dateStr: string): string => {
+        const dateObj = new Date(dateStr);
         const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
         return dateObj.toLocaleDateString('en-US', options);
     };
 
     const EstimatedDelivery = () => {
+        const ZERO_DATE_STR = "0001-01-01T00:00:00Z"
         return (
             <div className="flex flex-col">
                 <p className="text-base pb-1">Estimated Delivery</p>
-                <p className="text-base opacity-50">{FormatDate(props.estimatedDelivery)}</p>
+                {
+                    props.estimatedDelivery && props.estimatedDelivery !== ZERO_DATE_STR ?
+                        <p className="text-base opacity-50">{FormatDateString(props.estimatedDelivery)}</p>
+                        :
+                        <p className="text-base opacity-50">Not Available</p>
+                }
             </div>
         )
     }

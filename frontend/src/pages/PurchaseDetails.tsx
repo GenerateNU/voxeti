@@ -5,7 +5,6 @@ import { Divider, IconButton } from "@mui/material";
 import ProducerInfo from "../components/Purchase/ProducerInfo"
 import ShippingInfo from "../components/Purchase/ShippingInfo";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { Link } from "@mui/material";
 import { useParams } from "@tanstack/react-router";
 import { jobApi } from "../api/api";
 import Loading from "../components/Jobs/ProducerJobs/components/Loading";
@@ -31,18 +30,20 @@ const PurchaseDetails = (props: {jobId: string}) => {
     const [pageStatus, setPageStatus] = useState<PageStatus>(
         PageStatus.Loading
     );
-    const { data: job } = jobApi.useGetJobByIdQuery(props.jobId);
+    const { data: job, error } = jobApi.useGetJobByIdQuery(props.jobId);
 
     useEffect(() => {
-        if (job && job.producerId && job.trackingNumber && job.estimatedDelivery) {
+        if (error) {
+            setPageStatus(PageStatus.Error);
+        } else if (job) {
             setPageStatus(PageStatus.Success);
         } else {
-            setPageStatus(PageStatus.Error);
+            setPageStatus(PageStatus.Loading);
         }
-    }, [job]);
+    }, [job, error]);
 
     const PageSuccess = () => {
-        return job && job.producerId && job.trackingNumber && job.estimatedDelivery && (
+        return job && (
             <div className="py-32 w-full h-screen flex flex-col items-center">
                 <div className=" px-4 w-full sm:w-3/5 md:w-1/2">
                     <BackButton />
@@ -69,11 +70,13 @@ const PurchaseDetails = (props: {jobId: string}) => {
       }
 }
 
-const TrackingNumber = (props: {trackingNumber: string}) => {
+const TrackingNumber = (props: {trackingNumber?: string}) => {
     return (
         <div className="flex justify-between">
             <p className="text-base">Tracking Number</p>
-            <p className="text-base">{props.trackingNumber}</p>
+            {
+                props.trackingNumber ? <p className="text-base">{props.trackingNumber}</p> : <p className="text-base">Not Available</p>
+            }
         </div>
     )
 }
@@ -90,15 +93,9 @@ const Price = (props: {price: number}) => {
 const BackButton = () => {
     return (
         <div className="pb-5">
-            <IconButton aria-label="delete" size="small">
+            <IconButton href="/purchase-history" aria-label="delete" size="small">
                 <ArrowBackIosIcon fontSize="inherit" color="inherit" style={{ opacity: 0.75 }} />
-                <Link
-                    href="/purchase-history"
-                    underline="none"
-                    color="black"
-                >
-                    <p className=" text-base opacity-50">Purchase History</p>
-                </Link>
+                <p className=" text-base opacity-75">Purchase History</p>
             </IconButton>
         </div>
     );

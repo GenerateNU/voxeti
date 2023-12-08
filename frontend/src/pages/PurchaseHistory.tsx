@@ -35,21 +35,23 @@ const PurchaseHistory = (props: { designerId: string }) => {
     const [pageStatus, setPageStatus] = useState<PageStatus>(
         PageStatus.Loading
     );
-    const { data: jobs } = jobApi.useGetDesignerJobsQuery({
+    const { data: jobs, error } = jobApi.useGetDesignerJobsQuery({
         designerId: props.designerId,
         page: "0",
     });
 
     useEffect(() => {
-        if (jobs && jobs.length !== 0) {
+        if (error) {
+            setPageStatus(PageStatus.Error);
+        } else if (jobs) {
             setPageStatus(PageStatus.Success);
         } else {
-            setPageStatus(PageStatus.Error);
+            setPageStatus(PageStatus.Loading);
         }
-    });
+    }, [jobs, error]);
 
     const PageSuccess = () => {
-        return jobs && jobs.length !== 0 && (
+        return jobs && jobs.length !== 0 ? (
             <div className="py-32 w-full h-screen flex flex-col items-center">
               <div className=" px-4 w-full sm:w-3/5 flex flex-col">
                 <h2 className="text-3xl py-5">Purchase History</h2>
@@ -65,13 +67,24 @@ const PurchaseHistory = (props: { designerId: string }) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {jobs.map((job) =>
-                        <PurchaseRow job={job} type='producer' />
+                      {jobs.map((job, index) =>
+                        <PurchaseRow job={job} type='producer' key={index} />
                       )}
                     </TableBody>
                   </Table>
                 </TableContainer>
               </div>
+            </div>
+        ) : (
+            <div className="py-32 w-full h-screen flex flex-col items-center">
+                <div className=" px-4 w-full sm:w-3/5 flex flex-col">
+                    <h2 className="text-3xl py-5">Purchase History</h2>
+                    <div className="mt-16 self-center flex flex-col items-center">
+                        <h1 className='mt-10 text-xl'>
+                            No purchases yet
+                        </h1>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -90,10 +103,10 @@ const PageError = () => {
     return (
         <div className="py-32 w-full h-screen flex flex-col items-center">
             <div className=" px-4 w-full sm:w-3/5 flex flex-col">
-                <h2 className="text-3xl py-5">Job Submissions</h2>
+                <h2 className="text-3xl py-5">Purchase History</h2>
                 <div className="mt-16 self-center flex flex-col items-center">
                     <h1 className='mt-10 text-xl'>
-                        No jobs...
+                        Error fetching jobs
                     </h1>
                 </div>
             </div>
