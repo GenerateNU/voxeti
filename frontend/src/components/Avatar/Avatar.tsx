@@ -36,5 +36,5 @@ export default function CustomAvatar({ userType, firstName, lastName, innerHeigh
             </Avatar>
         </Avatar>
     )
-        
+
 }
