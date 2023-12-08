@@ -6,8 +6,9 @@ import QuestionForm from "./pages/Registration.tsx";
 import { UploadDesign } from "./pages/UploadDesign.tsx";
 import { Login } from "./pages/Login.tsx";
 import Jobs from "./pages/Jobs.tsx";
-import JobInfo from "./pages/JobInfo.tsx";
+import JobInfo from "./pages/JobAccept.tsx";
 import ProfilePage from "./pages/Profile.tsx";
+import JobView from "./pages/JobView.tsx";
 
 const rootRoute = new RootRoute({
   component: () => (
@@ -51,11 +52,17 @@ const jobsRoute = new Route({
   component: Jobs,
 });
 
-const jobInfoRoute = new Route({
+const jobAcceptRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "/job-accept/$jobId",
   component: JobInfo,
 });
+
+const jobViewRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: "/jobs/$jobId",
+  component: JobView,
+})
 
 const registrationRoute = new Route({
   getParentRoute: () => rootRoute,
@@ -78,7 +85,8 @@ const routeTree = rootRoute.addChildren([
   registrationRoute,
   uploadDesignRoute,
   jobsRoute,
-  jobInfoRoute,
+  jobAcceptRoute,
+  jobViewRoute
 ]);
 
 const router = new Router({ routeTree });
