@@ -1,7 +1,6 @@
 import { Fab, Link } from "@mui/material";
 import { useState } from "react";
 import NavDropDown from "./Dropdown/NavDropDown";
-import NotifactionIcon from "../../assets/navbar/notifaction.png";
 import ProfileIcon from "../../assets/navbar/profile.png";
 import { useStateSelector } from "../../hooks/use-redux";
 import router from "../../router";
@@ -30,9 +29,7 @@ export default function NavBar() {
                 Create a Job
               </Link>
             )}
-            <Fab size="small" className="!shadow-none !bg-transparent">
-              <img className="h-6" src={NotifactionIcon} />
-            </Fab>
+
             <Fab
               size="small"
               className="!shadow-none !bg-transparent"

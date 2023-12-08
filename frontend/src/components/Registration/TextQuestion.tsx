@@ -5,9 +5,11 @@ import { TextField } from "@mui/material";
 export default function TextQuestion({
   question,
   control,
+  password,
 }: {
   question: FormQuestion;
   control: Control;
+  password?: boolean;
 }) {
   return (
     <Controller
@@ -25,6 +27,7 @@ export default function TextQuestion({
                 ? control.getFieldState(question.key).error?.message
                 : " "
             }
+            type={password ? "password" : "text"}
             onChange={(e) => onChange(e.target.value)}
             label={question.prompt}
             variant="outlined"
