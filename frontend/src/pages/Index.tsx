@@ -189,7 +189,7 @@ export default function Index() {
             about bringing your designs to life. You can choose from a variety
             of printers, each with its own unique capabilities and specialties.
           </p>
-          <button 
+          <button
             className="bg-primary/90 mt-4 p-4 rounded-md text-background font-bold font-display mx-auto"
             onClick={() => router.navigate({ to: '/register' })}
           >
