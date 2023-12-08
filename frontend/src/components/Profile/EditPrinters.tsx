@@ -26,7 +26,7 @@ export default function EditPrinters(props: {
           dimensions: { ...p.dimensions },
           supportedFilament: [...p.supportedFilament],
         }))
-      : []
+      : [],
   );
 
   const printerInfo: [string, string, string?][][] =
@@ -151,7 +151,7 @@ export default function EditPrinters(props: {
         display={printers[props.index]?.name || "Add New Printer"}
         onChange={(delta: number) => {
           props.setSection(
-            props.index + delta === printers.length ? section : ""
+            props.index + delta === printers.length ? section : "",
           );
           props.setIndex(props.index + delta);
         }}

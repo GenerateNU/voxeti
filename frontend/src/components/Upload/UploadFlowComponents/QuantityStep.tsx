@@ -29,7 +29,7 @@ export default function QuantityStep({
   const [dataUrl, setDataUrl] = useState<string>("");
   const [currentFile, setCurrentFile] = useState(0);
   const [currentQuantitiy, setCurrentQuantitiy] = useState(
-    states.quantities[currentFile]
+    states.quantities[currentFile],
   );
   const reader = new FileReader();
 

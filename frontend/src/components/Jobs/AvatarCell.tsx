@@ -1,19 +1,25 @@
 import { Avatar } from "@mui/material";
 
 type ProducerCellProps = {
-  avatar?: string,
-  firstName?: string,
-  lastName?: string,
-  userType: 'designer' | 'producer',
-  imageOnly: boolean,
-  size: number,
-}
+  avatar?: string;
+  firstName?: string;
+  lastName?: string;
+  userType: "designer" | "producer";
+  imageOnly: boolean;
+  size: number;
+};
 
-export default function AvatarCell({ firstName, lastName, userType, imageOnly, size } : ProducerCellProps) {
+export default function AvatarCell({
+  firstName,
+  lastName,
+  userType,
+  imageOnly,
+  size,
+}: ProducerCellProps) {
   const avatarOutlineColor = {
-    designer: '!bg-designer',
-    producer: '!bg-producer',
-  }
+    designer: "!bg-designer",
+    producer: "!bg-producer",
+  };
 
   return (
     <div className="flex items-center text-base">
@@ -21,7 +27,7 @@ export default function AvatarCell({ firstName, lastName, userType, imageOnly, s
         sx={{
           width: size,
           height: size,
-          marginRight: '20px'
+          marginRight: "20px",
         }}
         className={avatarOutlineColor[userType]}
       >
@@ -42,9 +48,10 @@ export default function AvatarCell({ firstName, lastName, userType, imageOnly, s
           </Avatar>
         </Avatar>
       </Avatar>
-      {!imageOnly && ((firstName && lastName)
-        ? firstName + " " + lastName
-        : userType === "producer"
+      {!imageOnly &&
+        (firstName && lastName
+          ? firstName + " " + lastName
+          : userType === "producer"
           ? "Awaiting Acceptance"
           : "User Not Found")}
     </div>

@@ -7,20 +7,20 @@ import { useStateDispatch } from "./use-redux";
 
 export default function useLogout() {
   const [logout] = authApi.useLogoutMutation();
-  const dispatch = useStateDispatch()
+  const dispatch = useStateDispatch();
   const { addError, setOpen } = useApiError();
 
   const handleLogout = () => {
     logout({})
       .unwrap()
       .then(() => {
-        dispatch(resetUser())
-        router.navigate({to: "/login"})
+        dispatch(resetUser());
+        router.navigate({ to: "/login" });
       })
       .catch((error) => {
         ErrorHandler({ dispatch, addError, setOpen, error });
-      })
-  }
+      });
+  };
 
-  return handleLogout
+  return handleLogout;
 }

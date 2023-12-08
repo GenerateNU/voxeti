@@ -38,9 +38,9 @@ export default function StyledButton({
       disabled={disabled}
       startIcon={icon}
       href={href}
-      onClick={color === 'success' ? () => {} : onClick}
+      onClick={color === "success" ? () => {} : onClick}
       sx={{
-        cursor: `${color === 'success' ? 'default' : 'pointer'}`
+        cursor: `${color === "success" ? "default" : "pointer"}`,
       }}
     >
       {children}

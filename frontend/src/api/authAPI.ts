@@ -11,12 +11,12 @@ export const createAuthApi = (baseUrl: string) =>
       baseUrl: `${baseUrl}/auth`,
       credentials: "include",
       prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as RootState).user.csrfToken
+        const token = (getState() as RootState).user.csrfToken;
         if (token) {
-          headers.set("Csrftoken", token)
+          headers.set("Csrftoken", token);
         }
-        return headers
-      }
+        return headers;
+      },
     }),
     endpoints: (builder) => ({
       login: builder.mutation<UserSliceState, UserCredentials>({
@@ -42,8 +42,8 @@ export const createAuthApi = (baseUrl: string) =>
       authenticate: builder.query({
         query: () => ({
           method: "POST",
-          url: "/authenticate"
-        })
-      })
+          url: "/authenticate",
+        }),
+      }),
     }),
   });

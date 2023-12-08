@@ -25,7 +25,7 @@ import { Printer } from "../main.types.ts";
 
 const producerQuestions = allQuestions.sections;
 const designerQuestions = allQuestions.sections.filter(
-  (section) => section.userType?.toLowerCase() !== "producer"
+  (section) => section.userType?.toLowerCase() !== "producer",
 );
 
 const QuestionForm = () => {
@@ -48,10 +48,10 @@ const QuestionForm = () => {
   const [login] = authApi.useLoginMutation();
   const dispatch = useStateDispatch();
   const [totalSections, setTotalSections] = useState<number>(
-    allQuestions.sections.length
+    allQuestions.sections.length,
   );
   const [questions, setQuestions] = useState<FormSection[]>(
-    allQuestions.sections
+    allQuestions.sections,
   );
 
   const temp: string = watch("userType");
