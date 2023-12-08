@@ -13,7 +13,7 @@ import { Job } from "../../../main.types";
 import Loading from "./components/Loading";
 import { PageStatus } from "../../../main.types";
 import FilterDropDown from "../FilterDropDown";
-import JobRow from "../JobRow";
+import JobRow, { JobExtended } from "../JobRow";
 import TableHeader from "../TableHeader";
 import { useStateSelector } from "../../../hooks/use-redux";
 import ErrorImage from "../../../assets/hero-image-2.png"
@@ -131,7 +131,7 @@ export default function JobsProducer() {
               </TableHead>
               <TableBody>
                 {jobs.map((job) =>
-                  <JobRow job={job} type='designer' />
+                  <JobRow job={job as JobExtended} type='designer' />
                 )}
               </TableBody>
             </Table>
