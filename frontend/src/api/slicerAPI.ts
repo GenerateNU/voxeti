@@ -28,7 +28,6 @@ export const createPriceEstimationApi = (baseUrl: string) =>
       credentials: "include",
       prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).user.csrfToken;
-        console.log(token);
         if (token) {
           headers.set("Csrftoken", token);
         }

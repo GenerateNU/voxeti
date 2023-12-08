@@ -1,11 +1,14 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { GoogleSSOResponse, UseGoogleProps } from "./hooks.types";
+import { useApiError } from "./use-api-error";
 
 export default function useGoogle({
   setProviderLoginPending,
   setProviderUser,
   googleSSO,
 }: UseGoogleProps) {
+  const { addError, setOpen } = useApiError();
+
   // Google login succeeds:
   function onSuccess(response: GoogleSSOResponse) {
     // Set provider pending to false:
@@ -20,15 +23,14 @@ export default function useGoogle({
           ssoAccessToken: response.access_token as string,
         });
       })
-      .catch((err) => {
-        // ERROR HANDLING NOT YET SETUP
-        console.log(err);
+      .catch(() => {
+        addError("Something went wrong, please try again");
+        setOpen(true);
       });
   }
 
   function onError() {
     setProviderLoginPending(false);
-    console.log("ERROR");
   }
 
   const signIn = useGoogleLogin({

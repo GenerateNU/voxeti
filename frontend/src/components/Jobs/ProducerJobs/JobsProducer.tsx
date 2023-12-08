@@ -63,7 +63,6 @@ export default function JobsProducer() {
         useQueryRecommendations.isSuccess &&
         useQueryRecommendations.data
       ) {
-        console.log(useQueryRecommendations.data);
         setJobs(useQueryRecommendations.data);
         setPageStatus(PageStatus.Success);
       } else if (
@@ -80,7 +79,6 @@ export default function JobsProducer() {
         setPageStatus(PageStatus.Error);
       } else {
         setPageStatus(PageStatus.Error);
-        console.log("Something else happened");
       }
     }, [useQueryResponseOther, useQueryRecommendations]);
 

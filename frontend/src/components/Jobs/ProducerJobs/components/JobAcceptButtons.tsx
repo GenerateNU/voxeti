@@ -53,12 +53,10 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
         .unwrap()
         .then(() => {
           setJobStatus("ACCEPTED");
-          console.log("job successfully accepted");
         })
-        .catch((error) => {
+        .catch(() => {
           addError("Error accepting the job");
           setOpen(true);
-          console.log(error);
         });
     }
   };
@@ -72,13 +70,9 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
         producerId: user.id,
       })
         .unwrap()
-        .then(() => {
-          console.log("job successfully declined");
-        })
-        .catch((error) => {
+        .catch(() => {
           addError("Error declining the job");
           setOpen(true);
-          console.log(error);
         });
     }
 

@@ -149,10 +149,9 @@ export default function JobInfo() {
 
           setPageStatus(PageStatus.Success);
         })
-        .catch((error) => {
+        .catch(() => {
           addError("Job doesn't exist or you don't have permission");
           setOpen(true);
-          console.log(error);
           setPageStatus(PageStatus.Error);
         });
     }
