@@ -85,7 +85,7 @@ const Price = (props: {price: number}) => {
     return (
         <div className="flex justify-between">
             <p className="text-base">Price</p>
-            <p className="text-base">${props.price}</p>
+            <p className="text-base">${(props.price / 100).toFixed(2)}</p>
         </div>
     )
 }
