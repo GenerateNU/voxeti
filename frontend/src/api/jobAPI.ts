@@ -24,6 +24,9 @@ export const createJobApi = (baseUrl: string) =>
           url: `/${jobId}`,
         }),
       }),
+      getJobById: builder.query<Job, string>({
+        query: (id) => `/${id}`,
+      }),
       deleteJob: builder.mutation<Design, string>({
         query: (jobId) => ({
           method: "DELETE",
@@ -58,9 +61,9 @@ export const createJobApi = (baseUrl: string) =>
       }),
       getDesignerJobs: builder.query<
         Job[],
-        { designerId: string; page: string }
+        { designerId: string; page: string; sort: string }
       >({
-        query: ({ designerId, page }) => `?designer=${designerId}&page=${page}`,
+        query: ({ designerId, page, sort }) => `?designer=${designerId}&page=${page}&sort=${sort}`,
       }),
       getDesignerJobsFiltered: builder.query<
         Job[],

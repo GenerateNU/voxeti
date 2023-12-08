@@ -32,6 +32,8 @@ export interface Job {
   filament: FilamentType;
   layerHeight: number;
   shippingAddress: Address;
+  trackingNumber?: string;
+  estimatedDelivery?: string;
 }
 
 // A Design is just a GridFS file, but renamed to match Voxeti branding
@@ -43,10 +45,10 @@ export interface Design {
 
 // 2. Supporting Schema:
 
-// Address coordinates
-export type Coordinates = {
-  latitude: number;
-  longitude: number;
+// Address location
+export type Geometry = {
+  type: string;
+  coordinates: number[];
 };
 
 // An address
@@ -58,7 +60,7 @@ export type Address = {
   city: string;
   state: string;
   country: string;
-  location?: Coordinates;
+  location?: Geometry;
 };
 
 // Print/printer physical dimensions

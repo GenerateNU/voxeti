@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@mui/material";
 import { Job } from "../../main.types";
 import { ReactNode } from "react";
-import ProducerCell from "./ProducerCell";
+import ProducerCell from "../Jobs/ProducerCell";
 import StyledButton from "../Button/Button";
 import { userApi } from "../../api/api";
 
@@ -38,24 +38,20 @@ const JobTableCell = (props: { children: ReactNode, size: 'sm' | 'md' | 'lg' }) 
   );
 }
 
-export default function JobRow({ job, type }: JobRowProps) {
-  const designerName = (id: string) => {
-    const { data: designer } = userApi.useGetUserQuery(id);
-
-    if (designer) {
-      return { firstName: designer.firstName, lastName: designer.lastName };
+export default function PurchaseRow({ job, type }: JobRowProps) {
+  const producerName = (producerId?: string) => {
+    if (!producerId || producerId === "000000000000000000000000") return undefined;
+    const { data: producer } = userApi.useGetUserQuery(producerId);
+    if (!producer) return undefined;
+    return {
+      firstName: producer.firstName,
+      lastName: producer.lastName
     }
-
-    return undefined;
   };
 
-  // Retrieve the designer name:
-  const name = designerName(type === 'producer' ? job.producerId as string : job.designerId as string)
+  // Retrieve the producer name:
+  const name = producerName(job.producerId)
 
-  const createdDate = new Date(job.createdAt)
-  if (type === 'designer') {
-    createdDate.setDate(createdDate.getDate() + 7)
-  }
 
   return (
     <TableRow
@@ -81,7 +77,7 @@ export default function JobRow({ job, type }: JobRowProps) {
         ${(job.price / 100).toFixed(2)}
       </JobTableCell>
       <JobTableCell size='md'>
-        {createdDate.toDateString()}
+        {new Date(job.createdAt).toLocaleDateString()}
       </JobTableCell>
       <TableCell
         align='right'
@@ -89,7 +85,7 @@ export default function JobRow({ job, type }: JobRowProps) {
         <StyledButton
           color='primary'
           size='sm'
-          href={`/job-accept/${job.id}`}
+          href={`/purchase-history/${job.id}`}
         >
           View Job
         </StyledButton>
