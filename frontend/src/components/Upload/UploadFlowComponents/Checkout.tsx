@@ -49,15 +49,18 @@ export default function Checkout({ states, setters }: CheckoutProps) {
     onComplete: handleComplete,
   };
 
-  return (
-    <div className="mt-32">
-      <div id="checkout">
-        {clientSecret && (
-          <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-            <EmbeddedCheckout />
-          </EmbeddedCheckoutProvider>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div className="">
+            <div id="checkout">
+                {clientSecret && (
+                    <EmbeddedCheckoutProvider
+                        stripe={stripePromise}
+                        options={options}
+                        >
+                        <EmbeddedCheckout />
+                    </EmbeddedCheckoutProvider>
+                )}
+            </div>
+        </div>
+    )
 }
