@@ -35,7 +35,7 @@ const QuestionForm = () => {
     handleSubmit,
     trigger,
     watch,
-    formState: { errors, isValid, isDirty },
+    formState: { isValid, isDirty },
   } = useForm({ mode: "onChange" });
 
   // Handle sso registration:
