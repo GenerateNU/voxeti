@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Job } from "../../../../main.types";
-import { Button, createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material";
 import { jobApi } from "../../../../api/api";
 import { useStateSelector } from "../../../../hooks/use-redux";
 import { useApiError } from "../../../../hooks/use-api-error";
+import StyledButton from "../../../Button/Button";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -87,35 +88,33 @@ export default function JobAcceptButtons(props: { currentJob: Job }) {
   if (jobStatus.toUpperCase() === "PENDING") {
     return (
       <ThemeProvider theme={theme}>
-        <div className=" flex flex-row flex-wrap items-center justify-end gap-y-1 gap-x-2">
-          <Button
-            variant="contained"
-            color="black"
-            className=" w-32"
+        <div className="flex flex-row items-center justify-end gap-y-1 gap-x-2">
+          <StyledButton
+            color="primary"
             onClick={acceptJob}
+            size="md"
           >
             Accept
-          </Button>
-          <Button
-            variant="outlined"
-            color="black"
-            className=" w-32"
+          </StyledButton>
+          <StyledButton
+            color="seconday"
             href="/jobs"
             onClick={declineJob}
+            size="md"
           >
             Decline
-          </Button>
+          </StyledButton>
         </div>
       </ThemeProvider>
     );
   } else {
     return (
       <ThemeProvider theme={theme}>
-        <div className=" flex flex-row flex-wrap items-center justify-end gap-y-1 gap-x-4">
-          <p className=" text-producer">JOB ACCEPTED</p>
-          <Button href="/jobs" variant="outlined" color="black" className="">
+        <div className=" flex flex-row items-center justify-end gap-y-1 gap-x-2">
+          <StyledButton color="success" size="md">Job Accepted</StyledButton>
+          <StyledButton href="/jobs" color="seconday" size="md">
             Current Jobs
-          </Button>
+          </StyledButton>
         </div>
       </ThemeProvider>
     );

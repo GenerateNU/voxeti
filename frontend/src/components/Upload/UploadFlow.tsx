@@ -43,12 +43,12 @@ export default function UploadFlow({
                             editFilter={() => setters.currentStep(3)}
                             slice={setters.slice}
                             />,
-                    5: <Checkout
+                    5: <Notes
+                            states={states}
+                        />,
+                    6: <Checkout
                             states={states}
                             setters={setters}
-                        />,
-                    6: <Notes
-                            states={states}
                         />,
                     7: <JobSubmitting />,
                     8: <ConfirmationPage

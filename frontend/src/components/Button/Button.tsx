@@ -24,6 +24,7 @@ export default function StyledButton({
     producer: ["!bg-producer", "!text-background", "hover:!bg-[#565656]"],
     designer: ["!bg-designer", "!text-background", "hover:!bg-[#565656]"],
     delete: ["!bg-[#F5F5F5]", "!text-error", "hover:!bg-[#FFCCCB]"],
+    success: ["!bg-[#14AE5C]", "!text-background", "hover:!bg[#14AE5C]"],
   };
 
   return (
