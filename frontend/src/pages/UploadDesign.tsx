@@ -223,6 +223,7 @@ export function UploadDesign() {
     filament: setFilament,
     address: setAddress,
     prices: setPrices,
+    formSubmit: formSubmit,
   };
   // -----------
 
@@ -232,7 +233,9 @@ export function UploadDesign() {
     ["3", filament !== "" && quality !== ""],
     ["4", prices.length >= 1],
     ["5", true],
-    ["6", true],
+    ["6", false],
+    ["7", false],
+    ["8", true],
   ]);
 
   const isSubmitStep = currentStep === 6;

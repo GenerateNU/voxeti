@@ -1,20 +1,20 @@
 import React, { useCallback } from "react";
 import DesignerInfo from "../components/Jobs/ProducerJobs/components/DesignerInfo";
 import { useStateSelector } from "../hooks/use-redux";
-import { Address, PageStatus, User } from "../main.types";
+import { PageStatus, User } from "../main.types";
 import Loading from "../components/Jobs/ProducerJobs/components/Loading";
-import { Divider, IconButton } from "@mui/material";
+import { Divider } from "@mui/material";
 import StyledButton from "../components/Button/Button";
 import { useApiError } from "../hooks/use-api-error";
-import TextField from "@mui/material/TextField";
 import { userApi } from "../api/api";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import useLogout from "../hooks/use-logout";
 import Auth from "../components/Auth/Auth";
 import { UserSliceState } from "../store/store.types";
 import { useDispatch } from "react-redux";
 import { setUser } from "../store/userSlice";
+import EditPrinters from "../components/Profile/EditPrinters";
+import EditLogin from "../components/Profile/EditLogin";
+import EditAddresses from "../components/Profile/EditAddresses";
 
 export default function ProfilePage() {
   const state = useStateSelector((state) => state.user);
@@ -32,6 +32,7 @@ function Profile(props: { state: UserSliceState }) {
     PageStatus.Loading
   );
   const [addressIndex, setAddressIndex] = React.useState(0);
+  const [printerIndex, setPrinterIndex] = React.useState(0);
   const [sectionEdit, setSectionEdit] = React.useState("None");
 
   const [patchUser] = userApi.usePatchUserMutation();
@@ -60,7 +61,7 @@ function Profile(props: { state: UserSliceState }) {
   const saveEdit = (body: Partial<User>) => {
     patchUser({
       id: props.state.user.id,
-      body: {...body, socialProvider: props.state.user.socialProvider},
+      body: { ...body, socialProvider: props.state.user.socialProvider },
     })
       .unwrap()
       .then((user) => {
@@ -82,218 +83,11 @@ function Profile(props: { state: UserSliceState }) {
       });
   };
 
-  const startEdit = (sectionName: string) => {
-    setSectionEdit(sectionName);
-  };
-
-  const FieldValuePairs = (props: {
-    rows: [string, string?, string?][][];
-    edit?: boolean;
-    updateFields: (key: string, value: string) => void;
-  }) => {
-    return (
-      <div className=" w-full sm:w-2/3">
-        {props.rows.map((section) => {
-          return (
-            <div className="flex flex-row justify-between flex-1 pr-4">
-              {section.map(([key, value, type]) => {
-                return (
-                  <div className=" pb-4">
-                    <div>{key}</div>
-                    <TextField
-                      id={`form-fields-${key.toLowerCase()}`}
-                      key={key.toLowerCase()}
-                      variant="standard"
-                      size="small"
-                      margin="none"
-                      defaultValue={value ? value : ""}
-                      placeholder={key}
-                      type={type}
-                      disabled={!props.edit}
-                      onChange={(event) => {
-                        props.updateFields(key, event.target.value);
-                      }}
-                      InputProps={{
-                        disableUnderline: !props.edit,
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
   const CustomDivider = () => {
     return (
       <div>
         <Divider className="pt-3" />
         <div className="py-3"></div>
-      </div>
-    );
-  };
-
-  const EditSaveButton = (props: {
-    sectionName: string;
-    body: Partial<User>;
-  }) => {
-    return sectionEdit == props.sectionName ? (
-      <StyledButton
-        size={"sm"}
-        color={"seconday"}
-        type="submit"
-        onClick={() => {
-          saveEdit(props.body);
-        }}
-      >
-        Save
-      </StyledButton>
-    ) : (
-      <StyledButton
-        size={"sm"}
-        color={"seconday"}
-        onClick={() => {
-          startEdit(props.sectionName);
-        }}
-      >
-        Edit
-      </StyledButton>
-    );
-  };
-
-  const LoginInfo = () => {
-    const [newEmail, setNewEmail] = React.useState(props.state.user.email);
-    const [newPassword, setNewPassword] = React.useState('')
-
-    const loginInfo: [string, string, string?][][] = [
-      [["Email", newEmail]],
-      [["Password", "", "password"]],
-    ];
-
-    return (
-      <div className="flex h-full flex-row flex-wrap justify-center sm:justify-between">
-        <FieldValuePairs
-          rows={
-            props.state.user.socialProvider == "NONE"
-              ? loginInfo
-              : [loginInfo[0]]
-          }
-          edit={sectionEdit == "login"}
-          updateFields={(key, value) => {
-            key === 'Password' ? setNewPassword(value) : setNewEmail(value);
-          }}
-        />
-        <div className=" flex items-center">
-          {props.state.user.socialProvider == "NONE" && (
-            <EditSaveButton sectionName="login" body={{ email: newEmail, ...(newPassword !== "" ? {password: newPassword} : {})}} />
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const AddressInfo = () => {
-    const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
-      props.state.user.addresses.map((a: Address) => ({ ...a }))
-    );
-
-    const adjustAddressIndex = (delta: number) => {
-      setAddressIndex(
-        Math.min(Math.max(addressIndex + delta, 0), currentAddresses.length - 1)
-      );
-    };
-    const changeFieldValue = (key: string, value: string) => {
-      if (sectionEdit == "address") {
-        const tempAddress = { ...currentAddresses[addressIndex] };
-        switch (key) {
-          case "Line 1":
-            tempAddress.line1 = value;
-            break;
-          case "Line 2":
-            tempAddress.line2 = value;
-            break;
-          case "City":
-            tempAddress.city = value;
-            break;
-          case "State":
-            tempAddress.state = value;
-            break;
-          case "Zipcode":
-            tempAddress.zipCode = value;
-            break;
-          case "Country":
-            tempAddress.country = value;
-            break;
-        }
-        currentAddresses[addressIndex] = tempAddress;
-        setCurrentAddresses(currentAddresses);
-      }
-    };
-
-    const AddressForm = (props: { index: number }) => {
-      const shippingInfo: [string, string?, string?][][] = [
-        [
-          ["Line 1", currentAddresses[props.index]?.line1],
-          ["Line 2", currentAddresses[props.index]?.line2],
-        ],
-        [
-          ["City", currentAddresses[props.index]?.city],
-          ["State", currentAddresses[props.index]?.state],
-        ],
-        [
-          ["Zipcode", currentAddresses[props.index]?.zipCode],
-          ["Country", currentAddresses[props.index]?.country],
-        ],
-      ];
-
-      return (
-        <FieldValuePairs
-          rows={shippingInfo}
-          edit={sectionEdit == "address"}
-          updateFields={changeFieldValue}
-        />
-      );
-    };
-
-    return (
-      <div>
-        <div className="flex h-full flex-row items-center justify-center sm:justify-between flex-wrap">
-          <AddressForm index={addressIndex} />
-          <div className=" flex items-center">
-            <EditSaveButton
-              sectionName="address"
-              body={{ addresses: currentAddresses }}
-            />
-          </div>
-        </div>
-        <div className="flex h-full flex-row justify-between items-center">
-          <IconButton
-            aria-label="Previous Address"
-            disabled={addressIndex == 0}
-            onClick={() => {
-              cancelEdit();
-              adjustAddressIndex(-1);
-            }}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-          <div>{`${currentAddresses[addressIndex]?.name} (${
-            addressIndex + 1
-          })`}</div>
-          <IconButton
-            aria-label="Next Address"
-            disabled={addressIndex == currentAddresses.length - 1}
-            onClick={() => {
-              cancelEdit();
-              adjustAddressIndex(1);
-            }}
-          >
-            <ChevronRightIcon />
-          </IconButton>
-        </div>
       </div>
     );
   };
@@ -353,10 +147,36 @@ function Profile(props: { state: UserSliceState }) {
           <DesignerInfo designerId={props.state.user.id} />
           <div className="py-2" />
           <CustomDivider />
-          <LoginInfo />
+          <EditLogin
+            setSection={setSectionEdit}
+            currentSection={sectionEdit}
+            email={props.state.user.email}
+            socialProvider={props.state.user.socialProvider}
+            saveEdit={saveEdit}
+          />
           <CustomDivider />
-          <AddressInfo />
+          <EditAddresses
+            setSection={setSectionEdit}
+            currentSection={sectionEdit}
+            addresses={props.state.user.addresses}
+            index={addressIndex}
+            setIndex={setAddressIndex}
+            saveEdit={saveEdit}
+          />
           <CustomDivider />
+          {props.state.user.userType !== "DESIGNER" && (
+            <div>
+              <EditPrinters
+                setSection={setSectionEdit}
+                currentSection={sectionEdit}
+                printers={props.state.user.printers}
+                index={printerIndex}
+                setIndex={setPrinterIndex}
+                saveEdit={saveEdit}
+              />
+              <CustomDivider />
+            </div>
+          )}
           <DeactivateAccount />
           <CustomDivider />
         </div>

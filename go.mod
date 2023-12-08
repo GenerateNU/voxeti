@@ -10,6 +10,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/pterm/pterm v0.12.66
 	github.com/stretchr/testify v1.8.4
+	github.com/stripe/stripe-go/v76 v76.5.0
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/crypto v0.13.0
 	googlemaps.github.io/maps v1.5.0
@@ -29,7 +30,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
-	github.com/stripe/stripe-go/v76 v76.5.0 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
