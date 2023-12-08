@@ -42,8 +42,8 @@ export const userSlice = createSlice({
 
     // 3. Set an SSO access token for user creation:
     setSSOAccessToken: (state, action: PayloadAction<string>) => {
-      state.ssoAccessToken = action.payload
-    }
+      state.ssoAccessToken = action.payload;
+    },
   },
 });
 

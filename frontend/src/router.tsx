@@ -62,7 +62,7 @@ const jobViewRoute = new Route({
   getParentRoute: () => rootRoute,
   path: "/jobs/$jobId",
   component: JobView,
-})
+});
 
 const registrationRoute = new Route({
   getParentRoute: () => rootRoute,
@@ -86,7 +86,7 @@ const routeTree = rootRoute.addChildren([
   uploadDesignRoute,
   jobsRoute,
   jobAcceptRoute,
-  jobViewRoute
+  jobViewRoute,
 ]);
 
 const router = new Router({ routeTree });

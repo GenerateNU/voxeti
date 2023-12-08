@@ -14,7 +14,7 @@ export default function EditAddresses(props: {
   saveEdit: (body: Partial<User>) => void;
 }) {
   const [currentAddresses, setCurrentAddresses] = React.useState<Address[]>(
-    props.addresses ? props.addresses.map((a: Address) => ({ ...a })) : []
+    props.addresses ? props.addresses.map((a: Address) => ({ ...a })) : [],
   );
 
   const section: string = "addresses";
@@ -123,7 +123,7 @@ export default function EditAddresses(props: {
         display={currentAddresses[props.index]?.name || "Add New Address"}
         onChange={(delta: number) => {
           props.setSection(
-            props.index + delta === currentAddresses.length ? section : ""
+            props.index + delta === currentAddresses.length ? section : "",
           );
           props.setIndex(props.index + delta);
         }}

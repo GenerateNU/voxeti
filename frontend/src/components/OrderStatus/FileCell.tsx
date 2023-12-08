@@ -12,11 +12,11 @@ export default function FileCell(props: { job: Job }) {
     const { data: data } = designApi.useGetDesignQuery(design);
     if (data) {
       setDesign((designs) => {
-        designs.push(data)
-        return designs
-      })
+        designs.push(data);
+        return designs;
+      });
     }
-  })
+  });
 
   return <div className="flex items-center text-lg">{props.job.designId}</div>;
 }

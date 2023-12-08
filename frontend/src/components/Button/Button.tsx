@@ -38,7 +38,10 @@ export default function StyledButton({
       disabled={disabled}
       startIcon={icon}
       href={href}
-      onClick={onClick}
+      onClick={color === "success" ? () => {} : onClick}
+      sx={{
+        cursor: `${color === "success" ? "default" : "pointer"}`,
+      }}
     >
       {children}
     </Button>

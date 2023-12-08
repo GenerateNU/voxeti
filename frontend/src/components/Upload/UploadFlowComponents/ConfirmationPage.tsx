@@ -28,15 +28,15 @@ export default function ConfirmationPage({ states }: ConfirmationPageProps) {
           total: breakdown.total - breakdown.taxCost - breakdown.shippingCost,
           quantity: states.quantities[index],
         };
-      })
+      }),
     );
     setTaxes(
-      states.prices.map((breakdown: EstimateBreakdown) => breakdown.taxCost)
+      states.prices.map((breakdown: EstimateBreakdown) => breakdown.taxCost),
     );
     setShippings(
       states.prices.map(
-        (breakdown: EstimateBreakdown) => breakdown.shippingCost
-      )
+        (breakdown: EstimateBreakdown) => breakdown.shippingCost,
+      ),
     );
   }, [states.prices, states.quantities]);
 

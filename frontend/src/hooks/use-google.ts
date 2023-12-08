@@ -15,7 +15,10 @@ export default function useGoogle({
     googleSSO(response.access_token as string)
       .unwrap()
       .then((res) => {
-        setProviderUser({...res, ssoAccessToken: response.access_token as string});
+        setProviderUser({
+          ...res,
+          ssoAccessToken: response.access_token as string,
+        });
       })
       .catch((err) => {
         // ERROR HANDLING NOT YET SETUP
