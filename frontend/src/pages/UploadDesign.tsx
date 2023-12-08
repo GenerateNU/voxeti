@@ -63,7 +63,7 @@ export function UploadDesign() {
   async function handleSliceDesign(
     file: File,
     layerHeight: string,
-    index: number,
+    index: number
   ) {
     const formData = new FormData();
     formData.append("file", file);
@@ -95,7 +95,7 @@ export function UploadDesign() {
   const handleSlicing = async () => {
     setIsSlicing(true);
     Promise.all(
-      file.map((file: File, index) => handleSliceDesign(file, quality, index)),
+      file.map((file: File, index) => handleSliceDesign(file, quality, index))
     ).then((responses) => {
       const filteredResponses = responses.filter((response) => {
         return response != undefined;
@@ -141,6 +141,7 @@ export function UploadDesign() {
       designId: designIds,
       quantity: quantities,
       status: "PENDING",
+      tracking: "",
       price: Math.round(totalPrice * 100),
       shipping: Math.round(shipping * 100),
       taxes: Math.round(taxes * 100),

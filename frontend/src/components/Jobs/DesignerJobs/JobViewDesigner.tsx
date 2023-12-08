@@ -4,23 +4,15 @@ import { JobExtended } from "../JobRow";
 
 import { Divider } from "@mui/material";
 import AvatarCell from "../AvatarCell";
-import { ReactNode } from "react";
 import Map from "../../Map/Map";
 import { useApiError } from "../../../hooks/use-api-error";
 import router from "../../../router";
 import { JobStatus, NEW_USER_ID, User } from "../../../main.types";
+import JobStatusTag from "../JobStatusTag";
+import { GridItem } from "../JobInfoGridCell";
 
 type JobViewDesignerProps = {
   jobId: string;
-};
-
-type GridItemProps = {
-  title: string;
-  children: ReactNode;
-};
-
-type JobStatusTagProps = {
-  status: JobStatus;
 };
 
 export default function JobViewDesigner({ jobId }: JobViewDesignerProps) {
@@ -59,33 +51,6 @@ export default function JobViewDesigner({ jobId }: JobViewDesignerProps) {
       });
   }
 
-  const GridItem = ({ title, children }: GridItemProps) => {
-    return (
-      <div className="text-[#A4A4A4]">
-        <h1 className="font-semibold text-lg text-primary mb-2">{title}</h1>
-        {children}
-      </div>
-    );
-  };
-
-  const JobStatusTag = ({ status }: JobStatusTagProps) => {
-    const infoMappings = {
-      PENDING: { title: "Pending", styles: "bg-background !text-primary" },
-      ACCEPTED: { title: "Accepted", styles: "bg-producer" },
-      INPROGRESS: { title: "In Progress", styles: "bg-[#ae7d14]" },
-      INSHIPPING: { title: "Shipped", styles: "bg-[designer]" },
-      COMPLETE: { title: "Complete", styles: "bg-[#14AE5C" },
-    };
-
-    return (
-      <div
-        className={`p-2 pr-6 pl-6 text-background shadow-md rounded-lg ${infoMappings[status].styles} w-fit`}
-      >
-        {infoMappings[status].title}
-      </div>
-    );
-  };
-
   // Job information:
   const address = (
     <>
@@ -94,8 +59,9 @@ export default function JobViewDesigner({ jobId }: JobViewDesignerProps) {
       {job?.shippingAddress.city}, {job?.shippingAddress.state}
     </>
   );
+
   const trackingNumber =
-    job?.status === "INSHIPPING" ? "No Information" : "VX562388751US";
+    job?.tracking === "" ? "No Information" : job?.tracking;
   const estimatedDelivery = () => {
     const date = new Date(job?.createdAt as Date);
     const shippingAdjustedDay = date.getDay() + 10;
